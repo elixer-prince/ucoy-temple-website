@@ -1,0 +1,29 @@
+{
+  "name": "ucoy-temple-website",
+  "version": "1.0.0",
+  "description": "United Congregation of Yisra'Yah website: a static Astro site published on Cloudflare Pages.",
+  "private": true,
+  "directories": {
+    "doc": "docs"
+  },
+  "engines": {
+    "node": ">=22.12.0"
+  },
+  "scripts": {
+    "dev": "astro dev",
+    "build": "astro build",
+    "preview": "astro preview",
+    "check": "astro check",
+    "verify": "npm run check && npm run build"
+  },
+  "dependencies": {
+    "astro": "^7.3.3"
+  },
+  "devDependencies": {
+    "@astrojs/check": "^0.9.10",
+    "typescript": "^6.0.0"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC"
+}

@@ -1,0 +1,14 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 32" role="img" aria-label="United Congregation of Yisra'Yah">
+  <!-- Placeholder mark, written during the stack build. Replace it with the
+       congregation's own when the design system is settled (scope feature 4). -->
+  <rect width="32" height="32" rx="7" fill="#2b3a6b" />
+  <text
+    x="16"
+    y="23.5"
+    text-anchor="middle"
+    font-family="Georgia, 'Times New Roman', serif"
+    font-size="19"
+    font-weight="700"
+    fill="#ffffff"
+  >Y</text>
+</svg>

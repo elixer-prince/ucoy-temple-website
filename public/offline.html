@@ -1,0 +1,122 @@
+<!doctype html>
+<!--
+  Shown by the service worker when a page is not in the cache and there is no
+  connection. It is a plain file rather than a built page on purpose: it has to
+  be reachable at a fixed address that the worker can cache by name.
+
+  The colours repeat the values in src/styles/tokens.css, because a file served
+  outside the build cannot read the built stylesheet, whose name is hashed.
+  Keep the two in step until scope feature 16 revisits the offline experience.
+-->
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>No connection</title>
+    <style>
+      :root {
+        color-scheme: light dark;
+        --canvas: #fbfaf7;
+        --surface: #ffffff;
+        --border: #dedbd0;
+        --ink: #191a20;
+        --body: #383a44;
+        --muted: #5c5e69;
+        --accent: #2b3a6b;
+        --on-accent: #ffffff;
+      }
+
+      @media (prefers-color-scheme: dark) {
+        :root {
+          --canvas: #14151b;
+          --surface: #1c1e26;
+          --border: #33353f;
+          --ink: #f3f2ed;
+          --body: #d4d3cd;
+          --muted: #a7a7ad;
+          --accent: #a8b6ef;
+          --on-accent: #14151b;
+        }
+      }
+
+      * {
+        box-sizing: border-box;
+      }
+
+      body {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        gap: 1.5rem;
+        min-height: 100dvh;
+        margin: 0;
+        padding: clamp(1rem, 4vw, 2rem);
+        background: var(--canvas);
+        color: var(--body);
+        font-family: system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif;
+        font-size: 1.0625rem;
+        line-height: 1.65;
+        text-align: center;
+      }
+
+      .panel {
+        max-width: 34rem;
+        padding: 2rem;
+        border: 1px solid var(--border);
+        border-radius: 14px;
+        background: var(--surface);
+      }
+
+      h1 {
+        margin: 0 0 0.5rem;
+        color: var(--ink);
+        font-family: Georgia, 'Times New Roman', serif;
+        font-size: clamp(1.5rem, 1.2rem + 1.2vw, 1.875rem);
+        line-height: 1.25;
+      }
+
+      p {
+        margin: 0 0 1rem;
+      }
+
+      p:last-of-type {
+        margin-bottom: 0;
+      }
+
+      .note {
+        color: var(--muted);
+        font-size: 0.875rem;
+      }
+
+      a.button {
+        display: inline-flex;
+        align-items: center;
+        min-height: 44px;
+        margin-top: 0.5rem;
+        padding: 0.75rem 1.5rem;
+        border-radius: 999px;
+        background: var(--accent);
+        color: var(--on-accent);
+        font-weight: 600;
+        text-decoration: none;
+      }
+
+      a.button:focus-visible {
+        outline: 3px solid var(--accent);
+        outline-offset: 3px;
+      }
+    </style>
+  </head>
+  <body>
+    <main class="panel">
+      <h1>There is no connection</h1>
+      <p>
+        This page has not been saved on your device yet, so it cannot be opened without a
+        connection. Pages you have already opened are still available.
+      </p>
+      <p class="note">Reconnect, then open the page again.</p>
+      <a class="button" href="/">Go to the home page</a>
+    </main>
+  </body>
+</html>
