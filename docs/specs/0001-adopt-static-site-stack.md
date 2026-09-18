@@ -1,7 +1,7 @@
 # 0001. Adopt a static site stack for the temple website
 
 **Date**: 2026-09-17
-**Status**: In Progress
+**Status**: Accepted
 
 ## Summary
 

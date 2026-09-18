@@ -1,0 +1,65 @@
+/*
+ * Design tokens for the United Congregation of Yisra'Yah website.
+ *
+ * These values MUST stay in sync with public/offline.html, which duplicates
+ * them because it is a static file served outside the build and cannot
+ * import a hashed stylesheet.  Update both together (scope feature 16 will
+ * revisit the offline experience).
+ */
+
+:root {
+  /* Light mode palette */
+  --canvas: #fbfaf7;
+  --surface: #ffffff;
+  --border: #dedbd0;
+  --ink: #191a20;
+  --body: #383a44;
+  --muted: #5c5e69;
+  --accent: #2b3a6b;
+  --on-accent: #ffffff;
+
+  /* Font families — variables set by the Astro font integration
+     (astro.config.mjs).  Fallbacks match offline.html. */
+  --font-sans: system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif;
+  --font-serif: Georgia, 'Times New Roman', serif;
+
+  /* Spacing scale (8-point grid) */
+  --space-3xs: clamp(0.25rem, 0.6vw, 0.5rem);
+  --space-2xs: clamp(0.5rem, 1.2vw, 0.75rem);
+  --space-xs: clamp(0.75rem, 1.6vw, 1rem);
+  --space-s: clamp(1rem, 2vw, 1.25rem);
+  --space-m: clamp(1.25rem, 2.8vw, 1.5rem);
+  --space-l: clamp(1.5rem, 3.6vw, 2rem);
+  --space-xl: clamp(2rem, 4.8vw, 2.75rem);
+  --space-2xl: clamp(2.75rem, 6.4vw, 3.5rem);
+
+  /* Typography */
+  --body-size: 1.0625rem; /* 17px — above the 16px minimum (AC-5) */
+  --body-line-height: 1.65;
+  --heading-line-height: 1.25;
+
+  /* Layout */
+  --max-content-width: 42rem;
+  --max-wide-width: 64rem;
+  --radius: 14px;
+  --border-width: 1px;
+}
+
+/* Dark mode palette (prefers-color-scheme: dark) */
+@media (prefers-color-scheme: dark) {
+  :root {
+    --canvas: #14151b;
+    --surface: #1c1e26;
+    --border: #33353f;
+    --ink: #f3f2ed;
+    --body: #d4d3cd;
+    --muted: #a7a7ad;
+    --accent: #a8b6ef;
+    --on-accent: #14151b;
+  }
+}
+
+/* Respect the OS colour scheme on the root element */
+html {
+  color-scheme: light dark;
+}

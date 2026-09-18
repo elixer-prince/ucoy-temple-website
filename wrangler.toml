@@ -1,0 +1,23 @@
+# Cloudflare Pages deployment configuration for the
+# United Congregation of Yisra'Yah website.
+#
+# This file tells Wrangler (and the Cloudflare Pages GitHub integration)
+# where to find the build output.  Environment variables are set in the
+# Pages dashboard under Settings → Environment Variables → Production.
+#
+# See docs/specs/0001-adopt-static-site-stack.md
+
+name = "ucoy-temple-website"
+pages_build_output_dir = "dist"
+
+# Environment variables — set the real values in the Cloudflare Pages
+# dashboard before deploying.  Listed here as documentation.
+#
+# [vars]
+# SITE_URL = "https://ucoy-temple-website.pages.dev"
+# CONTACT_EMAIL = "contact@ucoy.org"
+# FORM_ENDPOINT = "https://formspree.io/f/XXXXXX"
+# CALENDAR_ID = "<calendar-id>@group.calendar.google.com"
+# CALENDAR_TIMEZONE = "America/New_York"
+# CF_ANALYTICS_TOKEN = "<cloudflare-web-analytics-token>"
+

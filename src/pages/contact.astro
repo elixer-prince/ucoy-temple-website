@@ -1,0 +1,183 @@
+---
+import { SITE_CONFIG } from '@/config/site';
+import Layout from '@layouts/Layout.astro';
+import '@styles/tokens.css';
+import '@styles/base.css';
+
+interface Props {
+  sent?: boolean;
+}
+
+const sent = Astro.props.sent ?? false;
+---
+
+<Layout title="Contact" description="Send a message to the United Congregation of Yisra'Yah.">
+  <div class="container">
+    <h1>Contact us</h1>
+
+    {sent && (
+      <div class="notice notice-success" role="status">
+        Thank you — your message has been sent.
+      </div>
+    )}
+
+    <div class="contact-grid">
+      <!-- Contact information -->
+      <div class="contact-info">
+        <h2>Get in touch</h2>
+
+        <p>
+          <strong>Email:</strong>{' '}
+          <a href={`mailto:${SITE_CONFIG.contactEmail}`}>
+            {SITE_CONFIG.contactEmail}
+          </a>
+        </p>
+
+        {SITE_CONFIG.location.address && (
+          <address>
+            <strong>Address:</strong>{' '}
+            {SITE_CONFIG.location.name}
+            <br />
+            {SITE_CONFIG.location.address}
+          </address>
+        )}
+
+        <h3>Send us a message</h3>
+        <p>
+          Use the form to reach the temple office. We read every message
+          and usually respond within a day or two.
+        </p>
+
+        <h3>Privacy</h3>
+        <p class="text-muted">
+          The only data this site collects is what you type into this form.
+          Messages are sent to the temple email address via Formspree and
+          are not stored on this site. No cookies or tracking are used.
+        </p>
+      </div>
+
+      <!-- Contact form — posts to Formspree (AC-2, AC-3) -->
+      <form
+        action={SITE_CONFIG.formEndpoint}
+        method="POST"
+        class="contact-form"
+      >
+        <input type="hidden" name="_subject" value="Message from the temple website" />
+
+        <div class="form-group">
+          <label for="name">Name</label>
+          <input
+            type="text"
+            id="name"
+            name="name"
+            required
+            placeholder="Your name"
+          />
+        </div>
+
+        <div class="form-group">
+          <label for="email">Email</label>
+          <input
+            type="email"
+            id="email"
+            name="_replyto"
+            required
+            placeholder="you@example.com"
+          />
+        </div>
+
+        <div class="form-group">
+          <label for="message">Message</label>
+          <textarea
+            id="message"
+            name="message"
+            rows="6"
+            required
+            placeholder="What would you like to know?"
+          ></textarea>
+        </div>
+
+        <button type="submit" class="button">
+          Send message
+        </button>
+      </form>
+    </div>
+  </div>
+</Layout>
+
+<style>
+  .contact-grid {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: var(--space-xl);
+    margin: var(--space-l) 0;
+  }
+
+  @media (min-width: 48em) {
+    .contact-grid {
+      grid-template-columns: 1fr 1.2fr;
+      align-items: start;
+    }
+  }
+
+  .contact-info h2 {
+    margin-top: 0;
+  }
+
+  .contact-form {
+    display: grid;
+    gap: var(--space-s);
+  }
+
+  .form-group {
+    display: flex;
+    flex-direction: column;
+    gap: 0.25rem;
+  }
+
+  .form-group label {
+    font-weight: 600;
+    color: var(--ink);
+    font-size: 0.9375rem;
+  }
+
+  .form-group input,
+  .form-group textarea {
+    padding: 0.625rem 0.75rem;
+    border: var(--border-width) solid var(--border);
+    border-radius: 8px;
+    font-family: var(--font-sans);
+    font-size: var(--body-size);
+    background: var(--surface);
+    color: var(--body);
+    min-width: 0;
+  }
+
+  .form-group input:focus-visible,
+  .form-group textarea:focus-visible {
+    outline: 3px solid var(--accent);
+    outline-offset: 2px;
+    border-color: var(--accent);
+  }
+
+  .form-group input::placeholder,
+  .form-group textarea::placeholder {
+    color: var(--muted);
+  }
+
+  .notice {
+    padding: var(--space-s) var(--space-m);
+    border-radius: var(--radius);
+    margin-bottom: var(--space-s);
+  }
+
+  .notice-success {
+    background: var(--canvas);
+    border: var(--border-width) solid var(--border);
+    color: var(--body);
+  }
+
+  address {
+    font-style: normal;
+  }
+</style>

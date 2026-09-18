@@ -11,7 +11,7 @@ _These are recommendations to keep your build orderly, not requirements. Skip an
 
 | # | Feature | Phase | Status |
 |---|---------|-------|--------|
-| 1 | Stack & architecture | Foundation | in-progress |
+| 1 | Stack & architecture | Foundation | done |
 | 2 | Coding standards & tooling | Foundation | planned |
 | 3 | Content model | Foundation | planned |
 | 4 | Design system & UI foundation | Foundation | planned |
@@ -34,17 +34,17 @@ _These are recommendations to keep your build orderly, not requirements. Skip an
 
 ## Foundations
 
-### 1. Stack & architecture · in-progress
+### 1. Stack & architecture · done
 Decide the stack and scaffold a runnable project so every later slice builds on real structure. The decision settles the big cross cutting calls in one place: the offline strategy, content as plain files, local video hosting, Hebrew script handling, and the shape analytics will plug into.
 **Done when:** the stack is recorded in a spec and the empty scaffold boots locally and passes build.
 - [x] Decide the stack (spec): `/architect stack & architecture`
-- [ ] Build it: `/develop stack & architecture`
+- [x] Build it: `/develop stack & architecture`
   - Init project: Astro 7, TypeScript, Cloudflare Pages deploy, strict lint (AC-1, AC-4, AC-5)
   - Content + Markdown + Hebrew fonts + hand-written CSS shell + home page (AC-1, AC-2, AC-5, AC-6, AC-7)
   - Service worker + offline shell (AC-5, AC-7)
   - CI: GitHub push → Cloudflare Pages build, Formspree, calendar, analytics (AC-2, AC-3, AC-4)
-- [ ] Verify it: `/check verify stack & architecture`
-- [ ] Test it: `/test stack & architecture`
+- [x] Verify it: `/check verify stack & architecture`
+- [x] Test it: `/test stack & architecture`
 Spec [0001](../../specs/0001-adopt-static-site-stack.md) · code in `./`
 
 ### 2. Coding standards & tooling · planned

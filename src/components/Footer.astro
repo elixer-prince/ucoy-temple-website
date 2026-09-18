@@ -1,0 +1,79 @@
+---
+import { SITE_CONFIG } from '@/config/site';
+
+interface Props {
+  compact?: boolean;
+}
+
+const { compact = false } = Astro.props;
+---
+
+<footer class="site-footer">
+  <div class="container footer-inner">
+    <div class="footer-main">
+      <span class="footer-title">{SITE_CONFIG.title}</span>
+
+      {compact ? (
+        <p class="footer-small">
+          © {new Date().getFullYear()} {SITE_CONFIG.author}
+        </p>
+      ) : (
+        <>
+          <p class="footer-contact">
+            Contact: <a href={`mailto:${SITE_CONFIG.contactEmail}`}>{SITE_CONFIG.contactEmail}</a>
+          </p>
+
+          <p class="footer-small">
+            © {new Date().getFullYear()} {SITE_CONFIG.author}
+          </p>
+
+          <p class="footer-small">
+            This site uses{' '}
+            <a href="https://developers.cloudflare.com/web-analytics/">
+              Cloudflare Web Analytics
+            </a>{' '}
+            (cookieless) and is served as static HTML with no cookies or
+            tracking beyond that.
+          </p>
+        </>
+      )}
+    </div>
+  </div>
+</footer>
+
+<style>
+  .site-footer {
+    border-top: var(--border-width) solid var(--border);
+    background: var(--surface);
+    margin-top: var(--space-xl);
+  }
+
+  .footer-inner {
+    padding: var(--space-l) 0;
+  }
+
+  .footer-main {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+  }
+
+  .footer-title {
+    font-family: var(--font-serif);
+    font-size: 1.125rem;
+    font-weight: 700;
+    color: var(--ink);
+  }
+
+  .footer-contact {
+    margin: 0;
+    color: var(--body);
+  }
+
+  .footer-small {
+    margin: 0;
+    color: var(--muted);
+    font-size: 0.875rem;
+    line-height: 1.5;
+  }
+</style>

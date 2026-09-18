@@ -1,0 +1,80 @@
+---
+import { SITE_CONFIG } from '@/config/site';
+import Header from '@components/Header.astro';
+import Footer from '@components/Footer.astro';
+import '@styles/tokens.css';
+import '@styles/base.css';
+
+interface Props {
+  title: string;
+  description?: string;
+}
+
+const { title, description = SITE_CONFIG.description } = Astro.props;
+---
+
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>{title} — {SITE_CONFIG.title}</title>
+    <meta name="description" content={description} />
+
+    <!-- Preconnect to font source for faster font loading -->
+    <link rel="preconnect" href="https://cdn.fontsource.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+
+    <!-- Canonical link -->
+    <link rel="canonical" href={Astro.url.pathname} />
+
+    <!-- Favicon -->
+    <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
+    <link rel="apple-touch-icon" href="/favicon.svg" />
+
+    <!-- Theme colour (matches canvas token) -->
+    <meta name="theme-color" content="#fbfaf7" />
+    <meta name="color-scheme" content="light dark" />
+  </head>
+
+  <body>
+    <Header />
+
+    <main>
+      <slot />
+    </main>
+
+    <Footer />
+
+    <!-- Cloudflare Web Analytics (cookieless, AC-3).
+         Only loaded when a token is provided. -->
+    {SITE_CONFIG.cfAnalyticsToken ? (
+      <script type="module">
+        {`const CF_TOKEN = "${SITE_CONFIG.cfAnalyticsToken}";`}
+        const script = document.createElement('script');
+        script.src = 'https://static.cloudflareinsights.com/beacon.min.js';
+        script.setAttribute('data-cf-beacon', JSON.stringify({ token: CF_TOKEN }));
+        script.defer = true;
+        document.head.appendChild(script);
+      </script>
+    ) : null}
+
+    <!-- Register the service worker for offline support (AC-7). -->
+    <script type="module">
+      if ('serviceWorker' in navigator) {
+        window.addEventListener('load', () => {
+          navigator.serviceWorker.register('/sw.js').catch((err) => {
+            console.debug('SW registration failed:', err);
+          });
+        });
+      }
+    </script>
+  </body>
+</html>
+
+<style>
+  /* Ensure the body font-family is set after token import */
+  body {
+    font-family: var(--font-sans);
+  }
+</style>

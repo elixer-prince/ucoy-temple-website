@@ -1,0 +1,19 @@
+# Security and privacy headers for Cloudflare Pages build output.
+# Applied to all requests (spec 0001, AC-3 — no cookies, no tracking).
+#
+# _headers is a Cloudflare Pages convention.  Astro copies files from
+# public/ to dist/ at build time, so this file ends up at dist/_headers
+# in the deployment.
+#
+# Do NOT add Cache-Control: max-age here — the service worker
+# (sw.js) manages caching per its strategy.  Static HTML pages should
+# be served fresh so visitors get new content on each deploy.
+
+# Everything
+/*
+  X-Content-Type-Options: nosniff
+  X-Frame-Options: DENY
+  Referrer-Policy: strict-origin-when-cross-origin
+  X-XSS-Protection: 0
+  Permissions-Policy: geolocation=(), microphone=(), camera=(), payment=()
+

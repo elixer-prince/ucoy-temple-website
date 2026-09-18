@@ -1,0 +1,214 @@
+---
+import { getCollection } from 'astro:content';
+import { SITE_CONFIG } from '@/config/site';
+import Layout from '@layouts/Layout.astro';
+import '@styles/tokens.css';
+import '@styles/base.css';
+
+/**
+ * Format a Date for human-readable display (English, no external deps).
+ * Replaces the placeholder Hebrew date computation that will be wired
+ * in during the content-model feature.
+ */
+function formatDate(date: Date): string {
+  return date.toLocaleDateString('en-US', {
+    year: 'numeric',
+    month: 'long',
+    day: 'numeric',
+  });
+}
+
+// Fetch non-draft announcements, newest first.
+const announcements = await getCollection('announcements', ({ data }) =>
+  import.meta.env.PROD ? !data.draft : true
+);
+const recentAnnouncements = announcements
+  .sort((a, b) => b.data.date.valueOf() - a.data.date.valueOf())
+  .slice(0, 3);
+
+// Build the Google Calendar embed URL (AC-2: agenda view, temple timezone).
+const calendarUrl =
+  'https://calendar.google.com/calendar/embed?' +
+  new URLSearchParams({
+    src: SITE_CONFIG.calendarId,
+    ctz: SITE_CONFIG.calendarTimezone,
+    mode: 'AGENDA',
+    showTitle: '0',
+    showNav: '0',
+    showDate: '0',
+    showPrint: '0',
+    showTabs: '0',
+    showCalendars: '0',
+    showTz: '0',
+  });
+---
+
+<Layout title="Home" description={SITE_CONFIG.description}>
+  <!-- Hero / welcome -->
+  <section class="hero">
+    <div class="container">
+      <h1 class="hero-title">{SITE_CONFIG.title}</h1>
+      <p class="hero-hebrew" lang="he" dir="auto">עדת ישראה</p>
+      <p class="hero-subtitle">
+        A Messianic congregation rooted in the Hebrew roots of the faith.
+        We gather to worship, study Torah and the Testimony, and keep the
+        appointed times — available on your phone even with no internet.
+      </p>
+
+      <nav class="hero-nav" aria-label="Quick links">
+        <a href="/about" class="button">About us</a>
+        <a href="/visiting" class="button">Visit us</a>
+        <a href="/contact" class="button">Contact</a>
+      </nav>
+    </div>
+  </section>
+
+  <!-- Service schedule overview -->
+  <section class="service-times">
+    <div class="container">
+      <h2>Service times</h2>
+      <table>
+        <tbody>
+          <tr>
+            <td>Friday morning</td>
+            <td>9:00 AM</td>
+          </tr>
+          <tr>
+            <td>Friday evening (Kabbalat Shabbat)</td>
+            <td>At sunset</td>
+          </tr>
+          <tr>
+            <td>Shabbat morning (Shacharit)</td>
+            <td>9:30 AM</td>
+          </tr>
+          <tr>
+            <td>Havdalah (Closing of Shabbat)</td>
+            <td>After dark</td>
+          </tr>
+        </tbody>
+      </table>
+
+      <p class="text-muted">
+        Times shift with the seasons. See the
+        <a href="/visiting">visiting page</a> for directions and full
+        details.
+      </p>
+    </div>
+  </section>
+
+  <!-- Latest announcements (AC-6: newest first) -->
+  <section class="announcements">
+    <div class="container">
+      <h2>Latest announcements</h2>
+
+      {recentAnnouncements.length > 0 ? (
+        recentAnnouncements.map((announcement) => (
+          <article class="announcement">
+            <h3>{announcement.data.title}</h3>
+            <p class="announcement-date text-muted">
+              {formatDate(announcement.data.date)}
+            </p>
+            {announcement.data.summary && (
+              <p>{announcement.data.summary}</p>
+            )}
+          </article>
+        ))
+      ) : (
+        <p class="text-muted">No announcements at this time.</p>
+      )}
+    </div>
+  </section>
+
+  <!-- Upcoming events from Google Calendar (AC-2) -->
+  <section class="calendar">
+    <div class="container">
+      <h2>Upcoming events</h2>
+      <p class="text-muted">
+        Events come directly from the temple's Google Calendar — staff
+        update calendar.google.com and the changes appear here with the
+        next visit.
+      </p>
+
+      <iframe
+        src={calendarUrl}
+        class="calendar-embed"
+        style="border: 0"
+        width="100%"
+        height="650"
+        loading="lazy"
+        title="Upcoming events from the temple Google Calendar"
+      >
+        <!-- Iframes do not require JavaScript. -->
+        <p>Your browser does not support iframes.</p>
+      </iframe>
+    </div>
+  </section>
+</Layout>
+
+<style>
+  .hero {
+    text-align: center;
+    padding: var(--space-2xl) 0;
+  }
+
+  .hero-title {
+    font-family: var(--font-serif);
+    font-size: clamp(1.75rem, 1.5rem + 1.5vw, 2.25rem);
+    margin-bottom: var(--space-xs);
+  }
+
+  .hero-hebrew {
+    font-family: var(--font-serif);
+    font-size: 1.5rem;
+    color: var(--accent);
+    margin: 0 0 var(--space-s);
+  }
+
+  .hero-subtitle {
+    font-size: var(--body-size);
+    color: var(--body);
+    margin-bottom: var(--space-l);
+  }
+
+  .hero-nav {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--space-xs);
+    justify-content: center;
+  }
+
+  .service-times {
+    padding: var(--space-xl) 0;
+  }
+
+  .service-times table {
+    margin-bottom: var(--space-xs);
+  }
+
+  .announcements {
+    padding: var(--space-xl) 0;
+  }
+
+  .announcement {
+    border-bottom: var(--border-width) solid var(--border);
+    padding: var(--space-s) 0;
+  }
+
+  .announcement:last-child {
+    border-bottom: none;
+  }
+
+  .announcement-date {
+    font-size: 0.875rem;
+  }
+
+  .calendar {
+    padding: var(--space-xl) 0;
+  }
+
+  .calendar-embed {
+    border-radius: var(--radius);
+    border: var(--border-width) solid var(--border);
+    margin-top: var(--space-s);
+  }
+</style>
