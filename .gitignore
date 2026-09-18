@@ -1,0 +1,29 @@
+# Build output
+dist/
+
+# Generated types and dev state
+.astro/
+
+# Dependencies
+node_modules/
+
+# Logs
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+
+# Environment variables
+.env
+.env.production
+.env.local
+
+# Cloudflare Pages / Wrangler local state
+.wrangler/
+.dev.vars
+
+# Editor and OS files
+.DS_Store
+Thumbs.db
+
+# Agent scratch files
+.tmp-*
