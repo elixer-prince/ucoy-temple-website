@@ -1,16 +1,16 @@
 ---
-import { SITE_CONFIG } from '@/config/site';
-import Header from '@components/Header.astro';
-import Footer from '@components/Footer.astro';
-import '@styles/tokens.css';
-import '@styles/base.css';
+import { SITE_CONFIG } from '@/config/site'
+import Header from '@components/Header.astro'
+import Footer from '@components/Footer.astro'
+import '@styles/tokens.css'
+import '@styles/base.css'
 
 interface Props {
-  title: string;
-  description?: string;
+  title: string
+  description?: string
 }
 
-const { title, description = SITE_CONFIG.description } = Astro.props;
+const { title, description = SITE_CONFIG.description } = Astro.props
 ---
 
 <!doctype html>
@@ -50,12 +50,12 @@ const { title, description = SITE_CONFIG.description } = Astro.props;
          Only loaded when a token is provided. -->
     {SITE_CONFIG.cfAnalyticsToken ? (
       <script type="module">
-        {`const CF_TOKEN = "${SITE_CONFIG.cfAnalyticsToken}";`}
-        const script = document.createElement('script');
-        script.src = 'https://static.cloudflareinsights.com/beacon.min.js';
-        script.setAttribute('data-cf-beacon', JSON.stringify({ token: CF_TOKEN }));
-        script.defer = true;
-        document.head.appendChild(script);
+        const CF_TOKEN = `${SITE_CONFIG.cfAnalyticsToken}`
+        const script = document.createElement('script')
+        script.src = 'https://static.cloudflareinsights.com/beacon.min.js'
+        script.setAttribute('data-cf-beacon', JSON.stringify({ token: CF_TOKEN }))
+        script.defer = true
+        document.head.appendChild(script)
       </script>
     ) : null}
 
@@ -64,9 +64,9 @@ const { title, description = SITE_CONFIG.description } = Astro.props;
       if ('serviceWorker' in navigator) {
         window.addEventListener('load', () => {
           navigator.serviceWorker.register('/sw.js').catch((err) => {
-            console.debug('SW registration failed:', err);
-          });
-        });
+            console.debug('SW registration failed:', err)
+          })
+        })
       }
     </script>
   </body>
