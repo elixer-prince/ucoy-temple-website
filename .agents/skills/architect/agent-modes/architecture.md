@@ -15,12 +15,12 @@ From the engineer's answers, define clearly: product category (web app, API serv
 
 Before choosing any technology, pick the right foundational pattern:
 
-| Scale + Team | Pattern | Rationale |
-|---|---|---|
-| Small (< 1K users, team ≤ 5) | Monolith | Simplest to build, deploy, debug, and change. Extract nothing until a real bottleneck forces it. |
-| Medium (1K to 100K users, team 5 to 15) | Layered monolith (controllers → services → repositories) | Clean separation without distributed system complexity. Single deployable unit. |
-| Large (100K+ users, team 15+, clear ownership boundaries) | 2 to 3 focused services at domain boundaries | Service split driven by team ownership and specific scale bottleneck, not architectural taste. |
-| Data heavy | Batch vs stream decision first | Batch (cron + warehouse) is simpler and usually sufficient. Stream only when latency or volume forces it. |
+| Scale + Team                                              | Pattern                                                  | Rationale                                                                                                 |
+| --------------------------------------------------------- | -------------------------------------------------------- | --------------------------------------------------------------------------------------------------------- |
+| Small (< 1K users, team ≤ 5)                              | Monolith                                                 | Simplest to build, deploy, debug, and change. Extract nothing until a real bottleneck forces it.          |
+| Medium (1K to 100K users, team 5 to 15)                   | Layered monolith (controllers → services → repositories) | Clean separation without distributed system complexity. Single deployable unit.                           |
+| Large (100K+ users, team 15+, clear ownership boundaries) | 2 to 3 focused services at domain boundaries             | Service split driven by team ownership and specific scale bottleneck, not architectural taste.            |
+| Data heavy                                                | Batch vs stream decision first                           | Batch (cron + warehouse) is simpler and usually sufficient. Stream only when latency or volume forces it. |
 
 **Step 3: Choose the stack layer by layer**
 
@@ -28,15 +28,15 @@ For each layer, make a decision, state it, and justify it in one line. Do not he
 
 Reason in the durable CATEGORY, then pick the current product fresh. The table names the category/mechanism (the durable advice); this space rots fast, so select the actual product fresh and current at runtime: prefer whatever the project's `AGENTS.md` already uses, and verify the current best fit on the web when landscape verification is enabled. Do not treat any parenthetical example as a fixed recommendation.
 
-| Layer | Default category unless evidence says otherwise (e.g. as of training) |
-|---|---|
+| Layer            | Default category unless evidence says otherwise (e.g. as of training)                                                                                                        |
+| ---------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
 | Primary database | **A relational database**: ACID, relations, JSON support, mature tooling, scales to tens of millions of rows without specialised knowledge (e.g. a mature open source RDBMS) |
-| Cache | **An in memory cache**: treat as ephemeral; never use as primary store |
-| Auth | **A proven auth library or service**: never build from scratch |
-| Background jobs | **A database backed queue first**: add a dedicated queue/broker only when throughput demands it |
-| File storage | **Object storage**: never store files in the database |
-| Search | **The database's built in full text search first**: add a dedicated search engine only when the database cannot meet the query requirements |
-| Observability | **Structured logging + error tracking** (a hosted or cloud native tool): add from day one, not as an afterthought |
+| Cache            | **An in memory cache**: treat as ephemeral; never use as primary store                                                                                                       |
+| Auth             | **A proven auth library or service**: never build from scratch                                                                                                               |
+| Background jobs  | **A database backed queue first**: add a dedicated queue/broker only when throughput demands it                                                                              |
+| File storage     | **Object storage**: never store files in the database                                                                                                                        |
+| Search           | **The database's built in full text search first**: add a dedicated search engine only when the database cannot meet the query requirements                                  |
+| Observability    | **Structured logging + error tracking** (a hosted or cloud native tool): add from day one, not as an afterthought                                                            |
 
 **Expert opinions to apply for architecture:**
 
@@ -56,16 +56,16 @@ Compare full stacks in `## Options considered`, not individual technologies. Inc
 ```markdown
 ## Proposed stack
 
-| Layer | Choice | Reason |
-|---|---|---|
-| Language | | |
-| Framework | | |
-| Primary DB | | |
-| Auth | | |
-| Background jobs | | |
-| File storage | | |
-| Hosting | | |
-| Observability | | |
+| Layer           | Choice | Reason |
+| --------------- | ------ | ------ |
+| Language        |        |        |
+| Framework       |        |        |
+| Primary DB      |        |        |
+| Auth            |        |        |
+| Background jobs |        |        |
+| File storage    |        |        |
+| Hosting         |        |        |
+| Observability   |        |        |
 ```
 
 Include only layers relevant to this product; omit layers not yet needed. Every row needs a reason, one tight sentence.

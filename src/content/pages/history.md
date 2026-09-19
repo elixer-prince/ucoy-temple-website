@@ -34,5 +34,5 @@ keeping the same materials available offline on any phone — because the
 Word of God should never be out of reach, whether in the sanctuary or on
 a journey.
 
-*"The word of the Eternal is right and true; he is faithful in all his
-deeds."* — Tehillim (Psalms) 119:138
+_"The word of the Eternal is right and true; he is faithful in all his
+deeds."_ — Tehillim (Psalms) 119:138

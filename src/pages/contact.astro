@@ -1,14 +1,14 @@
 ---
-import { SITE_CONFIG } from '@/config/site';
-import Layout from '@layouts/Layout.astro';
-import '@styles/tokens.css';
-import '@styles/base.css';
+import { SITE_CONFIG } from '@/config/site'
+import Layout from '@layouts/Layout.astro'
+import '@styles/tokens.css'
+import '@styles/base.css'
 
 interface Props {
-  sent?: boolean;
+  sent?: boolean
 }
 
-const sent = Astro.props.sent ?? false;
+const sent = Astro.props.sent ?? false
 ---
 
 <Layout title="Contact" description="Send a message to the United Congregation of Yisra'Yah.">
@@ -28,15 +28,12 @@ const sent = Astro.props.sent ?? false;
 
         <p>
           <strong>Email:</strong>{' '}
-          <a href={`mailto:${SITE_CONFIG.contactEmail}`}>
-            {SITE_CONFIG.contactEmail}
-          </a>
+          <a href={`mailto:${SITE_CONFIG.contactEmail}`}>{SITE_CONFIG.contactEmail}</a>
         </p>
 
         {SITE_CONFIG.location.address && (
           <address>
-            <strong>Address:</strong>{' '}
-            {SITE_CONFIG.location.name}
+            <strong>Address:</strong> {SITE_CONFIG.location.name}
             <br />
             {SITE_CONFIG.location.address}
           </address>
@@ -44,46 +41,30 @@ const sent = Astro.props.sent ?? false;
 
         <h3>Send us a message</h3>
         <p>
-          Use the form to reach the temple office. We read every message
-          and usually respond within a day or two.
+          Use the form to reach the temple office. We read every message and usually respond within
+          a day or two.
         </p>
 
         <h3>Privacy</h3>
         <p class="text-muted">
-          The only data this site collects is what you type into this form.
-          Messages are sent to the temple email address via Formspree and
-          are not stored on this site. No cookies or tracking are used.
+          The only data this site collects is what you type into this form. Messages are sent to the
+          temple email address via Formspree and are not stored on this site. No cookies or tracking
+          are used.
         </p>
       </div>
 
       <!-- Contact form — posts to Formspree (AC-2, AC-3) -->
-      <form
-        action={SITE_CONFIG.formEndpoint}
-        method="POST"
-        class="contact-form"
-      >
+      <form action={SITE_CONFIG.formEndpoint} method="POST" class="contact-form">
         <input type="hidden" name="_subject" value="Message from the temple website" />
 
         <div class="form-group">
           <label for="name">Name</label>
-          <input
-            type="text"
-            id="name"
-            name="name"
-            required
-            placeholder="Your name"
-          />
+          <input type="text" id="name" name="name" required placeholder="Your name" />
         </div>
 
         <div class="form-group">
           <label for="email">Email</label>
-          <input
-            type="email"
-            id="email"
-            name="_replyto"
-            required
-            placeholder="you@example.com"
-          />
+          <input type="email" id="email" name="_replyto" required placeholder="you@example.com" />
         </div>
 
         <div class="form-group">

@@ -2,7 +2,7 @@
 
 Append an entry to `CHANGELOG.md` at the repo root. Use the **Edit** tool to insert under the current unreleased/top section. Do not rewrite existing entries.
 
-**Match the existing file first.** If `CHANGELOG.md` already exists, follow *its* structure and wording style (heading levels, section names, date format, bullet phrasing) per CHANGELOG_FORMAT_NOTE (do not impose the format below over a different established one). The format below is the default **only when creating the file fresh**.
+**Match the existing file first.** If `CHANGELOG.md` already exists, follow _its_ structure and wording style (heading levels, section names, date format, bullet phrasing) per CHANGELOG_FORMAT_NOTE (do not impose the format below over a different established one). The format below is the default **only when creating the file fresh**.
 
 **Idempotency.** Read the existing entries before adding. If an equivalent line for this change is already under the unreleased section, do not add a duplicate.
 
@@ -28,25 +28,32 @@ Add lines under the correct subheading inside `## [Unreleased]` (create the subh
 ## [Unreleased]
 
 ### Added
+
 - <new capability, user-facing phrasing>
 
 ### Changed
+
 - <change in existing behaviour>
 
 ### Deprecated
+
 - <soon-to-be-removed feature>
 
 ### Removed
+
 - <removed feature>
 
 ### Fixed
+
 - <bug fix, describe the bug, not the code>
 
 ### Security
+
 - <vulnerability addressed>
 ```
 
 Rules:
+
 - One bullet per notable change. Skip refactors that are internal only and do not affect users or integrators.
 - Write from the reader's perspective: "Added pagination to the orders endpoint", not "Added `limit` param to `getOrders`".
 - Map the change to the right category. A fix is `Fixed`; a new flag is `Added`; a behaviour change is `Changed`.

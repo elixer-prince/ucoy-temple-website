@@ -9,8 +9,8 @@ Astro supports on-demand server rendering with various deployment adapters.
 ```javascript
 // astro.config.mjs
 export default defineConfig({
-  output: 'static', // Default - all pages prerendered
-});
+  output: 'static' // Default - all pages prerendered
+})
 ```
 
 All pages built at build time. No server required.
@@ -19,14 +19,14 @@ All pages built at build time. No server required.
 
 ```javascript
 // astro.config.mjs
-import node from '@astrojs/node';
+import node from '@astrojs/node'
 
 export default defineConfig({
   output: 'server', // All pages rendered on-demand
   adapter: node({
-    mode: 'standalone',
-  }),
-});
+    mode: 'standalone'
+  })
+})
 ```
 
 All pages rendered per-request. Requires an adapter.
@@ -35,12 +35,12 @@ All pages rendered per-request. Requires an adapter.
 
 ```javascript
 // astro.config.mjs
-import vercel from '@astrojs/vercel';
+import vercel from '@astrojs/vercel'
 
 export default defineConfig({
   output: 'hybrid', // Static by default, opt-in to SSR
-  adapter: vercel(),
-});
+  adapter: vercel()
+})
 ```
 
 Static by default, with option to make specific pages dynamic.
@@ -52,11 +52,11 @@ Static by default, with option to make specific pages dynamic.
 ```astro
 ---
 // src/pages/api/time.ts
-export const prerender = false; // Server-rendered
+export const prerender = false // Server-rendered
 
 export const GET = () => {
-  return new Response(new Date().toISOString());
-};
+  return new Response(new Date().toISOString())
+}
 ---
 ```
 
@@ -65,7 +65,7 @@ export const GET = () => {
 ```astro
 ---
 // src/pages/about.astro
-export const prerender = true; // Static at build time
+export const prerender = true // Static at build time
 ---
 
 <h1>About Us</h1>
@@ -81,14 +81,14 @@ npx astro add node
 
 ```javascript
 // astro.config.mjs
-import node from '@astrojs/node';
+import node from '@astrojs/node'
 
 export default defineConfig({
   output: 'server',
   adapter: node({
-    mode: 'standalone', // or 'middleware'
-  }),
-});
+    mode: 'standalone' // or 'middleware'
+  })
+})
 ```
 
 ### Vercel
@@ -99,15 +99,15 @@ npx astro add vercel
 
 ```javascript
 // astro.config.mjs
-import vercel from '@astrojs/vercel';
+import vercel from '@astrojs/vercel'
 
 export default defineConfig({
   output: 'server',
   adapter: vercel({
     webAnalytics: { enabled: true },
-    imageService: true,
-  }),
-});
+    imageService: true
+  })
+})
 ```
 
 ### Netlify
@@ -118,14 +118,14 @@ npx astro add netlify
 
 ```javascript
 // astro.config.mjs
-import netlify from '@astrojs/netlify';
+import netlify from '@astrojs/netlify'
 
 export default defineConfig({
   output: 'server',
   adapter: netlify({
-    edgeMiddleware: true, // Use Edge Functions
-  }),
-});
+    edgeMiddleware: true // Use Edge Functions
+  })
+})
 ```
 
 ### Cloudflare
@@ -136,7 +136,7 @@ npx astro add cloudflare
 
 ```javascript
 // astro.config.mjs
-import cloudflare from '@astrojs/cloudflare';
+import cloudflare from '@astrojs/cloudflare'
 
 export default defineConfig({
   output: 'server',
@@ -144,10 +144,10 @@ export default defineConfig({
     mode: 'directory', // or 'advanced'
     routes: {
       strategy: 'include',
-      include: ['/api/*'],
-    },
-  }),
-});
+      include: ['/api/*']
+    }
+  })
+})
 ```
 
 ### Deno
@@ -158,12 +158,12 @@ npx astro add deno
 
 ```javascript
 // astro.config.mjs
-import deno from '@astrojs/deno';
+import deno from '@astrojs/deno'
 
 export default defineConfig({
   output: 'server',
-  adapter: deno(),
-});
+  adapter: deno()
+})
 ```
 
 ## SSR Features
@@ -173,15 +173,15 @@ export default defineConfig({
 ```astro
 ---
 // Available in SSR pages
-const url = Astro.url;
-const method = Astro.request.method;
-const headers = Astro.request.headers;
-const userAgent = headers.get('user-agent');
+const url = Astro.url
+const method = Astro.request.method
+const headers = Astro.request.headers
+const userAgent = headers.get('user-agent')
 
 // Get request body (POST, PUT, etc.)
 if (method === 'POST') {
-  const formData = await Astro.request.formData();
-  const json = await Astro.request.json();
+  const formData = await Astro.request.formData()
+  const json = await Astro.request.json()
 }
 ---
 ```
@@ -191,8 +191,8 @@ if (method === 'POST') {
 ```astro
 ---
 // Reading cookies
-const sessionId = Astro.cookies.get('session')?.value;
-const prefs = Astro.cookies.get('prefs')?.json();
+const sessionId = Astro.cookies.get('session')?.value
+const prefs = Astro.cookies.get('prefs')?.json()
 
 // Setting cookies
 Astro.cookies.set('session', 'abc123', {
@@ -200,11 +200,11 @@ Astro.cookies.set('session', 'abc123', {
   httpOnly: true,
   secure: true,
   sameSite: 'strict',
-  maxAge: 60 * 60 * 24 * 7, // 1 week
-});
+  maxAge: 60 * 60 * 24 * 7 // 1 week
+})
 
 // Deleting cookies
-Astro.cookies.delete('session');
+Astro.cookies.delete('session')
 ---
 ```
 
@@ -212,8 +212,8 @@ Astro.cookies.delete('session');
 
 ```astro
 ---
-Astro.response.headers.set('Cache-Control', 'max-age=3600');
-Astro.response.headers.set('X-Custom-Header', 'value');
+Astro.response.headers.set('Cache-Control', 'max-age=3600')
+Astro.response.headers.set('X-Custom-Header', 'value')
 ---
 ```
 
@@ -222,7 +222,7 @@ Astro.response.headers.set('X-Custom-Header', 'value');
 ```astro
 ---
 if (!user) {
-  return Astro.redirect('/login', 302);
+  return Astro.redirect('/login', 302)
 }
 ---
 ```
@@ -233,8 +233,8 @@ Defer rendering of specific Astro components to the server. Each island loads in
 
 ```astro
 ---
-import UserProfile from '../components/UserProfile.astro';
-import ProductReviews from '../components/ProductReviews.astro';
+import UserProfile from '../components/UserProfile.astro'
+import ProductReviews from '../components/ProductReviews.astro'
 ---
 
 <!-- Static content renders immediately -->
@@ -252,6 +252,7 @@ import ProductReviews from '../components/ProductReviews.astro';
 ```
 
 Key points:
+
 - Requires an adapter (same as SSR)
 - Props must be serializable (no functions)
 - Use `Referer` header to access page URL inside island
@@ -263,21 +264,21 @@ Server-side session storage for on-demand rendered pages (Astro 5.7+):
 
 ```javascript
 // astro.config.mjs
-import { defineConfig, sessionDrivers } from 'astro/config';
+import { defineConfig, sessionDrivers } from 'astro/config'
 
 export default defineConfig({
   adapter: node({ mode: 'standalone' }),
   session: {
-    driver: sessionDrivers.redis({ url: process.env.REDIS_URL }),
-  },
-});
+    driver: sessionDrivers.redis({ url: process.env.REDIS_URL })
+  }
+})
 ```
 
 ```astro
 ---
-export const prerender = false;
-const cart = await Astro.session?.get('cart');
-await Astro.session?.set('lastVisit', new Date());
+export const prerender = false
+const cart = await Astro.session?.get('cart')
+await Astro.session?.set('lastVisit', new Date())
 ---
 ```
 
@@ -289,63 +290,63 @@ See [references/sessions.md](sessions.md) for full details.
 
 ```typescript
 // src/pages/api/users/[id].ts
-import type { APIRoute } from 'astro';
+import type { APIRoute } from 'astro'
 
 export const GET: APIRoute = async ({ params, request }) => {
-  const { id } = params;
-  const user = await db.users.findById(id);
+  const { id } = params
+  const user = await db.users.findById(id)
 
   if (!user) {
-    return new Response(null, { status: 404 });
+    return new Response(null, { status: 404 })
   }
 
   return new Response(JSON.stringify(user), {
-    headers: { 'Content-Type': 'application/json' },
-  });
-};
+    headers: { 'Content-Type': 'application/json' }
+  })
+}
 
 export const PUT: APIRoute = async ({ params, request }) => {
-  const { id } = params;
-  const data = await request.json();
+  const { id } = params
+  const data = await request.json()
 
-  await db.users.update(id, data);
+  await db.users.update(id, data)
 
-  return new Response(null, { status: 204 });
-};
+  return new Response(null, { status: 204 })
+}
 
 export const DELETE: APIRoute = async ({ params }) => {
-  const { id } = params;
-  await db.users.delete(id);
-  return new Response(null, { status: 204 });
-};
+  const { id } = params
+  await db.users.delete(id)
+  return new Response(null, { status: 204 })
+}
 ```
 
 ### Streaming Responses
 
 ```typescript
 // src/pages/api/stream.ts
-import type { APIRoute } from 'astro';
+import type { APIRoute } from 'astro'
 
 export const GET: APIRoute = async () => {
-  const encoder = new TextEncoder();
+  const encoder = new TextEncoder()
 
   const stream = new ReadableStream({
     async start(controller) {
       for (let i = 0; i < 10; i++) {
-        controller.enqueue(encoder.encode(`data: ${i}\n\n`));
-        await new Promise(r => setTimeout(r, 1000));
+        controller.enqueue(encoder.encode(`data: ${i}\n\n`))
+        await new Promise((r) => setTimeout(r, 1000))
       }
-      controller.close();
-    },
-  });
+      controller.close()
+    }
+  })
 
   return new Response(stream, {
     headers: {
       'Content-Type': 'text/event-stream',
-      'Cache-Control': 'no-cache',
-    },
-  });
-};
+      'Cache-Control': 'no-cache'
+    }
+  })
+}
 ```
 
 ## Context and Locals
@@ -355,19 +356,19 @@ Access shared data across middleware and pages:
 ```typescript
 // src/middleware.ts
 export const onRequest = async ({ locals, request }, next) => {
-  const token = request.headers.get('authorization');
-  locals.user = await validateToken(token);
-  return next();
-};
+  const token = request.headers.get('authorization')
+  locals.user = await validateToken(token)
+  return next()
+}
 ```
 
 ```astro
 ---
 // src/pages/dashboard.astro
-const { user } = Astro.locals;
+const { user } = Astro.locals
 
 if (!user) {
-  return Astro.redirect('/login');
+  return Astro.redirect('/login')
 }
 ---
 

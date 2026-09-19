@@ -8,11 +8,11 @@ Actions are defined in `src/actions/index.ts`:
 
 ```typescript
 // src/actions/index.ts
-import { defineAction, z } from 'astro:actions';
+import { defineAction, z } from 'astro:actions'
 
 export const server = {
   // Actions go here
-};
+}
 ```
 
 ## Defining Actions
@@ -21,21 +21,21 @@ export const server = {
 
 ```typescript
 // src/actions/index.ts
-import { defineAction, z } from 'astro:actions';
+import { defineAction, z } from 'astro:actions'
 
 export const server = {
   subscribe: defineAction({
     input: z.object({
       email: z.string().email(),
-      name: z.string().min(2),
+      name: z.string().min(2)
     }),
     handler: async ({ email, name }) => {
       // Save to database, send email, etc.
-      await db.subscribers.create({ email, name });
-      return { success: true, message: 'Subscribed!' };
-    },
-  }),
-};
+      await db.subscribers.create({ email, name })
+      return { success: true, message: 'Subscribed!' }
+    }
+  })
+}
 ```
 
 ### Action with Accept Header
@@ -47,12 +47,12 @@ export const server = {
     accept: 'form', // Parses FormData
     input: z.object({
       email: z.string().email(),
-      message: z.string(),
+      message: z.string()
     }),
     handler: async ({ email, message }) => {
-      await sendEmail(email, message);
-      return { sent: true };
-    },
+      await sendEmail(email, message)
+      return { sent: true }
+    }
   }),
 
   // Accepts JSON (default)
@@ -60,14 +60,14 @@ export const server = {
     accept: 'json', // Default
     input: z.object({
       title: z.string(),
-      content: z.string(),
+      content: z.string()
     }),
     handler: async ({ title, content }) => {
-      const post = await db.posts.create({ title, content });
-      return post;
-    },
-  }),
-};
+      const post = await db.posts.create({ title, content })
+      return post
+    }
+  })
+}
 ```
 
 ### Action Without Input
@@ -76,11 +76,11 @@ export const server = {
 export const server = {
   getCurrentUser: defineAction({
     handler: async (_, context) => {
-      const user = context.locals.user;
-      return user || null;
-    },
-  }),
-};
+      const user = context.locals.user
+      return user || null
+    }
+  })
+}
 ```
 
 ## Using Actions
@@ -89,7 +89,7 @@ export const server = {
 
 ```astro
 ---
-import { actions } from 'astro:actions';
+import { actions } from 'astro:actions'
 ---
 
 <form method="POST" action={actions.subscribe}>
@@ -103,7 +103,7 @@ import { actions } from 'astro:actions';
 
 ```astro
 ---
-import { actions } from 'astro:actions';
+import { actions } from 'astro:actions'
 ---
 
 <form id="subscribe-form">
@@ -113,26 +113,26 @@ import { actions } from 'astro:actions';
 </form>
 
 <script>
-  import { actions } from 'astro:actions';
+  import { actions } from 'astro:actions'
 
-  const form = document.getElementById('subscribe-form');
+  const form = document.getElementById('subscribe-form')
 
   form.addEventListener('submit', async (e) => {
-    e.preventDefault();
-    const formData = new FormData(form);
+    e.preventDefault()
+    const formData = new FormData(form)
 
     const { data, error } = await actions.subscribe({
       email: formData.get('email'),
-      name: formData.get('name'),
-    });
+      name: formData.get('name')
+    })
 
     if (error) {
-      console.error(error.message);
-      return;
+      console.error(error.message)
+      return
     }
 
-    console.log('Success:', data.message);
-  });
+    console.log('Success:', data.message)
+  })
 </script>
 ```
 
@@ -140,13 +140,13 @@ import { actions } from 'astro:actions';
 
 ```astro
 ---
-import { actions } from 'astro:actions';
+import { actions } from 'astro:actions'
 
 // Call action from server
 const { data, error } = await actions.subscribe({
   email: 'user@example.com',
-  name: 'John Doe',
-});
+  name: 'John Doe'
+})
 ---
 ```
 
@@ -158,22 +158,18 @@ Get the result of a form submission:
 
 ```astro
 ---
-import { actions, getActionResult } from 'astro:actions';
+import { actions, getActionResult } from 'astro:actions'
 
-const result = await getActionResult(actions.subscribe);
+const result = await getActionResult(actions.subscribe)
 
 if (result?.error) {
   // Handle validation errors
 }
 ---
 
-{result?.data && (
-  <p class="success">{result.data.message}</p>
-)}
+{result?.data && <p class="success">{result.data.message}</p>}
 
-{result?.error && (
-  <p class="error">{result.error.message}</p>
-)}
+{result?.error && <p class="error">{result.error.message}</p>}
 
 <form method="POST" action={actions.subscribe}>
   <input type="email" name="email" required />
@@ -184,32 +180,33 @@ if (result?.error) {
 ### Error Handling
 
 ```typescript
-import { defineAction, z, ActionError } from 'astro:actions';
+import { defineAction, z, ActionError } from 'astro:actions'
 
 export const server = {
   createUser: defineAction({
     input: z.object({
-      email: z.string().email(),
+      email: z.string().email()
     }),
     handler: async ({ email }) => {
-      const existing = await db.users.findByEmail(email);
+      const existing = await db.users.findByEmail(email)
 
       if (existing) {
         throw new ActionError({
           code: 'CONFLICT',
-          message: 'User already exists',
-        });
+          message: 'User already exists'
+        })
       }
 
-      return await db.users.create({ email });
-    },
-  }),
-};
+      return await db.users.create({ email })
+    }
+  })
+}
 ```
 
 ### Error Codes
 
 Available error codes:
+
 - `BAD_REQUEST` - Invalid input
 - `UNAUTHORIZED` - Authentication required
 - `FORBIDDEN` - Permission denied
@@ -220,7 +217,7 @@ Available error codes:
 
 ```astro
 ---
-const result = await getActionResult(actions.createUser);
+const result = await getActionResult(actions.createUser)
 
 if (result?.error?.code === 'CONFLICT') {
   // Handle duplicate user
@@ -233,78 +230,75 @@ if (result?.error?.code === 'CONFLICT') {
 ### Zod Schema Validation
 
 ```typescript
-import { defineAction, z } from 'astro:actions';
+import { defineAction, z } from 'astro:actions'
 
 export const server = {
   updateProfile: defineAction({
     input: z.object({
-      username: z.string()
+      username: z
+        .string()
         .min(3, 'Username must be at least 3 characters')
         .max(20, 'Username must be at most 20 characters')
         .regex(/^[a-z0-9_]+$/, 'Only lowercase letters, numbers, and underscores'),
 
       bio: z.string().max(500).optional(),
 
-      birthdate: z.coerce.date()
-        .min(new Date('1900-01-01'))
-        .max(new Date()),
+      birthdate: z.coerce.date().min(new Date('1900-01-01')).max(new Date()),
 
-      tags: z.array(z.string()).max(5).default([]),
+      tags: z.array(z.string()).max(5).default([])
     }),
     handler: async (data) => {
-      return await db.profiles.update(data);
-    },
-  }),
-};
+      return await db.profiles.update(data)
+    }
+  })
+}
 ```
 
 ### Accessing Validation Errors
 
 ```astro
 ---
-const result = await getActionResult(actions.updateProfile);
+const result = await getActionResult(actions.updateProfile)
 
-const fieldErrors = result?.error?.fields;
+const fieldErrors = result?.error?.fields
 // { username: ['Too short'], bio: ['Too long'] }
 ---
 
 <form method="POST" action={actions.updateProfile}>
   <input type="text" name="username" />
-  {fieldErrors?.username && (
-    <span class="error">{fieldErrors.username[0]}</span>
-  )}
+  {fieldErrors?.username && <span class="error">{fieldErrors.username[0]}</span>}
 </form>
 ```
 
 ## Context Access
 
 ```typescript
-import { defineAction, z } from 'astro:actions';
+import { defineAction, z } from 'astro:actions'
 
 export const server = {
   protectedAction: defineAction({
     input: z.object({ data: z.string() }),
     handler: async ({ data }, context) => {
       // Access request
-      const ip = context.request.headers.get('x-forwarded-for');
+      const ip = context.request.headers.get('x-forwarded-for')
 
       // Access cookies
-      const token = context.cookies.get('session')?.value;
+      const token = context.cookies.get('session')?.value
 
       // Access locals (from middleware)
-      const user = context.locals.user;
+      const user = context.locals.user
 
       if (!user) {
         throw new ActionError({
           code: 'UNAUTHORIZED',
-          message: 'Must be logged in',
-        });
+          message: 'Must be logged in'
+        })
       }
 
-      return { processed: true };
-    },
-  }),
-};
+      return { processed: true }
+    }
+  })
+}
 ```
 
 ## File Uploads
@@ -315,15 +309,15 @@ export const server = {
     accept: 'form',
     input: z.object({
       image: z.instanceof(File),
-      description: z.string().optional(),
+      description: z.string().optional()
     }),
     handler: async ({ image, description }) => {
-      const buffer = await image.arrayBuffer();
-      const path = await saveFile(buffer, image.name);
-      return { url: path };
-    },
-  }),
-};
+      const buffer = await image.arrayBuffer()
+      const path = await saveFile(buffer, image.name)
+      return { url: path }
+    }
+  })
+}
 ```
 
 ```astro
@@ -337,40 +331,40 @@ export const server = {
 ## Redirect After Action
 
 ```typescript
-import { defineAction, z, ActionError } from 'astro:actions';
+import { defineAction, z, ActionError } from 'astro:actions'
 
 export const server = {
   login: defineAction({
     accept: 'form',
     input: z.object({
       email: z.string().email(),
-      password: z.string(),
+      password: z.string()
     }),
     handler: async ({ email, password }, context) => {
-      const user = await authenticate(email, password);
+      const user = await authenticate(email, password)
 
       if (!user) {
         throw new ActionError({
           code: 'UNAUTHORIZED',
-          message: 'Invalid credentials',
-        });
+          message: 'Invalid credentials'
+        })
       }
 
-      context.cookies.set('session', user.token, { httpOnly: true });
+      context.cookies.set('session', user.token, { httpOnly: true })
 
       // Return redirect URL for client to handle
-      return { redirect: '/dashboard' };
-    },
-  }),
-};
+      return { redirect: '/dashboard' }
+    }
+  })
+}
 ```
 
 ```astro
 ---
-const result = await getActionResult(actions.login);
+const result = await getActionResult(actions.login)
 
 if (result?.data?.redirect) {
-  return Astro.redirect(result.data.redirect);
+  return Astro.redirect(result.data.redirect)
 }
 ---
 ```

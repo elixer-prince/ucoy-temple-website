@@ -1,11 +1,11 @@
 ---
-import { SITE_CONFIG } from '@/config/site';
+import { SITE_CONFIG } from '@/config/site'
 
 interface Props {
-  compact?: boolean;
+  compact?: boolean
 }
 
-const { compact = false } = Astro.props;
+const { compact = false } = Astro.props
 ---
 
 <footer class="site-footer">
@@ -29,11 +29,8 @@ const { compact = false } = Astro.props;
 
           <p class="footer-small">
             This site uses{' '}
-            <a href="https://developers.cloudflare.com/web-analytics/">
-              Cloudflare Web Analytics
-            </a>{' '}
-            (cookieless) and is served as static HTML with no cookies or
-            tracking beyond that.
+            <a href="https://developers.cloudflare.com/web-analytics/">Cloudflare Web Analytics</a>{' '}
+            (cookieless) and is served as static HTML with no cookies or tracking beyond that.
           </p>
         </>
       )}

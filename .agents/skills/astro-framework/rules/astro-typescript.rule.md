@@ -1,10 +1,10 @@
 ---
 description: Rules for TypeScript configuration in Astro projects
 globs:
-  - "tsconfig.json"
-  - "src/env.d.ts"
-  - "**/*.ts"
-  - "**/*.astro"
+  - 'tsconfig.json'
+  - 'src/env.d.ts'
+  - '**/*.ts'
+  - '**/*.astro'
 ---
 
 # Astro TypeScript Rules
@@ -46,18 +46,13 @@ globs:
 ```astro
 ---
 interface Props {
-  title: string;
-  description?: string;
-  tags: string[];
-  variant?: 'primary' | 'secondary';
+  title: string
+  description?: string
+  tags: string[]
+  variant?: 'primary' | 'secondary'
 }
 
-const {
-  title,
-  description = 'Default description',
-  tags,
-  variant = 'primary',
-} = Astro.props;
+const { title, description = 'Default description', tags, variant = 'primary' } = Astro.props
 ---
 ```
 
@@ -68,13 +63,13 @@ const {
 /// <reference types="astro/client" />
 
 interface ImportMetaEnv {
-  readonly PUBLIC_API_URL: string;
-  readonly DATABASE_URL: string;
-  readonly SECRET_KEY: string;
+  readonly PUBLIC_API_URL: string
+  readonly DATABASE_URL: string
+  readonly SECRET_KEY: string
 }
 
 interface ImportMeta {
-  readonly env: ImportMetaEnv;
+  readonly env: ImportMetaEnv
 }
 ```
 
@@ -85,12 +80,12 @@ interface ImportMeta {
 declare namespace App {
   interface Locals {
     user: {
-      id: string;
-      email: string;
-      name: string;
-    } | null;
-    theme: 'light' | 'dark';
-    requestId: string;
+      id: string
+      email: string
+      name: string
+    } | null
+    theme: 'light' | 'dark'
+    requestId: string
   }
 }
 ```
@@ -99,15 +94,15 @@ declare namespace App {
 
 ```typescript
 // src/content/config.ts
-import { defineCollection, z, reference } from 'astro:content';
+import { defineCollection, z, reference } from 'astro:content'
 
 const blog = defineCollection({
   type: 'content',
   schema: z.object({
     title: z.string(),
-    author: reference('authors'),
-  }),
-});
+    author: reference('authors')
+  })
+})
 
 // Types are auto-generated:
 // import type { CollectionEntry } from 'astro:content';
@@ -118,15 +113,15 @@ const blog = defineCollection({
 
 ```typescript
 // src/pages/api/example.ts
-import type { APIRoute, APIContext } from 'astro';
+import type { APIRoute, APIContext } from 'astro'
 
 export const GET: APIRoute = async (context: APIContext) => {
-  const { params, request, cookies, locals, url } = context;
+  const { params, request, cookies, locals, url } = context
 
   return new Response(JSON.stringify({ ok: true }), {
-    headers: { 'Content-Type': 'application/json' },
-  });
-};
+    headers: { 'Content-Type': 'application/json' }
+  })
+}
 ```
 
 ## Path Aliases Usage
@@ -134,11 +129,11 @@ export const GET: APIRoute = async (context: APIContext) => {
 ```astro
 ---
 // With aliases
-import Layout from '@layouts/Layout.astro';
-import Card from '@components/Card.astro';
-import { getCollection } from 'astro:content';
+import Layout from '@layouts/Layout.astro'
+import Card from '@components/Card.astro'
+import { getCollection } from 'astro:content'
 
 // Instead of
-import Layout from '../../../layouts/Layout.astro';
+import Layout from '../../../layouts/Layout.astro'
 ---
 ```

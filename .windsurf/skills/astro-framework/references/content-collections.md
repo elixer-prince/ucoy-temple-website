@@ -25,9 +25,9 @@ src/
 
 ```typescript
 // src/content.config.ts
-import { defineCollection } from 'astro:content';
-import { glob, file } from 'astro/loaders';
-import { z } from 'astro/zod';
+import { defineCollection } from 'astro:content'
+import { glob, file } from 'astro/loaders'
+import { z } from 'astro/zod'
 
 const blogCollection = defineCollection({
   loader: glob({ base: './src/content/blog', pattern: '**/*.{md,mdx}' }),
@@ -39,9 +39,9 @@ const blogCollection = defineCollection({
     heroImage: z.string().optional(),
     tags: z.array(z.string()).default([]),
     draft: z.boolean().default(false),
-    author: z.string(),
-  }),
-});
+    author: z.string()
+  })
+})
 
 const authorsCollection = defineCollection({
   loader: file('src/data/authors.json'),
@@ -50,42 +50,44 @@ const authorsCollection = defineCollection({
     email: z.string().email(),
     bio: z.string(),
     avatar: z.string().url(),
-    social: z.object({
-      twitter: z.string().optional(),
-      github: z.string().optional(),
-    }).optional(),
-  }),
-});
+    social: z
+      .object({
+        twitter: z.string().optional(),
+        github: z.string().optional()
+      })
+      .optional()
+  })
+})
 
 export const collections = {
   blog: blogCollection,
-  authors: authorsCollection,
-};
+  authors: authorsCollection
+}
 ```
 
 ### Legacy Configuration (Astro 4)
 
 ```typescript
 // src/content/config.ts (legacy path)
-import { defineCollection, z } from 'astro:content';
+import { defineCollection, z } from 'astro:content'
 
 const blogCollection = defineCollection({
   type: 'content', // Markdown/MDX files
   schema: z.object({
     title: z.string(),
-    pubDate: z.coerce.date(),
-  }),
-});
+    pubDate: z.coerce.date()
+  })
+})
 
 const authorsCollection = defineCollection({
   type: 'data', // JSON/YAML files
   schema: z.object({
     name: z.string(),
-    email: z.string().email(),
-  }),
-});
+    email: z.string().email()
+  })
+})
 
-export const collections = { blog: blogCollection, authors: authorsCollection };
+export const collections = { blog: blogCollection, authors: authorsCollection }
 ```
 
 ## Built-in Loaders (Astro 5+)
@@ -95,15 +97,15 @@ export const collections = { blog: blogCollection, authors: authorsCollection };
 Loads entries from directories of Markdown, MDX, JSON, YAML, or TOML files:
 
 ```typescript
-import { glob } from 'astro/loaders';
+import { glob } from 'astro/loaders'
 
 const blog = defineCollection({
   loader: glob({
     base: './src/content/blog',
-    pattern: '**/*.{md,mdx}',
+    pattern: '**/*.{md,mdx}'
   }),
-  schema: z.object({ title: z.string() }),
-});
+  schema: z.object({ title: z.string() })
+})
 ```
 
 Options: `pattern`, `base`, `generateId()` (custom ID generation), `retainBody` (set `false` to exclude raw body).
@@ -113,12 +115,12 @@ Options: `pattern`, `base`, `generateId()` (custom ID generation), `retainBody` 
 Loads entries from a single JSON, YAML, or TOML file:
 
 ```typescript
-import { file } from 'astro/loaders';
+import { file } from 'astro/loaders'
 
 const authors = defineCollection({
   loader: file('src/data/authors.json'),
-  schema: z.object({ name: z.string() }),
-});
+  schema: z.object({ name: z.string() })
+})
 ```
 
 Supports a custom `parser` for non-standard formats (e.g., CSV).
@@ -130,15 +132,15 @@ Load from any source (APIs, databases, CMSes):
 ```typescript
 const products = defineCollection({
   loader: async () => {
-    const response = await fetch('https://api.example.com/products');
-    const data = await response.json();
+    const response = await fetch('https://api.example.com/products')
+    const data = await response.json()
     return data.map((product: any) => ({
       id: product.id,
-      ...product,
-    }));
+      ...product
+    }))
   },
-  schema: z.object({ name: z.string(), price: z.number() }),
-});
+  schema: z.object({ name: z.string(), price: z.number() })
+})
 ```
 
 ### Object Loaders (Advanced)
@@ -146,23 +148,23 @@ const products = defineCollection({
 For full control with incremental updates, caching, and file watching:
 
 ```typescript
-import type { Loader } from 'astro/loaders';
+import type { Loader } from 'astro/loaders'
 
 function myLoader(options: { url: string }): Loader {
   return {
     name: 'my-loader',
     load: async ({ store, meta, logger }) => {
-      const lastModified = meta.get('lastModified');
-      const data = await fetchData(options.url, lastModified);
+      const lastModified = meta.get('lastModified')
+      const data = await fetchData(options.url, lastModified)
 
-      store.clear();
+      store.clear()
       for (const item of data) {
-        store.set({ id: item.id, data: item });
+        store.set({ id: item.id, data: item })
       }
 
-      meta.set('lastModified', new Date().toISOString());
-    },
-  };
+      meta.set('lastModified', new Date().toISOString())
+    }
+  }
 }
 ```
 
@@ -171,23 +173,23 @@ function myLoader(options: { url: string }): Loader {
 Live loaders fetch data fresh on every request — no data store to update. Use for real-time data:
 
 ```typescript
-import type { LiveLoader } from 'astro/loaders';
+import type { LiveLoader } from 'astro/loaders'
 
 function productLoader(config: { apiKey: string }): LiveLoader<Product> {
   return {
     name: 'product-loader',
     loadCollection: async ({ filter }) => {
-      const data = await fetchProducts(config.apiKey, filter);
+      const data = await fetchProducts(config.apiKey, filter)
       return {
-        entries: data.map(p => ({ id: p.sku, data: p })),
-      };
+        entries: data.map((p) => ({ id: p.sku, data: p }))
+      }
     },
     loadEntry: async ({ filter }) => {
-      const product = await fetchProduct(config.apiKey, filter.id);
-      if (!product) return undefined;
-      return { id: product.sku, data: product };
-    },
-  };
+      const product = await fetchProduct(config.apiKey, filter.id)
+      if (!product) return undefined
+      return { id: product.sku, data: product }
+    }
+  }
 }
 ```
 
@@ -195,10 +197,10 @@ Query live collections with `getLiveCollection()` and `getLiveEntry()`:
 
 ```astro
 ---
-import { getLiveCollection, getLiveEntry } from 'astro:content';
+import { getLiveCollection, getLiveEntry } from 'astro:content'
 
-const { entries, error } = await getLiveCollection('products');
-const { entry, error: entryError } = await getLiveEntry('products', 'sku-123');
+const { entries, error } = await getLiveCollection('products')
+const { entry, error: entryError } = await getLiveEntry('products', 'sku-123')
 ---
 ```
 
@@ -210,9 +212,9 @@ For Markdown and MDX files with frontmatter:
 
 ```markdown
 ---
-title: "My First Post"
+title: 'My First Post'
 pubDate: 2024-01-15
-author: "john"
+author: 'john'
 ---
 
 # Hello World
@@ -239,7 +241,7 @@ For JSON or YAML data files:
 ### Common Field Types
 
 ```typescript
-import { z } from 'astro/zod'; // Astro 5+
+import { z } from 'astro/zod' // Astro 5+
 // import { z } from 'astro:content'; // Legacy (Astro 4)
 
 const schema = z.object({
@@ -264,7 +266,7 @@ const schema = z.object({
   // Objects
   author: z.object({
     name: z.string(),
-    email: z.string().email(),
+    email: z.string().email()
   }),
 
   // Enums
@@ -280,43 +282,44 @@ const schema = z.object({
   // Unions
   media: z.union([
     z.object({ type: z.literal('image'), src: z.string() }),
-    z.object({ type: z.literal('video'), url: z.string() }),
-  ]),
-});
+    z.object({ type: z.literal('video'), url: z.string() })
+  ])
+})
 ```
 
 ### Image Schema
 
 ```typescript
 // Astro 5+ with loader
-import { defineCollection } from 'astro:content';
-import { glob } from 'astro/loaders';
-import { z } from 'astro/zod';
+import { defineCollection } from 'astro:content'
+import { glob } from 'astro/loaders'
+import { z } from 'astro/zod'
 
 const blog = defineCollection({
   loader: glob({ base: './src/content/blog', pattern: '**/*.md' }),
-  schema: ({ image }) => z.object({
-    title: z.string(),
-    cover: image(), // Validates and optimizes images
-    coverAlt: z.string(),
-  }),
-});
+  schema: ({ image }) =>
+    z.object({
+      title: z.string(),
+      cover: image(), // Validates and optimizes images
+      coverAlt: z.string()
+    })
+})
 ```
 
 ### Reference Other Collections
 
 ```typescript
-import { defineCollection, reference } from 'astro:content';
-import { z } from 'astro/zod';
+import { defineCollection, reference } from 'astro:content'
+import { z } from 'astro/zod'
 
 const blog = defineCollection({
   loader: glob({ base: './src/content/blog', pattern: '**/*.md' }),
   schema: z.object({
     title: z.string(),
     author: reference('authors'), // References authors collection
-    relatedPosts: z.array(reference('blog')).optional(),
-  }),
-});
+    relatedPosts: z.array(reference('blog')).optional()
+  })
+})
 ```
 
 ## Querying Collections
@@ -325,24 +328,25 @@ const blog = defineCollection({
 
 ```astro
 ---
-import { getCollection } from 'astro:content';
+import { getCollection } from 'astro:content'
 
 // Get all entries
-const allPosts = await getCollection('blog');
+const allPosts = await getCollection('blog')
 
 // Filter entries
 const publishedPosts = await getCollection('blog', ({ data }) => {
-  return data.draft !== true;
-});
+  return data.draft !== true
+})
 
 // Filter by date
 const recentPosts = await getCollection('blog', ({ data }) => {
-  return data.pubDate > new Date('2024-01-01');
-});
+  return data.pubDate > new Date('2024-01-01')
+})
 
 // Sort entries
-const sortedPosts = (await getCollection('blog'))
-  .sort((a, b) => b.data.pubDate.valueOf() - a.data.pubDate.valueOf());
+const sortedPosts = (await getCollection('blog')).sort(
+  (a, b) => b.data.pubDate.valueOf() - a.data.pubDate.valueOf()
+)
 ---
 
 <ul>
@@ -359,17 +363,17 @@ const sortedPosts = (await getCollection('blog'))
 
 ```astro
 ---
-import { getEntry } from 'astro:content';
+import { getEntry } from 'astro:content'
 
 // Get single entry by collection and slug
-const post = await getEntry('blog', 'my-first-post');
+const post = await getEntry('blog', 'my-first-post')
 
 // Get single entry by reference
-const author = await getEntry(post.data.author);
+const author = await getEntry(post.data.author)
 
 // Check if entry exists
 if (!post) {
-  return Astro.redirect('/404');
+  return Astro.redirect('/404')
 }
 ---
 
@@ -383,12 +387,12 @@ if (!post) {
 
 ```astro
 ---
-import { getEntry, getEntries } from 'astro:content';
+import { getEntry, getEntries } from 'astro:content'
 
-const post = await getEntry('blog', 'my-post');
+const post = await getEntry('blog', 'my-post')
 
 // Get multiple referenced entries
-const relatedPosts = await getEntries(post.data.relatedPosts);
+const relatedPosts = await getEntries(post.data.relatedPosts)
 ---
 ```
 
@@ -398,10 +402,10 @@ const relatedPosts = await getEntries(post.data.relatedPosts);
 
 ```astro
 ---
-import { getEntry, render } from 'astro:content';
+import { getEntry, render } from 'astro:content'
 
-const post = await getEntry('blog', 'my-post');
-const { Content, headings } = await render(post);
+const post = await getEntry('blog', 'my-post')
+const { Content, headings } = await render(post)
 ---
 
 <article>
@@ -425,8 +429,8 @@ const { Content, headings } = await render(post);
 
 ```astro
 ---
-const post = await getEntry('blog', 'my-post');
-const { Content, headings } = await post.render();
+const post = await getEntry('blog', 'my-post')
+const { Content, headings } = await post.render()
 ---
 ```
 
@@ -435,18 +439,18 @@ const { Content, headings } = await post.render();
 ```astro
 ---
 // src/pages/blog/[...slug].astro
-import { getCollection, render } from 'astro:content';
+import { getCollection, render } from 'astro:content'
 
 export async function getStaticPaths() {
-  const posts = await getCollection('blog');
+  const posts = await getCollection('blog')
   return posts.map((post) => ({
     params: { slug: post.id },
-    props: { post },
-  }));
+    props: { post }
+  }))
 }
 
-const { post } = Astro.props;
-const { Content } = await render(post);
+const { post } = Astro.props
+const { Content } = await render(post)
 ---
 
 <article>
@@ -477,23 +481,23 @@ const blog = defineCollection({
   loader: glob({
     base: './src/content/blog',
     pattern: '**/*.md',
-    retainBody: false, // Significantly reduces data store size
+    retainBody: false // Significantly reduces data store size
   }),
-  schema: z.object({ title: z.string(), pubDate: z.coerce.date() }),
-});
+  schema: z.object({ title: z.string(), pubDate: z.coerce.date() })
+})
 ```
 
 Only use `retainBody: false` for collections where you don't call `render()`. If you need to render content on detail pages, keep the default (`true`).
 
 ### Migration Pitfalls (Astro 4 → 5)
 
-| What changed | Old (Astro 4) | New (Astro 5+) |
-|---|---|---|
-| Config file | `src/content/config.ts` | `src/content.config.ts` |
-| Collection type | `type: 'content'` / `type: 'data'` | `loader: glob(...)` / `loader: file(...)` |
-| Zod import | `import { z } from 'astro:content'` | `import { z } from 'astro/zod'` |
-| Rendering | `const { Content } = await entry.render()` | `import { render } from 'astro:content'; await render(entry)` |
-| Route param | `post.slug` | `post.id` |
+| What changed    | Old (Astro 4)                              | New (Astro 5+)                                                |
+| --------------- | ------------------------------------------ | ------------------------------------------------------------- |
+| Config file     | `src/content/config.ts`                    | `src/content.config.ts`                                       |
+| Collection type | `type: 'content'` / `type: 'data'`         | `loader: glob(...)` / `loader: file(...)`                     |
+| Zod import      | `import { z } from 'astro:content'`        | `import { z } from 'astro/zod'`                               |
+| Rendering       | `const { Content } = await entry.render()` | `import { render } from 'astro:content'; await render(entry)` |
+| Route param     | `post.slug`                                | `post.id`                                                     |
 
 **The most common migration bug:** importing `z` from `astro:content` instead of `astro/zod`. This still compiles but can cause subtle type mismatches with the new Content Layer API.
 

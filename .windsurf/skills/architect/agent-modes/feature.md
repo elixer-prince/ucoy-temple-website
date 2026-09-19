@@ -53,14 +53,17 @@ Include `## Feature design` after `## Rationale`. Every field below is required;
 <State machine for the key entity, e.g. order: draft → submitted → paid → fulfilled. Omit if no state machine.>
 
 **API surface**:
-| Endpoint | Method | Key inputs | Key outputs | Auth | Key errors |
-|---|---|---|---|---|---|
-| /resource | POST | field:type (req), field:type (opt) | id, status | bearer | 409 conflict, 422 invalid |
+
+| Endpoint  | Method | Key inputs                         | Key outputs | Auth   | Key errors                |
+| --------- | ------ | ---------------------------------- | ----------- | ------ | ------------------------- |
+| /resource | POST   | field:type (req), field:type (opt) | id, status  | bearer | 409 conflict, 422 invalid |
 
 **Value sourcing** (name the source of every value each action produces, computes, or displays; a required value with no named source is an undecided input to resolve now, never one for the build to invent):
-| Action | Value produced / displayed | Source |
-|---|---|---|
-| <action> | <the value an AC needs> | <input param · DB column · derived from X · decided in spec N> |
+
+| Action   | Value produced / displayed | Source                                                         |
+| -------- | -------------------------- | -------------------------------------------------------------- |
+| <action> | <the value an AC needs>    | <input param · DB column · derived from X · decided in spec N> |
+
 <!-- Trace each value the acceptance criteria require, not just the obvious ones; this exposes inputs the API table omits. Procedural, not a checklist. Illustrations of the pattern: a read that must show "the user's local day" names where the timezone comes from; a displayed total names its rounding/currency source; a per-tenant query names how the tenant is resolved. -->
 
 **Key invariants**:
@@ -70,13 +73,16 @@ Include `## Feature design` after `## Rationale`. Every field below is required;
 <Who can read/write what. Roles, ownership rules, public/private. If the feature touches regulated data, name the compliance scope here.>
 
 **Configuration required**:
+
 - `ENV_VAR_NAME`: purpose (e.g. `<SERVICE>_API_KEY`, the external API key this feature needs)
+
 <!-- Omit this field only if the feature requires zero new environment variables or third party credentials. -->
 
 <!-- Acceptance criteria are NOT restated here; they live once, IDed, in ## Requirements (the contract).
      Reference their IDs from the scenarios below. -->
 
 **Critical test scenarios** (each maps to an acceptance criterion in ## Requirements):
+
 - Happy path: <one line: the main flow working end to end>, verifies AC-N
 - Failure case: <the most important thing that must fail gracefully, such as concurrent write, third party timeout, invalid state transition>, verifies AC-N
 - Auth/permission: <who cannot access this and what they receive>, verifies AC-N

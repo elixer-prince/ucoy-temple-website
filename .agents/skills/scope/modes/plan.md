@@ -97,6 +97,7 @@ Citations are gated by Step 6b: ask that panel first (or confirm the chosen leve
 ### Step 6b: References consent (one panel, covers sources AND links)
 
 Ask ONE consent question governing both the `(basis: …)` citations and any reference links (one clear ask, not two). Panel; record the outcome as the References level:
+
 - question: "Add a References section to the scope (where the recommendations come from, and optionally links)? The intent and reasoning stay either way. The links option runs a subagent that web searches and fetches pages to confirm official docs and standards, which costs some extra tokens."
 - header: "References"
 - options:
@@ -106,13 +107,14 @@ Ask ONE consent question governing both the `(basis: …)` citations and any ref
 
 No references (or no answer): no `## References` section, no `(basis: …)` citations anywhere; the scope keeps its intent and reasoning and reads clean. Done.
 
-Sources only (or the agent has no web tools): wherever the scope recommends something the engineer didn't dictate (phasing choice, order rationale, a suggested capability, a `Needs spec` flag, a tier call), append a short `(basis: …)`: a project source (`your AGENTS.md`, a spec, the existing stack) or a named practice (`vertical slices ship real value early`, `foundations before features`, `data model is the costliest thing to redo`); inline you have no web tools, so name the source or practice, never a URL. Add a `## References` section naming *Project sources* (verifiable) and *Practices & standards* (named); no Links group, no subagent. Done.
+Sources only (or the agent has no web tools): wherever the scope recommends something the engineer didn't dictate (phasing choice, order rationale, a suggested capability, a `Needs spec` flag, a tier call), append a short `(basis: …)`: a project source (`your AGENTS.md`, a spec, the existing stack) or a named practice (`vertical slices ship real value early`, `foundations before features`, `data model is the costliest thing to redo`); inline you have no web tools, so name the source or practice, never a URL. Add a `## References` section naming _Project sources_ (verifiable) and _Practices & standards_ (named); no Links group, no subagent. Done.
 
 Sources plus web verified links: as Sources only, then verify the links with a read only web subagent (it only fetches; you do the writing), so links are confirmed, never fabricated:
+
 - Spawn a read only `researcher` subagent (capability first). `model`: the cheapest tier; do not inherit the session model (Claude Code: the `researcher` type pins `haiku` and carries the web tools; a light model elsewhere) · `description: "Scope: verify reference links"`
 - Tools: `Read`, `WebSearch`, `WebFetch` (no `Edit`; it does not write)
 - `prompt`: the scope recommendations and the candidate sources. Job: confirm each load bearing `(basis: …)` is sound; where a canonical source is worth linking (an official doc, a named standard/practice), web search and fetch to confirm it exists and says what's claimed; return only the compact list of verified links (title + URL), or "none verified". Never invent a URL. Keep it lean.
-- Then YOU (main thread) write the `## References` *Links* group from that verified list (web verified only, else "none verified"); the fetch happens once here, and nothing fetches these links again afterward. They are for a human to follow.
+- Then YOU (main thread) write the `## References` _Links_ group from that verified list (web verified only, else "none verified"); the fetch happens once here, and nothing fetches these links again afterward. They are for a human to follow.
 - No web tools or subagents: degrade to the Sources only behavior.
 
 ### Step 7: Report and hand off

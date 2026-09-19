@@ -15,6 +15,7 @@ Establish: exactly how the current solution actually works (not how it was inten
 **Step 3: Identify options with migration reality**
 
 Always evaluate:
+
 1. **Fix in place**: targeted improvement to the existing solution. Often underrated; sometimes it is the right answer.
 2. **Replace with strangler**: build the new solution alongside the old, migrate incrementally, retire the old
 3. **Replace directly**: only if the existing system is truly unmaintainable or the scope is small and low risk
@@ -36,10 +37,11 @@ Standard format. Add a `## Migration plan` section if the migration is not trivi
 
 **Strategy**: <strangler | big bang | feature-flagged | no migration needed>
 **Phases**:
+
 1. <Phase 1: what changes and when>
 2. <Phase 2>
-**Rollback**: <how to revert if phase N fails>
-**Risks**: <what could go wrong during migration>
+   **Rollback**: <how to revert if phase N fails>
+   **Risks**: <what could go wrong during migration>
 ```
 
 ---

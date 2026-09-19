@@ -6,21 +6,22 @@ Guide paths below (`ui-guide.md`, `logical-guide.md`, `checklist.md`) are relati
 
 ### Step 1: Classify the track
 
-| Signals | Track |
-|---|---|
-| "page", "component", "screen", "layout", "ui"; a screenshot is attached; visual work against `design.md` | **UI** → `ui-guide.md` |
-| "api", "endpoint", "service", "functionality", "logic", "data", "job", "webhook", "integration" | **Logical** → `logical-guide.md` |
-| Both present (e.g. "auth": pages + session logic) | **Both**: run each track for its part |
+| Signals                                                                                                  | Track                                 |
+| -------------------------------------------------------------------------------------------------------- | ------------------------------------- |
+| "page", "component", "screen", "layout", "ui"; a screenshot is attached; visual work against `design.md` | **UI** → `ui-guide.md`                |
+| "api", "endpoint", "service", "functionality", "logic", "data", "job", "webhook", "integration"          | **Logical** → `logical-guide.md`      |
+| Both present (e.g. "auth": pages + session logic)                                                        | **Both**: run each track for its part |
 
 If genuinely ambiguous, ask once: "Is this the UI, the logic behind it, or both?"
 
 ### Step 2: Load the decision and conventions (both tracks)
 
 Read:
+
 1. **The governing spec** (feature's `spec` pointer, or Step 0), build spec sections only: `## Requirements` (user stories + IDed acceptance criteria `AC-1…`; the contract, and the source of the Step 4 verify steps), `## Decision`, the design/spec section (`## Feature design` / `## Proposed stack` / spec table), `## Build plan` (ordered tasks tagged "satisfies AC-N"; the data model migration sized to the feature), `## Consequences` (constraints). Skip `## Context`, `## Options considered`, `## Rationale` (decision history, not build input) unless a constraint needs the reasoning. Umbrella `index.md` → read the index (decision + child list; `## Structure` maps every child; the index holds any cross child contract), then only the child spec(s) this sub task touches (usually one; a second only if it truly spans two, never all), build spec sections only. Never read the spec's `rationale.md` for a build. **Check the `Status`** (single file, or umbrella `index.md`; children carry none): `Proposed` → normal for a feature spec `/architect` designed and linked (it means agreed, not yet built; `Accepted` is reserved for shipped), so build it and advance to `In Progress` (Step 3) with no warning. Pause to confirm only for a clearly unconfirmed draft (no scope link) or an unratified standalone decision spec. `Superseded` → use the superseding spec; `Assumed` → expected on a resumed build via the Step 0 escape hatch (a decision recorded but not deliberated): build against the recorded assumption and carry the ratify reminder into Step 4 (it does not block `done`; the `Assumed` flag stays until `/architect` ratifies).
 2. **The nearest `AGENTS.md`** to the target code area (Claude Code loads it automatically; read explicitly to be sure). It carries decisions synced from earlier features: don't ask again what's settled.
 3. **`design.md`** (UI track only): the visual source of truth.
-4. **The build approach**, precedence: the feature's scope row `Approach` override if declared, else the project default in root `AGENTS.md`, else the scope file's header. Strategies: vertical end to end slice, thinnest usable whole, UI shell first prototype wired later, full user journey per phase. Governs *how you assemble* the slice in Step 3, not *what* it contains (the spec fixes that). None recorded → default to a coherent end to end slice, every layer the feature spans (data → logic → interface → UI). Reason from the strategy's principle, not a fixed per approach recipe.
+4. **The build approach**, precedence: the feature's scope row `Approach` override if declared, else the project default in root `AGENTS.md`, else the scope file's header. Strategies: vertical end to end slice, thinnest usable whole, UI shell first prototype wired later, full user journey per phase. Governs _how you assemble_ the slice in Step 3, not _what_ it contains (the spec fixes that). None recorded → default to a coherent end to end slice, every layer the feature spans (data → logic → interface → UI). Reason from the strategy's principle, not a fixed per approach recipe.
 5. **Tool skills**: the spec's `## Decision` **Implementation skills** field names them (e.g. an ORM, an auth library); `AGENTS.md`'s `## Agent skills` section lists what's installed, one bullet per skill with its location. Open the `SKILL.md` (the path from that bullet or the spec field is real and readable) of each one materially governing the code you're about to write and follow its conventions. On demand only: just the skills this sub task touches, not all. On Claude Code a skill may activate on its own; read it explicitly anyway. Unreadable → build from the spec plus knowledge, note it.
 
 **Monorepo: work inside the target workspace.** Workspaces config or `apps/*`/`packages/*` manifests → identify the feature's workspace (code pointer, or task path) and operate there: its nested `AGENTS.md` and `design.md`, its `package.json`/stack, write into its tree, run its commands (`dev`/`build`/`test`, scoped to that workspace, e.g. `<pkgmgr> --filter <workspace> …` or the monorepo task runner's filtered command). The checks before you start apply to that workspace; its scope is `docs/scope/<workspace>/`.
@@ -56,7 +57,7 @@ Build from the map (Step 3): the reading is offloaded, the deciding and writing 
 
 ### Step 2.6: Doc check (only when needed): offload current usage lookups to a web subagent
 
-Only when you genuinely need the current usage/API of a tool the spec already decided (fast moving or newly released) and you're unsure your knowledge is current. Most builds don't need it: on a stable stack, build from knowledge and let the typecheck/build/lint loop catch a stale API. Never to choose or reconsider a tool (`/architect`'s job): look up *how to use* the decided tool, not *whether*; if docs reveal it can't work, that's the "spec is wrong" path (Step 3), not a silent swap. Not a second fetch of the spec's reference links (human facing, verified at design time).
+Only when you genuinely need the current usage/API of a tool the spec already decided (fast moving or newly released) and you're unsure your knowledge is current. Most builds don't need it: on a stable stack, build from knowledge and let the typecheck/build/lint loop catch a stale API. Never to choose or reconsider a tool (`/architect`'s job): look up _how to use_ the decided tool, not _whether_; if docs reveal it can't work, that's the "spec is wrong" path (Step 3), not a silent swap. Not a second fetch of the spec's reference links (human facing, verified at design time).
 
 **How (capability first):** spawn a read only web subagent (on Claude Code the `researcher` type, which pins a fast, low cost model and carries the web tools; else your agent's web/browse tool), its model set explicitly to a fast, low cost tier (not the session model), briefed with the exact tools/versions from the spec and the one thing you need. Return only a compact usage summary (current call/config/setup, version notes, gotchas), never raw pages. No web capability → skip: build from knowledge, lean on the build/typecheck loop, note the assumption.
 
@@ -66,7 +67,7 @@ Only when you genuinely need the current usage/API of a tool the spec already de
 
 **Build the coherent slice the approach calls for; don't silently skip surface.** Assemble as a senior build engineer per the Step 2 approach, and let the approach visibly shape the slice, not the same build relabeled (each strategy per Step 2). Reason from the principle, not a recipe; none recorded → the Step 2 end to end default. Cross check the task list against `## Requirements` (`AC-1…`) and the spec's API/UI surface before building: required but uncovered → flag it and add the task. Every `AC-N` is satisfied by a task you build, or explicitly deferred with the engineer's agreement.
 
-**Resume first; never rebuild what's done.** Use the Step 0 scope file only (the workspace's, in a monorepo). Status **`existing`** (shipped) or **`dropped`** (dropped from scope) → not active: don't build it automatically; say it's marked `<status>` and confirm reviving/modifying (a new task, possibly needing a spec). Else find the first unchecked `[ ]` in the spec's `## Build plan` (or the scope checkboxes, no spec); `[x]` tasks are already built, don't redo them. Say where you pick up: "This feature is 4/10 done, resuming at *data integration*." Set the feature's status to `in-progress` (At a glance table and heading); a governing spec's `**Status**:` line advances `Proposed` → `In Progress` surgically per Artifact ownership (read it again first; not `Proposed` → flag, don't clobber). An **`Assumed`** spec is the exception: leave its status `Assumed` (do not advance it to `In Progress`), because the decision is not deliberated yet; only `/architect` ratification clears `Assumed`. No scope → just build the requested task.
+**Resume first; never rebuild what's done.** Use the Step 0 scope file only (the workspace's, in a monorepo). Status **`existing`** (shipped) or **`dropped`** (dropped from scope) → not active: don't build it automatically; say it's marked `<status>` and confirm reviving/modifying (a new task, possibly needing a spec). Else find the first unchecked `[ ]` in the spec's `## Build plan` (or the scope checkboxes, no spec); `[x]` tasks are already built, don't redo them. Say where you pick up: "This feature is 4/10 done, resuming at _data integration_." Set the feature's status to `in-progress` (At a glance table and heading); a governing spec's `**Status**:` line advances `Proposed` → `In Progress` surgically per Artifact ownership (read it again first; not `Proposed` → flag, don't clobber). An **`Assumed`** spec is the exception: leave its status `Assumed` (do not advance it to `In Progress`), because the decision is not deliberated yet; only `/architect` ratification clears `Assumed`. No scope → just build the requested task.
 
 **Gather remaining inline answers** (the Step 2 spec gap answer, UI asset and design direction questions, an ambiguous business rule) before any build handoff; they need the engineer.
 
@@ -109,14 +110,22 @@ Tracks:
 
   ```markdown
   # Verify: <feature> · spec NNNN · updated <date>
+
   _Steps derived from spec NNNN acceptance criteria. `/check verify` runs these; `/test` locks the durable ones._
+
   ## UI / manual
-  - [ ] <action> → <expected>        → AC-N
+
+  - [ ] <action> → <expected> → AC-N
+
   ## Commands
-  - [ ] `<command>` → <expected>     → AC-N
+
+  - [ ] `<command>` → <expected> → AC-N
+
   ## Acceptance-criteria coverage
+
   - AC-1 … covered by step … · AC-2 … · …
   ```
+
 - Relay the track's report (the `## /develop complete` block from `ui-guide.md` and/or `logical-guide.md`).
 - **Suggest the next step from the scope; make clear it is optional.** Phrase it as an offer the engineer can take or skip, e.g. "Suggested next: `/check verify <feature>`, or mark it done and move to the next thing, your call." The suggestion is this feature's **first unticked box**; all boxes ticked → point to the next feature. A feature with no `Verify it`/`Test it` box has none to suggest, just move on. Never present a stage as required, and never suggest a stage whose box is not on the feature.
   - **If the spec is `Assumed`**, suggest ratification first: `/architect <feature>: ratify the assumed <decision>` (it can catch a wrong assumption before you build further on it), but it is still the engineer's call.

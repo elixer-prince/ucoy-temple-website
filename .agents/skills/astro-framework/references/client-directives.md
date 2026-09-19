@@ -26,6 +26,7 @@ Hydrate immediately when the page loads. Use for above-the-fold interactive cont
 ```
 
 **Use when:**
+
 - Component is immediately visible
 - User interaction expected right away
 - Critical interactive functionality
@@ -40,6 +41,7 @@ Hydrate when the browser is idle (using `requestIdleCallback`). Good for lower-p
 ```
 
 **Use when:**
+
 - Component is visible but not immediately needed
 - User likely to interact after initial page load
 - Want to prioritize above-the-fold content
@@ -55,6 +57,7 @@ Hydrate when the component enters the viewport. Uses Intersection Observer.
 ```
 
 **Use when:**
+
 - Component is below the fold
 - Heavy components that shouldn't block initial load
 - Lazy-loaded features
@@ -63,10 +66,12 @@ Hydrate when the component enters the viewport. Uses Intersection Observer.
 
 ```astro
 <!-- Hydrate when 50% visible with 200px margin -->
-<HeavyComponent client:visible={{
-  rootMargin: "200px",
-  threshold: 0.5
-}} />
+<HeavyComponent
+  client:visible={{
+    rootMargin: '200px',
+    threshold: 0.5
+  }}
+/>
 ```
 
 ### client:media
@@ -85,6 +90,7 @@ Hydrate only when a media query matches. Perfect for responsive components.
 ```
 
 **Use when:**
+
 - Component only needed at certain viewport sizes
 - Device-specific functionality
 - Accessibility considerations
@@ -103,6 +109,7 @@ Skip server rendering entirely. Component only renders on the client.
 ```
 
 **Use when:**
+
 - Component uses browser-only APIs (window, document, localStorage)
 - Component has SSR incompatibilities
 - Third-party component doesn't support SSR
@@ -115,9 +122,9 @@ Astro supports multiple UI frameworks in the same project:
 
 ```astro
 ---
-import ReactCounter from './ReactCounter.jsx';
-import VueCard from './VueCard.vue';
-import SvelteButton from './SvelteButton.svelte';
+import ReactCounter from './ReactCounter.jsx'
+import VueCard from './VueCard.vue'
+import SvelteButton from './SvelteButton.svelte'
 ---
 
 <ReactCounter client:load />
@@ -129,13 +136,13 @@ import SvelteButton from './SvelteButton.svelte';
 
 Choose the right directive based on priority:
 
-| Priority | Directive | JavaScript Load | Use Case |
-|----------|-----------|-----------------|----------|
-| 1 (Highest) | `client:load` | Immediate | Critical interactivity |
-| 2 | `client:idle` | When idle | Important but not urgent |
-| 3 | `client:visible` | When visible | Below-the-fold content |
-| 4 | `client:media` | When matches | Responsive components |
-| Special | `client:only` | Client only | Browser-only APIs |
+| Priority    | Directive        | JavaScript Load | Use Case                 |
+| ----------- | ---------------- | --------------- | ------------------------ |
+| 1 (Highest) | `client:load`    | Immediate       | Critical interactivity   |
+| 2           | `client:idle`    | When idle       | Important but not urgent |
+| 3           | `client:visible` | When visible    | Below-the-fold content   |
+| 4           | `client:media`   | When matches    | Responsive components    |
+| Special     | `client:only`    | Client only     | Browser-only APIs        |
 
 ## Common Patterns
 
@@ -143,8 +150,8 @@ Choose the right directive based on priority:
 
 ```astro
 ---
-import DesktopNav from './DesktopNav.astro'; // Static
-import MobileMenu from './MobileMenu.jsx';
+import DesktopNav from './DesktopNav.astro' // Static
+import MobileMenu from './MobileMenu.jsx'
 ---
 
 <DesktopNav />
@@ -155,8 +162,8 @@ import MobileMenu from './MobileMenu.jsx';
 
 ```astro
 ---
-import StaticContent from './StaticContent.astro';
-import EnhancedFeatures from './EnhancedFeatures.jsx';
+import StaticContent from './StaticContent.astro'
+import EnhancedFeatures from './EnhancedFeatures.jsx'
 ---
 
 <!-- Always visible -->
@@ -170,15 +177,12 @@ import EnhancedFeatures from './EnhancedFeatures.jsx';
 
 ```astro
 ---
-import DataVisualization from './DataVisualization.jsx';
+import DataVisualization from './DataVisualization.jsx'
 ---
 
 <!-- Only load when visible and browser is ready -->
 <div class="chart-container">
-  <DataVisualization
-    client:visible={{ rootMargin: "100px" }}
-    data={chartData}
-  />
+  <DataVisualization client:visible={{ rootMargin: '100px' }} data={chartData} />
 </div>
 ```
 
@@ -199,16 +203,18 @@ A common mistake: wrapping an entire React/Vue navbar in `client:load` just for 
 ```astro
 <nav>
   <ul class="nav-links">{/* static links */}</ul>
-  <button id="menu-toggle" aria-expanded="false">Menu</button>
+  <button id="menu-toggle" aria-expanded="false">
+    Menu
+  </button>
 </nav>
 
 <script>
-  const toggle = document.getElementById('menu-toggle');
+  const toggle = document.getElementById('menu-toggle')
   toggle?.addEventListener('click', () => {
-    const expanded = toggle.getAttribute('aria-expanded') === 'true';
-    toggle.setAttribute('aria-expanded', String(!expanded));
-    document.querySelector('.nav-links')?.classList.toggle('open');
-  });
+    const expanded = toggle.getAttribute('aria-expanded') === 'true'
+    toggle.setAttribute('aria-expanded', String(!expanded))
+    document.querySelector('.nav-links')?.classList.toggle('open')
+  })
 </script>
 ```
 
@@ -238,6 +244,7 @@ If a React component's bundle exceeds ~50KB, consider splitting:
 ### When `client:only` Is Actually Needed
 
 `client:only` skips SSR entirely — no HTML on first paint. This hurts SEO and perceived performance. Use it **only** when:
+
 - The component crashes during SSR (e.g., reads `window.innerWidth` at module scope)
 - A third-party library has no SSR support and no workaround
 - The component is purely decorative and non-essential (e.g., a confetti animation)
@@ -260,18 +267,18 @@ Check which components are hydrated:
 
 ```javascript
 // In browser console
-document.querySelectorAll('[data-astro-cid]').forEach(el => {
-  console.log(el, el.dataset);
-});
+document.querySelectorAll('[data-astro-cid]').forEach((el) => {
+  console.log(el, el.dataset)
+})
 ```
 
 ## Performance Impact
 
-| Directive | Initial Load | TTI Impact | Bundle Size |
-|-----------|--------------|------------|-------------|
-| None | Fastest | None | 0 KB |
-| `client:visible` | Fast | Low | Deferred |
-| `client:idle` | Fast | Low | Deferred |
-| `client:media` | Fast | Conditional | Conditional |
-| `client:load` | Slower | High | Immediate |
-| `client:only` | Slowest | High | Immediate + no SSR |
+| Directive        | Initial Load | TTI Impact  | Bundle Size        |
+| ---------------- | ------------ | ----------- | ------------------ |
+| None             | Fastest      | None        | 0 KB               |
+| `client:visible` | Fast         | Low         | Deferred           |
+| `client:idle`    | Fast         | Low         | Deferred           |
+| `client:media`   | Fast         | Conditional | Conditional        |
+| `client:load`    | Slower       | High        | Immediate          |
+| `client:only`    | Slowest      | High        | Immediate + no SSR |

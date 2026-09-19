@@ -1,6 +1,7 @@
 # Scope Plan Route: monorepo
 
 Monorepo (workspaces config: `pnpm-workspace.yaml`, `turbo.json`, `nx.json`, `lerna.json`, `workspaces` in root `package.json`; or multiple manifests under `apps/*` / `packages/*`): plan per workspace, never mix apps:
+
 - Each workspace: `docs/scope/<workspace>/` (`scope.md`, or `index.md` + epics if large). Repo wide planning (monorepo tooling, cross cutting infra, e.g. a shared design system in `packages/ui`): `docs/scope/_root/`.
 - Top level `docs/scope/index.md` maps the monorepo: one line per workspace (and `_root`) linking its scope with a status rollup (features done / total); create or update whenever a workspace scope is added or its rollup changes.
 - `/scope web <idea>` plans the `web` app; bare `/scope` on a monorepo asks which workspace(s) (or "repo wide") as a panel. Read that workspace's nested `AGENTS.md` for its stack/conventions; apps differ, don't assume one.

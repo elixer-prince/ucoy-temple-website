@@ -1,10 +1,10 @@
 ---
 description: Rules for server-side sessions
 globs:
-  - "src/pages/**/*"
-  - "src/actions/**/*"
-  - "src/middleware.ts"
-  - "astro.config.mjs"
+  - 'src/pages/**/*'
+  - 'src/actions/**/*'
+  - 'src/middleware.ts'
+  - 'astro.config.mjs'
 ---
 
 # Sessions Rules
@@ -34,11 +34,11 @@ Use sessions for server-side state that persists across requests: user data, sho
 
 ```astro
 ---
-export const prerender = false;
+export const prerender = false
 
-const user = await Astro.session?.get('user');
+const user = await Astro.session?.get('user')
 if (!user) {
-  return Astro.redirect('/login');
+  return Astro.redirect('/login')
 }
 ---
 

@@ -29,9 +29,9 @@ src/pages/
 ```astro
 ---
 // src/pages/about.astro
-import Layout from '../layouts/Layout.astro';
+import Layout from '../layouts/Layout.astro'
 
-const title = "About Us";
+const title = 'About Us'
 ---
 
 <Layout title={title}>
@@ -47,18 +47,18 @@ const title = "About Us";
 ```astro
 ---
 // src/pages/blog/[slug].astro
-import { getCollection } from 'astro:content';
+import { getCollection } from 'astro:content'
 
 export async function getStaticPaths() {
-  const posts = await getCollection('blog');
+  const posts = await getCollection('blog')
   return posts.map((post) => ({
     params: { slug: post.slug },
-    props: { post },
-  }));
+    props: { post }
+  }))
 }
 
-const { post } = Astro.props;
-const { Content } = await post.render();
+const { post } = Astro.props
+const { Content } = await post.render()
 ---
 
 <h1>{post.data.title}</h1>
@@ -73,14 +73,16 @@ const { Content } = await post.render();
 export function getStaticPaths() {
   return [
     { params: { category: 'tech', slug: 'astro-intro' } },
-    { params: { category: 'life', slug: 'travel-tips' } },
-  ];
+    { params: { category: 'life', slug: 'travel-tips' } }
+  ]
 }
 
-const { category, slug } = Astro.params;
+const { category, slug } = Astro.params
 ---
 
-<p>Category: {category}, Slug: {slug}</p>
+<p>
+  Category: {category}, Slug: {slug}
+</p>
 ```
 
 ### Rest Parameters (Catch-all)
@@ -90,13 +92,13 @@ const { category, slug } = Astro.params;
 // src/pages/docs/[...path].astro
 export function getStaticPaths() {
   return [
-    { params: { path: undefined } },        // /docs
+    { params: { path: undefined } }, // /docs
     { params: { path: 'getting-started' } }, // /docs/getting-started
-    { params: { path: 'guides/routing' } },  // /docs/guides/routing
-  ];
+    { params: { path: 'guides/routing' } } // /docs/guides/routing
+  ]
 }
 
-const { path } = Astro.params;
+const { path } = Astro.params
 // path can be undefined, "getting-started", or "guides/routing"
 ---
 ```
@@ -110,16 +112,16 @@ With SSR enabled, you can access params without `getStaticPaths`:
 // src/pages/products/[id].astro
 // Requires output: 'server' or 'hybrid' with prerender = false
 
-const { id } = Astro.params;
+const { id } = Astro.params
 
-const response = await fetch(`https://api.example.com/products/${id}`);
-const product = await response.json();
+const response = await fetch(`https://api.example.com/products/${id}`)
+const product = await response.json()
 
 if (!product) {
   return new Response(null, {
     status: 404,
     statusText: 'Not Found'
-  });
+  })
 }
 ---
 
@@ -132,75 +134,71 @@ if (!product) {
 
 ```typescript
 // src/pages/api/posts.json.ts
-import type { APIRoute } from 'astro';
-import { getCollection } from 'astro:content';
+import type { APIRoute } from 'astro'
+import { getCollection } from 'astro:content'
 
 export const GET: APIRoute = async () => {
-  const posts = await getCollection('blog');
+  const posts = await getCollection('blog')
   return new Response(
-    JSON.stringify(posts.map(p => ({
-      title: p.data.title,
-      slug: p.slug,
-    }))),
+    JSON.stringify(
+      posts.map((p) => ({
+        title: p.data.title,
+        slug: p.slug
+      }))
+    ),
     {
       status: 200,
       headers: {
-        'Content-Type': 'application/json',
-      },
+        'Content-Type': 'application/json'
+      }
     }
-  );
-};
+  )
+}
 ```
 
 ### Server Endpoints (SSR)
 
 ```typescript
 // src/pages/api/submit.ts
-import type { APIRoute } from 'astro';
+import type { APIRoute } from 'astro'
 
 export const POST: APIRoute = async ({ request }) => {
-  const formData = await request.formData();
-  const email = formData.get('email');
+  const formData = await request.formData()
+  const email = formData.get('email')
 
   // Validate and process
   if (!email) {
-    return new Response(
-      JSON.stringify({ error: 'Email required' }),
-      { status: 400 }
-    );
+    return new Response(JSON.stringify({ error: 'Email required' }), { status: 400 })
   }
 
   // Save to database, send email, etc.
 
-  return new Response(
-    JSON.stringify({ success: true }),
-    { status: 200 }
-  );
-};
+  return new Response(JSON.stringify({ success: true }), { status: 200 })
+}
 ```
 
 ### Dynamic Endpoints
 
 ```typescript
 // src/pages/api/users/[id].ts
-import type { APIRoute } from 'astro';
+import type { APIRoute } from 'astro'
 
 export const GET: APIRoute = async ({ params }) => {
-  const { id } = params;
-  const user = await fetchUser(id);
+  const { id } = params
+  const user = await fetchUser(id)
 
   if (!user) {
-    return new Response(null, { status: 404 });
+    return new Response(null, { status: 404 })
   }
 
-  return new Response(JSON.stringify(user));
-};
+  return new Response(JSON.stringify(user))
+}
 
 export const DELETE: APIRoute = async ({ params }) => {
-  const { id } = params;
-  await deleteUser(id);
-  return new Response(null, { status: 204 });
-};
+  const { id } = params
+  await deleteUser(id)
+  return new Response(null, { status: 204 })
+}
 ```
 
 ## Redirects
@@ -213,9 +211,9 @@ export default defineConfig({
   redirects: {
     '/old-page': '/new-page',
     '/blog/[...slug]': '/articles/[...slug]',
-    '/external': 'https://example.com',
-  },
-});
+    '/external': 'https://example.com'
+  }
+})
 ```
 
 ### Programmatic Redirects (SSR)
@@ -224,11 +222,11 @@ export default defineConfig({
 ---
 // In page or middleware
 if (!user) {
-  return Astro.redirect('/login');
+  return Astro.redirect('/login')
 }
 
 // With status code
-return Astro.redirect('/dashboard', 307);
+return Astro.redirect('/dashboard', 307)
 ---
 ```
 
@@ -239,10 +237,10 @@ Serve different content for a URL without redirect:
 ```astro
 ---
 // src/pages/[lang]/about.astro
-const { lang } = Astro.params;
+const { lang } = Astro.params
 
 if (lang !== 'en' && lang !== 'es') {
-  return Astro.rewrite('/404');
+  return Astro.rewrite('/404')
 }
 ---
 ```
@@ -266,18 +264,16 @@ When multiple routes could match, Astro uses this priority:
 ```astro
 ---
 // src/pages/blog/[...page].astro
-import { getCollection } from 'astro:content';
+import { getCollection } from 'astro:content'
 
 export async function getStaticPaths({ paginate }) {
-  const posts = await getCollection('blog');
-  const sortedPosts = posts.sort(
-    (a, b) => b.data.pubDate.valueOf() - a.data.pubDate.valueOf()
-  );
+  const posts = await getCollection('blog')
+  const sortedPosts = posts.sort((a, b) => b.data.pubDate.valueOf() - a.data.pubDate.valueOf())
 
-  return paginate(sortedPosts, { pageSize: 10 });
+  return paginate(sortedPosts, { pageSize: 10 })
 }
 
-const { page } = Astro.props;
+const { page } = Astro.props
 ---
 
 <ul>
@@ -288,7 +284,9 @@ const { page } = Astro.props;
 
 <nav>
   {page.url.prev && <a href={page.url.prev}>Previous</a>}
-  <span>Page {page.currentPage} of {page.lastPage}</span>
+  <span>
+    Page {page.currentPage} of {page.lastPage}
+  </span>
   {page.url.next && <a href={page.url.next}>Next</a>}
 </nav>
 ```
@@ -302,10 +300,10 @@ export default defineConfig({
     defaultLocale: 'en',
     locales: ['en', 'es', 'fr'],
     routing: {
-      prefixDefaultLocale: false, // /about vs /en/about
-    },
-  },
-});
+      prefixDefaultLocale: false // /about vs /en/about
+    }
+  }
+})
 ```
 
 ```

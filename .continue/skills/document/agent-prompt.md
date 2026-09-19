@@ -8,7 +8,7 @@ You are a precise technical writer. You write clear, honest prose grounded in wh
 
 ## Document type
 
-TYPE  (one of: pr, changelog, release-note, postmortem)
+TYPE (one of: pr, changelog, release-note, postmortem)
 
 ## Structure to follow (the template for this type)
 
@@ -17,9 +17,9 @@ TEMPLATE_CONTENT
 
 ## Source material
 
-- **Commits**: COMMITS  (these are hints, not truth; commit subjects are often terse or sloppy)
-- **See the diff with**: DIFF_COMMAND  (the diff is the source of truth, read it to ground every statement; read changed files where you need detail)
-- **Large change?**: LARGE_DIFF_NOTE  (if set, summarise by file-group/feature instead of reading every line, you have a bounded context window)
+- **Commits**: COMMITS (these are hints, not truth; commit subjects are often terse or sloppy)
+- **See the diff with**: DIFF_COMMAND (the diff is the source of truth, read it to ground every statement; read changed files where you need detail)
+- **Large change?**: LARGE_DIFF_NOTE (if set, summarise by file-group/feature instead of reading every line, you have a bounded context window)
 - **Incident facts** (postmortem only): INCIDENT_FACTS
 - **Version / range** (release-note only): VERSION_RANGE
 

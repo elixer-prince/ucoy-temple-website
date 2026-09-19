@@ -8,20 +8,20 @@ Astro components use a `.astro` extension and consist of two main parts:
 ---
 // Component Script (Frontmatter)
 // Runs on the server at build time (or request time for SSR)
-import SomeComponent from './SomeComponent.astro';
-import { getCollection } from 'astro:content';
+import SomeComponent from './SomeComponent.astro'
+import { getCollection } from 'astro:content'
 
 interface Props {
-  title: string;
-  description?: string;
+  title: string
+  description?: string
 }
 
-const { title, description = 'Default description' } = Astro.props;
+const { title, description = 'Default description' } = Astro.props
 
 // Top-level await is supported
-const posts = await getCollection('blog');
-const response = await fetch('https://api.example.com/data');
-const data = await response.json();
+const posts = await getCollection('blog')
+const response = await fetch('https://api.example.com/data')
+const data = await response.json()
 ---
 
 <!-- Component Template -->
@@ -44,17 +44,21 @@ const data = await response.json();
 ```astro
 ---
 interface Props {
-  name: string;
-  greeting?: string;
-  items: string[];
+  name: string
+  greeting?: string
+  items: string[]
 }
 
-const { name, greeting = "Hello", items } = Astro.props;
+const { name, greeting = 'Hello', items } = Astro.props
 ---
 
-<h1>{greeting}, {name}!</h1>
+<h1>
+  {greeting}, {name}!
+</h1>
 <ul>
-  {items.map((item) => <li>{item}</li>)}
+  {items.map((item) => (
+    <li>{item}</li>
+  ))}
 </ul>
 ```
 
@@ -62,7 +66,7 @@ const { name, greeting = "Hello", items } = Astro.props;
 
 ```astro
 ---
-const allProps = Astro.props;
+const allProps = Astro.props
 // Spread to child component
 ---
 
@@ -75,10 +79,9 @@ const allProps = Astro.props;
 
 ```astro
 <!-- Wrapper.astro -->
----
----
+--- ---
 <div class="wrapper">
-  <slot />  <!-- Children go here -->
+  <slot /> <!-- Children go here -->
 </div>
 ```
 
@@ -93,14 +96,13 @@ const allProps = Astro.props;
 
 ```astro
 <!-- Layout.astro -->
----
----
+--- ---
 <div class="container">
   <header>
     <slot name="header" />
   </header>
   <main>
-    <slot />  <!-- Default slot -->
+    <slot /> <!-- Default slot -->
   </main>
   <footer>
     <slot name="footer" />
@@ -129,7 +131,7 @@ const allProps = Astro.props;
 
 ```astro
 ---
-const hasHeader = Astro.slots.has('header');
+const hasHeader = Astro.slots.has('header')
 ---
 
 {hasHeader && (
@@ -143,7 +145,7 @@ const hasHeader = Astro.slots.has('header');
 
 ```astro
 ---
-const html = await Astro.slots.render('default');
+const html = await Astro.slots.render('default')
 ---
 
 <Fragment set:html={html} />
@@ -155,9 +157,9 @@ const html = await Astro.slots.render('default');
 
 ```astro
 ---
-const name = "Astro";
-const items = ['Apple', 'Banana', 'Cherry'];
-const visible = true;
+const name = 'Astro'
+const items = ['Apple', 'Banana', 'Cherry']
+const visible = true
 ---
 
 <h1>{name}</h1>
@@ -166,7 +168,9 @@ const visible = true;
 
 <!-- Lists -->
 <ul>
-  {items.map((item) => <li>{item}</li>)}
+  {items.map((item) => (
+    <li>{item}</li>
+  ))}
 </ul>
 
 <!-- Conditional rendering -->
@@ -180,11 +184,13 @@ const visible = true;
 
 ```astro
 ---
-const dynamicId = "my-id";
-const dynamicClass = "active";
+const dynamicId = 'my-id'
+const dynamicClass = 'active'
 ---
 
-<div id={dynamicId} class={dynamicClass}>Content</div>
+<div id={dynamicId} class={dynamicClass}>
+  Content
+</div>
 
 <!-- Boolean attributes -->
 <input type="checkbox" checked={true} />
@@ -198,16 +204,18 @@ const dynamicClass = "active";
 
 ```astro
 ---
-const isActive = true;
-const isDisabled = false;
+const isActive = true
+const isDisabled = false
 ---
 
-<div class:list={[
-  'base-class',
-  { 'active': isActive },
-  { 'disabled': isDisabled },
-  isActive && 'conditional-class',
-]}>
+<div
+  class:list={[
+    'base-class',
+    { active: isActive },
+    { disabled: isDisabled },
+    isActive && 'conditional-class'
+  ]}
+>
   Content
 </div>
 <!-- Output: <div class="base-class active conditional-class">Content</div> -->
@@ -221,7 +229,7 @@ Inject raw HTML (be careful with user input - XSS risk):
 
 ```astro
 ---
-const rawHTML = "<strong>Bold</strong>";
+const rawHTML = '<strong>Bold</strong>'
 ---
 
 <div set:html={rawHTML} />
@@ -233,7 +241,7 @@ Safely set text content:
 
 ```astro
 ---
-const text = "Some text content";
+const text = 'Some text content'
 ---
 
 <p set:text={text} />
@@ -245,7 +253,7 @@ Wrap multiple elements without adding extra DOM:
 
 ```astro
 ---
-import { Fragment } from 'astro:components';
+import { Fragment } from 'astro:components'
 ---
 
 <Fragment>
@@ -267,22 +275,22 @@ import { Fragment } from 'astro:components';
 ```astro
 ---
 // Astro components
-import Header from '../components/Header.astro';
+import Header from '../components/Header.astro'
 
 // UI framework components
-import ReactComponent from '../components/ReactComponent.jsx';
+import ReactComponent from '../components/ReactComponent.jsx'
 
 // Data
-import { getCollection } from 'astro:content';
+import { getCollection } from 'astro:content'
 
 // Utilities
-import { formatDate } from '../utils/date';
+import { formatDate } from '../utils/date'
 
 // Styles
-import '../styles/global.css';
+import '../styles/global.css'
 
 // JSON data
-import data from '../data/config.json';
+import data from '../data/config.json'
 ---
 ```
 
@@ -291,34 +299,34 @@ import data from '../data/config.json';
 ```astro
 ---
 // URL information
-const currentPath = Astro.url.pathname;
-const searchParams = Astro.url.searchParams;
+const currentPath = Astro.url.pathname
+const searchParams = Astro.url.searchParams
 
 // Request (SSR only)
-const userAgent = Astro.request.headers.get('user-agent');
+const userAgent = Astro.request.headers.get('user-agent')
 
 // Cookies (SSR only)
-const token = Astro.cookies.get('token');
+const token = Astro.cookies.get('token')
 
 // Redirect (SSR only)
 if (!token) {
-  return Astro.redirect('/login');
+  return Astro.redirect('/login')
 }
 
 // Props
-const { title } = Astro.props;
+const { title } = Astro.props
 
 // Slots
-const hasContent = Astro.slots.has('default');
+const hasContent = Astro.slots.has('default')
 
 // Site configuration
-const siteUrl = Astro.site;
+const siteUrl = Astro.site
 
 // Generator
-const generator = Astro.generator; // "Astro v4.x.x"
+const generator = Astro.generator // "Astro v4.x.x"
 
 // Current locale (i18n)
-const locale = Astro.currentLocale;
+const locale = Astro.currentLocale
 ---
 ```
 

@@ -20,6 +20,7 @@ Claude Code loads it via the import below:
 ```
 
 Hard rules:
+
 - Never overwrite an existing `AGENTS.md` (possibly authored by the user or another tool). Create only when missing; otherwise propose additions via the diff format.
 - `CLAUDE.md` only ever holds the pointer; never duplicate AGENTS.md content into it.
 - Migration (when told `MIGRATE=yes`): copy the legacy `CLAUDE.md` content verbatim into a new `AGENTS.md`, then replace `CLAUDE.md` with the pointer above. Never discard curated content.
@@ -38,6 +39,7 @@ The stamp records provenance, not permission: it never licenses overwriting an e
 ## The mirrored root fields
 
 <!-- ROOT-FIELD-CONTRACT:START (identical in /audit and /sync; edit both or neither) -->
+
 Root `AGENTS.md` carries two mirrored fields. Each has exactly one source of truth outside the file, and no skill may invent a value for either:
 
 - `## Stack` mirrors the architecture spec, the one under `docs/specs/` with a `## Proposed stack` section.
@@ -132,6 +134,7 @@ A codebase exists but no AGENTS.md. Explore enough to write an accurate root AGE
 **Step 1: Discover**
 
 With your file tools, list the project tree a few levels deep, skipping vendored/generated dirs (`.git`, `node_modules`, `.next`, `dist`, `build`). Read whichever exist:
+
 - `package.json` / `pyproject.toml` / `Cargo.toml` / `go.mod`: stack and deps
 - `.github/workflows/`: CI and deploy patterns
 - Main entry point (`src/index.*`, `main.*`, `app.*`, `server.*`)
@@ -149,9 +152,11 @@ Stack, runtime, framework; daily commands (install, dev, build, test); conventio
 Monorepo (`MONOREPO_OR_NO` = yes): don't judge or deep scan. Every workspace (`apps/*`, `packages/*`) gets a light stub `AGENTS.md` at its root (`## Stack` + `## Commands` from its manifest, scoped, e.g. `<pkgmgr> -F <name> …`, plus a one line overview), the sibling `CLAUDE.md` pointer, and a root `## Context files` pointer. Deep conventions come later via `/audit <workspace>`. A doc buried below a workspace root with no root doc: follow the relocation rule the main agent surfaced. Skip the judgment step below.
 
 Single repo: identify the major areas/modules (e.g. `src/auth`, `src/payments`, `src/api`); judge each. Warrants a nested doc: distinct conventions, not obvious rules, local commands, external integrations, or gotchas a developer must know before touching it. Does not: a simple module with no surprises, or root already covers it (skip; never one per folder). For each warranted area: write `<area>/AGENTS.md` with the nested template, its sibling `<area>/CLAUDE.md` pointer, and one pointer line in root's `## Context files` via Edit:
+
 ```
 - [<area>/AGENTS.md](<area>/AGENTS.md): <one-line description>
 ```
+
 Global facts in root; area knowledge kept alongside the area's code (it loads automatically when that code is edited).
 
 **Step 5: Report** (format at the bottom); list every nested doc created.
@@ -219,6 +224,7 @@ Be conservative: flag only durable findings you're confident about; when unsure,
 ## Root AGENTS.md template
 
 === ROOT AGENTS.md TEMPLATE START ===
+
 # <Project name>
 
 ## Stack
@@ -231,12 +237,13 @@ Be conservative: flag only durable findings you're confident about; when unsure,
 ## Build approach
 
 <The project's default build strategy, a short line: name + one line principle. A project wide
- convention every skill reads (like the stack). Seeded from the scope header; `<TBD, set by
+convention every skill reads (like the stack). Seeded from the scope header; `<TBD, set by
  /scope>` if none is set yet. The approach is one of:
- - **Tracer Bullet**, vertical end to end slices, thin but complete through every layer
- - **Skateboard**, ship the thinnest usable whole, then grow it
- - **Facade**, UI first shell, then wire the real behavior behind it (prototype led)
- - **Journey**, build the full user path, one phase at a time>
+
+- **Tracer Bullet**, vertical end to end slices, thin but complete through every layer
+- **Skateboard**, ship the thinnest usable whole, then grow it
+- **Facade**, UI first shell, then wire the real behavior behind it (prototype led)
+- **Journey**, build the full user path, one phase at a time>
 
 ## Commands
 
@@ -261,21 +268,22 @@ Stored in `docs/specs/`. Format: `docs/specs/NNNN-title.md`.
 ## Rules
 
 <Conventions that apply everywhere, from pattern presets and/or discovered from code.
-  For greenfield: paste the selected pattern conventions here.
-  For whole-repo: extract what you observe in the code.
-  Keep this to 5 to 10 bullet points max.>
+For greenfield: paste the selected pattern conventions here.
+For whole-repo: extract what you observe in the code.
+Keep this to 5 to 10 bullet points max.>
 
 ## Agent skills
 
 <Installed Agent Skills carrying this project's tool conventions, ONE bullet each (rules in
-  greenfield Step 2), omit the section if none. Only project wide skills here; an area specific
-  skill goes in that area's nested AGENTS.md.>
+greenfield Step 2), omit the section if none. Only project wide skills here; an area specific
+skill goes in that area's nested AGENTS.md.>
+
 - [<skill>](<skills-dir>/<skill>/): `<owner>/<repo>`, <one line: what it governs>
 
 <Then, only if present, a compact line each (a declined tool has nothing to load, and an MCP
-  server is a connected service with no local file, so both stay lines, not bullets):
-  `Declined: <tool>, <tool>` (offered before, not wanted; keep so a later /audit or /architect
-  does not offer it again) · `MCP servers: <server> (connected), <server> (recommended)`>
+server is a connected service with no local file, so both stay lines, not bullets):
+`Declined: <tool>, <tool>` (offered before, not wanted; keep so a later /audit or /architect
+does not offer it again) · `MCP servers: <server> (connected), <server> (recommended)`>
 
 ## Context files
 
@@ -298,8 +306,8 @@ _Drafted by /audit from the repo, worth a quick human pass. Edit freely: once a 
 
 ## Key files
 
-| File | Owns |
-|---|---|
+| File   | Owns                     |
+| ------ | ------------------------ |
 | <path> | <what it does, one line> |
 
 ## Commands
@@ -317,7 +325,8 @@ _Drafted by /audit from the repo, worth a quick human pass. Edit freely: once a 
 ## Agent skills
 
 <Area specific skills, same bullet format as root, omit if none:
-  - [<skill>](<skills-dir>/<skill>/): `<owner>/<repo>`, <what it governs for this area>
+
+- [<skill>](<skills-dir>/<skill>/): `<owner>/<repo>`, <what it governs for this area>
   A declined tool or MCP server stays a compact `Declined:` / `MCP servers:` line, as in root.>
 
 ## Related specs

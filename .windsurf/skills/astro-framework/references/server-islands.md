@@ -15,8 +15,8 @@ Add `server:defer` to any Astro component to turn it into a server island:
 
 ```astro
 ---
-import Avatar from '../components/Avatar.astro';
-import ProductReviews from '../components/ProductReviews.astro';
+import Avatar from '../components/Avatar.astro'
+import ProductReviews from '../components/ProductReviews.astro'
 ---
 
 <!-- Static content renders immediately -->
@@ -46,6 +46,7 @@ Use the named `"fallback"` slot to show placeholder content while the island loa
 ```
 
 Good fallback patterns:
+
 - Generic placeholder (e.g., generic avatar instead of user's avatar)
 - Loading skeleton/spinner
 - Placeholder UI with approximate dimensions (prevents layout shift)
@@ -58,8 +59,8 @@ Inside a server island component, you can do anything a normal SSR component can
 ---
 // src/components/Avatar.astro
 // This runs on the server when the island is requested
-const userSession = Astro.cookies.get('session');
-const avatarURL = await getUserAvatar(userSession);
+const userSession = Astro.cookies.get('session')
+const avatarURL = await getUserAvatar(userSession)
 ---
 
 <img alt="User avatar" src={avatarURL} />
@@ -92,9 +93,9 @@ To access the page URL, check the `Referer` header:
 
 ```astro
 ---
-const referer = Astro.request.headers.get('Referer');
-const url = new URL(referer);
-const productId = url.searchParams.get('product');
+const referer = Astro.request.headers.get('Referer')
+const url = new URL(referer)
+const productId = url.searchParams.get('product')
 ---
 ```
 
@@ -105,7 +106,7 @@ Server island data is fetched via GET requests, so standard `Cache-Control` head
 ```astro
 ---
 // Cache this island for 1 hour
-Astro.response.headers.set('Cache-Control', 'max-age=3600');
+Astro.response.headers.set('Cache-Control', 'max-age=3600')
 ---
 ```
 
@@ -118,6 +119,7 @@ Astro.response.headers.set('Cache-Control', 'max-age=3600');
 ## Use Cases
 
 Server islands are ideal for:
+
 - **Personalized content** on otherwise static pages (user avatars, greeting bars)
 - **Dynamic data** that changes frequently (product prices, stock status, reviews)
 - **Authenticated sections** (user dashboards widgets on a public page)
@@ -131,8 +133,8 @@ The most common server island pattern — three rendering strategies on one page
 
 ```astro
 ---
-import PriceStock from '../components/PriceStock.astro';
-import AddToCart from '../components/AddToCart.jsx';
+import PriceStock from '../components/PriceStock.astro'
+import AddToCart from '../components/AddToCart.jsx'
 ---
 
 <!-- Static: title, images, description (cached at CDN) -->
@@ -152,6 +154,7 @@ import AddToCart from '../components/AddToCart.jsx';
 ### Common Mistakes
 
 **Passing large objects as props:**
+
 ```astro
 <!-- BAD: entire product object gets URL-encoded -->
 <PriceStock server:defer product={fullProductObject} />
@@ -171,10 +174,10 @@ Without `slot="fallback"`, users see nothing until the island loads. Always prov
 ```astro
 ---
 // WRONG: returns /_server-islands/PriceStock
-const url = Astro.url;
+const url = Astro.url
 
 // RIGHT: returns the actual page URL
-const pageUrl = new URL(Astro.request.headers.get('Referer'));
+const pageUrl = new URL(Astro.request.headers.get('Referer'))
 ---
 ```
 

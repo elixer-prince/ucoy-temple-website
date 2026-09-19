@@ -7,7 +7,7 @@ Astro's View Transitions provide smooth navigation between pages without full pa
 ```astro
 ---
 // src/layouts/Layout.astro
-import { ClientRouter } from 'astro:transitions';
+import { ClientRouter } from 'astro:transitions'
 ---
 
 <!doctype html>
@@ -24,6 +24,7 @@ import { ClientRouter } from 'astro:transitions';
 ## How It Works
 
 With `<ClientRouter />` enabled:
+
 1. User clicks a link
 2. Astro intercepts the navigation
 3. New page content is fetched
@@ -36,24 +37,20 @@ With `<ClientRouter />` enabled:
 
 ```astro
 ---
-import { fade } from 'astro:transitions';
+import { fade } from 'astro:transitions'
 ---
 
-<div transition:animate={fade({ duration: '0.4s' })}>
-  Content fades in and out
-</div>
+<div transition:animate={fade({ duration: '0.4s' })}>Content fades in and out</div>
 ```
 
 ### slide
 
 ```astro
 ---
-import { slide } from 'astro:transitions';
+import { slide } from 'astro:transitions'
 ---
 
-<div transition:animate={slide({ duration: '0.3s' })}>
-  Content slides in from the side
-</div>
+<div transition:animate={slide({ duration: '0.3s' })}>Content slides in from the side</div>
 ```
 
 ### initial
@@ -61,9 +58,7 @@ import { slide } from 'astro:transitions';
 Prevents animation on first page load:
 
 ```astro
-<div transition:animate="initial">
-  No animation on initial load
-</div>
+<div transition:animate="initial">No animation on initial load</div>
 ```
 
 ### none
@@ -71,9 +66,7 @@ Prevents animation on first page load:
 Disables transition for an element:
 
 ```astro
-<div transition:animate="none">
-  Instant swap, no animation
-</div>
+<div transition:animate="none">Instant swap, no animation</div>
 ```
 
 ## Transition Directives
@@ -84,16 +77,10 @@ Link elements across pages for morphing:
 
 ```astro
 <!-- Page 1: List -->
-<img
-  src={post.image}
-  transition:name={`hero-${post.slug}`}
-/>
+<img src={post.image} transition:name={`hero-${post.slug}`} />
 
 <!-- Page 2: Detail -->
-<img
-  src={post.data.image}
-  transition:name={`hero-${post.slug}`}
-/>
+<img src={post.data.image} transition:name={`hero-${post.slug}`} />
 ```
 
 Elements with matching `transition:name` will morph into each other.
@@ -103,13 +90,9 @@ Elements with matching `transition:name` will morph into each other.
 Control animation behavior:
 
 ```astro
-<header transition:animate="none">
-  <!-- Static header, no animation -->
-</header>
+<header transition:animate="none"><!-- Static header, no animation --></header>
 
-<main transition:animate={slide({ duration: '0.5s' })}>
-  <!-- Slides in -->
-</main>
+<main transition:animate={slide({ duration: '0.5s' })}><!-- Slides in --></main>
 ```
 
 ### transition:persist
@@ -145,18 +128,30 @@ With unique ID:
 
 ```astro
 ---
-import { slide } from 'astro:transitions';
+import { slide } from 'astro:transitions'
 ---
 
 <style>
   @keyframes slideInFromLeft {
-    from { transform: translateX(-100%); opacity: 0; }
-    to { transform: translateX(0); opacity: 1; }
+    from {
+      transform: translateX(-100%);
+      opacity: 0;
+    }
+    to {
+      transform: translateX(0);
+      opacity: 1;
+    }
   }
 
   @keyframes slideOutToRight {
-    from { transform: translateX(0); opacity: 1; }
-    to { transform: translateX(100%); opacity: 0; }
+    from {
+      transform: translateX(0);
+      opacity: 1;
+    }
+    to {
+      transform: translateX(100%);
+      opacity: 0;
+    }
   }
 </style>
 
@@ -165,13 +160,13 @@ import { slide } from 'astro:transitions';
     old: {
       name: 'slideOutToRight',
       duration: '0.3s',
-      easing: 'ease-in',
+      easing: 'ease-in'
     },
     new: {
       name: 'slideInFromLeft',
       duration: '0.3s',
-      easing: 'ease-out',
-    },
+      easing: 'ease-out'
+    }
   }}
 >
   Custom sliding content
@@ -187,25 +182,23 @@ export const customSlide = {
     name: 'slideOut',
     duration: '0.3s',
     easing: 'ease-in',
-    fillMode: 'forwards',
+    fillMode: 'forwards'
   },
   new: {
     name: 'slideIn',
     duration: '0.3s',
     easing: 'ease-out',
-    fillMode: 'backwards',
-  },
-};
+    fillMode: 'backwards'
+  }
+}
 ```
 
 ```astro
 ---
-import { customSlide } from '../transitions/custom';
+import { customSlide } from '../transitions/custom'
 ---
 
-<div transition:animate={customSlide}>
-  Uses custom animation
-</div>
+<div transition:animate={customSlide}>Uses custom animation</div>
 ```
 
 ## Navigation Controls
@@ -214,13 +207,13 @@ import { customSlide } from '../transitions/custom';
 
 ```astro
 <script>
-  import { navigate } from 'astro:transitions/client';
+  import { navigate } from 'astro:transitions/client'
 
   // Navigate programmatically
-  navigate('/about');
+  navigate('/about')
 
   // With history options
-  navigate('/dashboard', { history: 'replace' });
+  navigate('/dashboard', { history: 'replace' })
 </script>
 ```
 
@@ -231,9 +224,7 @@ import { customSlide } from '../transitions/custom';
   Full page reload
 </a>
 
-<form data-astro-reload>
-  Submit causes full reload
-</form>
+<form data-astro-reload>Submit causes full reload</form>
 ```
 
 ## Lifecycle Events
@@ -242,30 +233,30 @@ import { customSlide } from '../transitions/custom';
 <script>
   document.addEventListener('astro:before-preparation', (event) => {
     // Before fetching new page
-    console.log('Navigating to:', event.to);
-  });
+    console.log('Navigating to:', event.to)
+  })
 
   document.addEventListener('astro:after-preparation', (event) => {
     // After fetching, before swap
-  });
+  })
 
   document.addEventListener('astro:before-swap', (event) => {
     // Right before DOM swap
     // Can customize swap behavior
     event.swap = () => {
       // Custom swap logic
-    };
-  });
+    }
+  })
 
   document.addEventListener('astro:after-swap', (event) => {
     // After DOM swap, before animations
     // Good for re-initializing scripts
-  });
+  })
 
   document.addEventListener('astro:page-load', (event) => {
     // Page fully loaded, animations complete
     // Runs on initial load and every navigation
-  });
+  })
 </script>
 ```
 
@@ -276,8 +267,8 @@ Scripts with `data-astro-rerun` execute on every navigation:
 ```astro
 <script data-astro-rerun>
   // This runs on initial load AND every navigation
-  console.log('Page changed!');
-  initializeComponent();
+  console.log('Page changed!')
+  initializeComponent()
 </script>
 ```
 
@@ -300,6 +291,7 @@ Forms work with view transitions:
 ## Fallback Behavior
 
 Browsers without View Transitions API get:
+
 - Full page navigation (no JavaScript errors)
 - Graceful degradation
 
@@ -308,7 +300,7 @@ Check support:
 ```astro
 <script>
   if (document.startViewTransition) {
-    console.log('View Transitions supported!');
+    console.log('View Transitions supported!')
   }
 </script>
 ```
@@ -319,7 +311,9 @@ Check support:
 
 ```astro
 <!-- Skip view transitions -->
-<a href="/page" data-astro-reload>Full Reload</a>
+<a href="/page" data-astro-reload>
+  Full Reload
+</a>
 ```
 
 ### Prefetching
@@ -329,17 +323,25 @@ Check support:
 export default defineConfig({
   prefetch: {
     prefetchAll: true, // Prefetch all links on hover
-    defaultStrategy: 'viewport', // or 'hover', 'load'
-  },
-});
+    defaultStrategy: 'viewport' // or 'hover', 'load'
+  }
+})
 ```
 
 ```astro
 <!-- Manual prefetch control -->
-<a href="/page" data-astro-prefetch="hover">Prefetch on hover</a>
-<a href="/page" data-astro-prefetch="viewport">Prefetch when visible</a>
-<a href="/page" data-astro-prefetch="load">Prefetch immediately</a>
-<a href="/page" data-astro-prefetch="false">Never prefetch</a>
+<a href="/page" data-astro-prefetch="hover">
+  Prefetch on hover
+</a>
+<a href="/page" data-astro-prefetch="viewport">
+  Prefetch when visible
+</a>
+<a href="/page" data-astro-prefetch="load">
+  Prefetch immediately
+</a>
+<a href="/page" data-astro-prefetch="false">
+  Never prefetch
+</a>
 ```
 
 ## Common Patterns
@@ -365,18 +367,12 @@ export default defineConfig({
 <!-- List page -->
 {images.map((img) => (
   <a href={`/gallery/${img.id}`}>
-    <img
-      src={img.thumb}
-      transition:name={`image-${img.id}`}
-    />
+    <img src={img.thumb} transition:name={`image-${img.id}`} />
   </a>
 ))}
 
 <!-- Detail page -->
-<img
-  src={image.full}
-  transition:name={`image-${image.id}`}
-/>
+<img src={image.full} transition:name={`image-${image.id}`} />
 ```
 
 ## Best Practices

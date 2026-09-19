@@ -1,30 +1,31 @@
 ---
 name: architect
 allowed-tools: Bash, Read, Grep, Glob, Write, Edit, Agent, AskUserQuestion
-description: "Run /architect when choosing between approaches, designing a feature or page, picking a tech stack, or when /develop says a decision is owed, anytime a load bearing technical decision is unmade. Asks deep questions, recommends an answer, and writes a build spec to docs/specs/. Owns all spec files."
+description: 'Run /architect when choosing between approaches, designing a feature or page, picking a tech stack, or when /develop says a decision is owed, anytime a load bearing technical decision is unmade. Asks deep questions, recommends an answer, and writes a build spec to docs/specs/. Owns all spec files.'
 ---
 
 ## Output style (plain words, no dashes, no hyphens)
 
 <!-- OUTPUT-STYLE:START -->
+
 Write everything this skill produces, files and messages alike, in plain simple language. Talk to the reader as `you`, warm and direct like a colleague, and present every step as a recommendation they may run or skip, never an order. Keep technical terms that carry real meaning; explain each in plain words. Never use a dash or a hyphen as punctuation: no em dash, no en dash, and no hyphenated compounds. Write `read only`, not `read-only`. Say it in simple words, or reword the sentence. Code, file paths, command flags, and values other skills match on keep their hyphens. Use short sentences, commas, or parentheses. Clear beats clever.
 <!-- OUTPUT-STYLE:END -->
 
 ## What this skill does
 
-Runs structured discovery, weighs options, and writes or updates a build spec in `docs/specs/`. The main thread writes; it offloads only reading the codebase or fetching the web to a cheap subagent (see *Subagents*). Four modes:
+Runs structured discovery, weighs options, and writes or updates a build spec in `docs/specs/`. The main thread writes; it offloads only reading the codebase or fetching the web to a cheap subagent (see _Subagents_). Four modes:
 
-| Mode | When | Design behaviour |
-|---|---|---|
-| `FEATURE` | Designing a new feature from scratch, with or without existing code | First principles design, best practices, minimal code reading |
-| `ARCHITECTURE` | Choosing a tech stack or foundational architecture for a new project | Comprehensive stack evaluation, industry patterns, no code to read |
-| `ENHANCEMENT` | Improving, replacing, or scaling something that already exists | Read existing code + specs, focused option comparison |
+| Mode            | When                                                                                      | Design behaviour                                                           |
+| --------------- | ----------------------------------------------------------------------------------------- | -------------------------------------------------------------------------- |
+| `FEATURE`       | Designing a new feature from scratch, with or without existing code                       | First principles design, best practices, minimal code reading              |
+| `ARCHITECTURE`  | Choosing a tech stack or foundational architecture for a new project                      | Comprehensive stack evaluation, industry patterns, no code to read         |
+| `ENHANCEMENT`   | Improving, replacing, or scaling something that already exists                            | Read existing code + specs, focused option comparison                      |
 | `CROSS-CUTTING` | Standardising a pattern across the whole codebase (error handling, logging, auth, naming) | Sample current state, define the standard precisely, recommend enforcement |
 
 - **Create**: new decision → new spec with status `Proposed`
 - **Update**: evolving an existing decision → edit existing spec in place
 - **Supersede**: replacing a past decision → new spec + update old spec's status line
-- **Ratify**: deliberating an `Assumed` spec that `/develop` recorded when the engineer chose to build before deciding → see *Ratify an assumed decision* below
+- **Ratify**: deliberating an `Assumed` spec that `/develop` recorded when the engineer chose to build before deciding → see _Ratify an assumed decision_ below
 
 Spec status behaves one of two ways, decided by whether a buildable scope feature links the spec (a `docs/scope/` row whose `spec` cell points to it):
 
@@ -43,7 +44,7 @@ The main thread runs the conversation and writes the spec; it never hands the wr
 
 - **Read the codebase** (cheapest model, Claude Code `haiku`): a read only scan of existing code when the repo is large (ENHANCEMENT/CROSS-CUTTING). Claude Code: the `scout` type. Returns a compact map, never file dumps.
 - **Fetch from the web** (cheapest model, Claude Code `haiku`): the current tool landscape check and the Agent Skill / MCP discovery, both during the design conversation (Stage c), when a decision needs current facts. Claude Code: the `researcher` type. Returns a compact summary, never raw pages.
-- **Cross check the drafted spec** (its primary job is decision completeness: finding values an action must produce whose source the spec never names, and decisions the builder would otherwise invent): a read only pass that reads the finished spec and returns a critique, writing nothing. `/architect` **always asks** whether to run it (never runs or skips it on the engineer's behalf), recommending `Another model` strongly at `GA`/`Beta` (the tiers where these bugs live), offering it at `Alpha`, and recommending `Skip` at `Prototype`; any gap it finds is presented to the engineer with a recommended fix for them to decide, not auto resolved. See *After the spec is written*.
+- **Cross check the drafted spec** (its primary job is decision completeness: finding values an action must produce whose source the spec never names, and decisions the builder would otherwise invent): a read only pass that reads the finished spec and returns a critique, writing nothing. `/architect` **always asks** whether to run it (never runs or skips it on the engineer's behalf), recommending `Another model` strongly at `GA`/`Beta` (the tiers where these bugs live), offering it at `Alpha`, and recommending `Skip` at `Prototype`; any gap it finds is presented to the engineer with a recommended fix for them to decide, not auto resolved. See _After the spec is written_.
 
 Web fetching happens once, when a decision needs it (the Stage (c) landscape and tool discovery checks). The links it returns go into the spec's References for a human to follow; the AI never fetches them again (not in the cross check, `/develop`, or `/audit`).
 
@@ -74,7 +75,8 @@ Two independent choices, location (repo shape) and shape (decision size):
   - **`index.md`**: the build spec `/develop` reads: `## Summary`, `## Requirements`, `## Decision`, the design/spec section, `## Build plan`, `## Consequences`, `## Follow-up`, and a one line `## Rationale` pointer to `rationale.md`. For an umbrella it also opens with a `## Structure` manifest listing and linking every child spec (one line each: what it is plus which decision it supports), and holds any cross child contract.
   - **`rationale.md`**: the decision record `/develop` skips: `## Context`, `## Options considered`, `## Rationale`, the `## References` section, and any bulky evidence (inventories, audits) under its own subheading. There is no `research/` folder; all evidence lives here.
   - Child specs (umbrella only) are flat `NNNN-<child>.md` files, each complete enough to build from on its own with a short inline rationale (not its own `rationale.md`); promote a child to its own directory only when it grows heavy. Cross child contracts live in the umbrella `index.md`.
-- **One narrow exception into the scope:** after the spec is confirmed, update the matching feature to the ready to build shape (exact edits in *After the spec is written*, step 3). Never dump the atomic task list into the scope. No matching feature: offer to enroll one (see the derive tasks step).
+
+- **One narrow exception into the scope:** after the spec is confirmed, update the matching feature to the ready to build shape (exact edits in _After the spec is written_, step 3). Never dump the atomic task list into the scope. No matching feature: offer to enroll one (see the derive tasks step).
 
 **Artifact base.** specs live under `docs/` by default. If `docs/` is a published docs site (`docusaurus.config.*`, `.vitepress/`, `mkdocs.yml`, Astro Starlight, or Nextra detected), use `.workflow/` instead (`.workflow/specs/`). Always follow whichever base already exists (paths here assume `docs/`).
 
@@ -83,7 +85,7 @@ Two independent choices, location (repo shape) and shape (decision size):
 ## Portability (any OS, any agent)
 
 - **Commands**: `git` is the only required CLI, same on every OS. Other shell snippets (`mkdir -p`, `date`, `find`, `ls`, `cat`, `wc`) are POSIX reference, not literal scripts; use your agent's cross platform file tools (read, search/glob, write, create dir) and your knowledge of today's date. Create `docs/specs/` with your write tool, not `mkdir`.
-- **Bundled files**: `agent-prompt.md`, `agent-modes/*.md`, and `spec-template.md` live at paths relative to this skill's folder. The main thread reads these itself right before it writes the spec (see *Write the spec*): `agent-prompt.md` (the persona, rules, and report format), the one matching `agent-modes/<mode>.md`, and `spec-template.md` (the section structure). Read them only at write time, not during pre-flight, so they don't sit in context through the whole interview.
+- **Bundled files**: `agent-prompt.md`, `agent-modes/*.md`, and `spec-template.md` live at paths relative to this skill's folder. The main thread reads these itself right before it writes the spec (see _Write the spec_): `agent-prompt.md` (the persona, rules, and report format), the one matching `agent-modes/<mode>.md`, and `spec-template.md` (the section structure). Read them only at write time, not during pre-flight, so they don't sit in context through the whole interview.
 - **No interactive question support?** Use whatever your agent provides (an options picker) and fall back only where missing: ask the question rounds as plain text with the same options.
 
 ## Execution
@@ -113,6 +115,7 @@ Run these steps (the `git` commands are literal; everything else uses your agent
 - **(Optional)** list installed skills dirs for availability only (`.claude/skills/`, `.agents/skills/`, `skills/`). Relevance is decided by AGENTS.md plus the feature, not name matching.
 
 From the spec list (paths relative to `$SPEC_DIR`):
+
 - **Next number**: highest existing + 1, zero padded to 4 digits; `0001` if none (an umbrella directory counts as one number). Collision guard (teams): list again `$SPEC_DIR` immediately before you write; if the chosen `NNNN` exists, bump to the next free number. Never overwrite an existing spec; after writing, confirm no concurrent run took the same number.
 - **Filename / shape**: `kebab-case` slug from the topic, max 5 words, no articles, lowercase.
   - Simple decision → `$SPEC_DIR/NNNN-kebab-title.md`.
@@ -120,12 +123,12 @@ From the spec list (paths relative to `$SPEC_DIR`):
 - **Related specs**: go in two passes so this stays cheap as specs accumulate. First read only the title line of each existing spec (cheap even at dozens of them); then read the first 20 lines (title, status, opening of Context) of just the few whose title plausibly overlaps this topic, to confirm. Flag matches.
 - **Child of umbrella detection**: if the topic is a sub decision of an existing umbrella (`$SPEC_DIR/NNNN-<umbrella>/`), e.g. one that surfaced while building under it, place the new spec inside that directory as the next child (`NNNN-child.md`) and add it to the umbrella's `index.md` list, not a new top level spec. Same path when `/develop` hits a decision partway through a build. Tell the engineer where it's going.
 - **Update/supersede detection**: if an existing spec clearly overlaps the topic (same domain, system, decision), before the staged conversation present a decision panel (plain text options where the agent has no picker; the picker adds Other automatically): "I found an existing spec that may overlap: `[path]`, [title]. How should I treat this?", options: **New decision (create a new spec)** · **Update the existing spec in place** · **Supersede it (a new spec replaces it)**. Default to the "(recommended)" option by overlap strength (nearly identical → Update or Supersede; adjacent → New). On update/supersede: set OPERATION, read the existing spec in full, and skip the staged conversation for in place updates.
-  - **Assumed spec found**: if the overlapping spec's `**Status**:` is `Assumed`, this is a ratify, not the panel above. Follow *Ratify an assumed decision* (run the design conversation, then either fill in the real content and clear `Assumed`, or supersede if the assumption was wrong).
+  - **Assumed spec found**: if the overlapping spec's `**Status**:` is `Assumed`, this is a ratify, not the panel above. Follow _Ratify an assumed decision_ (run the design conversation, then either fill in the real content and clear `Assumed`, or supersede if the assumption was wrong).
 
 **Community skills** come from the project's `AGENTS.md`, never a hardcoded name table (names and stacks change). Project wide skills/conventions live in root `AGENTS.md`, area specific ones in the nested `<area>/AGENTS.md` (maintained by `/audit` and `/sync`):
 
 1. Read root `AGENTS.md` and the nested `AGENTS.md` for this feature's area; their `## Agent skills` section lists each installed skill as a bullet with its location and a one line note on what it governs, so you can pick out the relevant ones and their paths directly.
-2. Identify only the skills relevant to *this* feature. Take each relevant skill's path and note from that `## Agent skills` bullet, and open it on demand while writing, only if it materially shapes the decision (see *Write the spec*, item 12). Skip skills the feature doesn't touch.
+2. Identify only the skills relevant to _this_ feature. Take each relevant skill's path and note from that `## Agent skills` bullet, and open it on demand while writing, only if it materially shapes the decision (see _Write the spec_, item 12). Skip skills the feature doesn't touch.
 3. Available ≠ relevant. You may list the installed skills dirs to see what exists, but relevance comes from the feature plus `AGENTS.md`. If a clearly relevant skill is installed but not yet referenced in `AGENTS.md`, use it anyway and flag (spec Follow-up) that it belongs in the right context file: root if project wide, nested `<area>/AGENTS.md` if area specific.
 4. Whatever the context files show the project already uses (a BaaS, an ORM, a payment provider, an auth library) is what your library/provider recommendation must build on or prefer, not an unrelated external tool. If a genuinely better option isn't installed, note it as a spec Follow-up rather than silently assuming it.
 
@@ -135,36 +138,39 @@ From the spec list (paths relative to `$SPEC_DIR`):
 
 ### Scope validation, framing, and staged design conversation
 
-For create or supersede operations, this is a hard gate: **read `internal/design-conversation.md` in full before you ask the engineer a single design question, and follow it.** It holds Scope validation (including the already built documentation path), Framing, and the staged design conversation. *Asks vs acts* above is only the intent, not the protocol; do not open the interview, generate questions, or write the spec until you have read that file. (Skip only for in place spec updates.)
+For create or supersede operations, this is a hard gate: **read `internal/design-conversation.md` in full before you ask the engineer a single design question, and follow it.** It holds Scope validation (including the already built documentation path), Framing, and the staged design conversation. _Asks vs acts_ above is only the intent, not the protocol; do not open the interview, generate questions, or write the spec until you have read that file. (Skip only for in place spec updates.)
 
 ### Write the spec (main thread)
 
 After the staged conversation, you write the spec yourself. Do not spawn anyone to draft, research, or critique it. Resolve this skill's folder to an absolute path (you already resolve these relative paths, so you know the folder) and Read three files now (only now, so they don't sit in context through the interview): `agent-prompt.md`, `spec-template.md`, and the one mode file matching the inferred MODE:
+
 - `FEATURE` → `agent-modes/feature.md`
 - `ARCHITECTURE` → `agent-modes/architecture.md`
 - `ENHANCEMENT` → `agent-modes/enhancement.md`
 - `CROSS-CUTTING` → `agent-modes/cross-cutting.md`
 
 Then write the spec, applying:
+
 - **From `agent-prompt.md`**: adopt the persona ("Who you are / How you think / What you do NOT do") and follow the common instructions, Step 0, Step 0b, `## Expert rules that apply to all modes`, and `## Report format`. At `## Instructions by mode`, follow the one mode file above as the only mode specific block; ignore the other mode files. `agent-prompt.md` is written as a subagent brief with ALL_CAPS placeholders; read those placeholders as the inputs you already gathered in the conversation (listed below), and apply the rules to yourself.
 - **From `spec-template.md`**: use only the part between `=== SPEC TEMPLATE START ===` and `=== SPEC TEMPLATE END ===` (the spec section structure and field guidance). The trailing reference/meta sections (`## Filename conventions`, the `## Status values` table, the umbrella structure / child status notes, `## Writing rules`) are your own guidance: you resolved the filename, shape, and initial `**Status**:` in pre-flight; write the `**Status**:` line per the "On the initial `**Status**:` line" rule in `## Expert rules that apply to all modes`. Do not edit `spec-template.md`.
 
-**References and links: reuse the Stage (c) `REFERENCES_LEVEL`; do not fetch now.** Write the `## References` section and `(basis: ...)` citations at that level, per *On sourcing & citations* in `agent-prompt.md`. The Stage (c) checks ran once; reuse only the links they confirmed, and cite any unverified source by name with no URL. Only if Stage (c) never ran (e.g. the documentation path), present the References consent panel now (recommended pick `No references, keep it clean`) and set `REFERENCES_LEVEL` to `none` or `sources` (`sources+links` is not offered, no fetch is available at write time).
+**References and links: reuse the Stage (c) `REFERENCES_LEVEL`; do not fetch now.** Write the `## References` section and `(basis: ...)` citations at that level, per _On sourcing & citations_ in `agent-prompt.md`. The Stage (c) checks ran once; reuse only the links they confirmed, and cite any unverified source by name with no URL. Only if Stage (c) never ran (e.g. the documentation path), present the References consent panel now (recommended pick `No references, keep it clean`) and set `REFERENCES_LEVEL` to `none` or `sources` (`sources+links` is not offered, no fetch is available at write time).
 
 The inferred MODE (from Framing) is already one of `FEATURE` / `ARCHITECTURE` / `ENHANCEMENT` / `CROSS-CUTTING`.
 
 The inputs to apply (you already have them from the design conversation and pre-flight):
+
 1. Design topic (from the user's original message)
 2. The inferred framing: MODE, platform (web/mobile/API), stack & conventions (from `AGENTS.md`), and any constraints/compliance inferred or confirmed
-2a. The feature's build approach (pre-flight precedence: scope row `Approach` override, else the project default from `AGENTS.md`/scope header, else the noted default) → `BUILD_APPROACH`; order and slice `## Build plan` by what the approach implies for this feature
+   2a. The feature's build approach (pre-flight precedence: scope row `Approach` override, else the project default from `AGENTS.md`/scope header, else the noted default) → `BUILD_APPROACH`; order and slice `## Build plan` by what the approach implies for this feature
 3. All staged conversation answers, stage by stage: the confirmed acceptance criteria (already IDed AC-1…, to seed `## Requirements`), the confirmed data model (entities/fields/relationships, the target that seeds the `## Build plan` migration, sized to the feature), the confirmed stack/tool picks, API surface, authz model, and edge cases. On the documentation path (staged conversation skipped) treat it as `"Staged design skipped, documenting an already-made decision"`, not an error
-3a. The RECOMMEND items → `RECOMMEND_ITEMS_OR_NONE`: the specific decisions you must make and justify (tool/provider aligned to the stack, session model, etc.); make each call, don't echo it back as an open question. If none, treat as `"none"`
-3b. The References level → `REFERENCES_LEVEL` (`none` | `sources` | `sources+links`, per the rule above). If Stage (c) never ran and you have not asked, default to `none`
+   3a. The RECOMMEND items → `RECOMMEND_ITEMS_OR_NONE`: the specific decisions you must make and justify (tool/provider aligned to the stack, session model, etc.); make each call, don't echo it back as an open question. If none, treat as `"none"`
+   3b. The References level → `REFERENCES_LEVEL` (`none` | `sources` | `sources+links`, per the rule above). If Stage (c) never ran and you have not asked, default to `none`
 4. Context file contents: `AGENTS.md` (root + the feature area's nested), or `CLAUDE.md` as fallback, or "MISSING"
 5. Existing spec list (filenames + first line of each)
 6. Related spec paths (flagged in pre-flight)
 7. The resolved spec location (`$SPEC_DIR`), next number, and shape: a single file `$SPEC_DIR/NNNN-title.md`, or a directory `$SPEC_DIR/NNNN-title/` (`index.md` + `rationale.md`, plus child specs for an umbrella). Umbrella: write the named child decisions; any inventory/audit goes in `rationale.md`, never in `docs/scope/`, never loose in the code tree. Only the `index.md` carries a `**Status**:` line (it mirrors the feature); child specs omit the lifecycle Status (spec content governed by the umbrella)
-8. Source file count (whether there's code to read; for a large ENHANCEMENT/CROSS-CUTTING codebase, offload the reading to a `scout` subagent per *Subagents* and write from its map)
+8. Source file count (whether there's code to read; for a large ENHANCEMENT/CROSS-CUTTING codebase, offload the reading to a `scout` subagent per _Subagents_ and write from its map)
 9. Operation: `create` | `update` | `supersede`
 10. Today's date (from pre-flight)
 11. Documentation context (if the "already built" path ran: the engineer's free text answers about why this was chosen, alternatives, and tradeoffs)
@@ -179,6 +185,7 @@ Once the spec file exists, read `internal/after-subagent.md` and follow it for c
 ### Update / Supersede path
 
 If the task is to update or supersede an existing spec:
+
 - Pre-flight: read the existing spec in full
 - Skip the staged conversation if operation is in place update
 - Set the operation: `update` or `supersede`
@@ -203,4 +210,4 @@ Either way, ratification is why an `Assumed` spec can leave that state: `/develo
 - Main thread design conversation: `internal/design-conversation.md` (read only for create/supersede)
 - Agent Skill & MCP offer: `internal/tool-discovery.md` (read only when the stack walk settles a new tool; it asks before it searches, and the registry fetch then runs in a `researcher` subagent)
 - Main thread completion flow: `internal/after-subagent.md` (read only after the spec is written)
-- The staged design conversation is generated per feature (see *Staged design conversation*, stages a to f), not stored; there are no canned question lists. If a topic is too vague to generate from, narrow it first (scope validation, or one clarifying question), never fall back to generic MCQs
+- The staged design conversation is generated per feature (see _Staged design conversation_, stages a to f), not stored; there are no canned question lists. If a topic is too vague to generate from, narrow it first (scope validation, or one clarifying question), never fall back to generic MCQs

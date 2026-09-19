@@ -5,12 +5,14 @@ Trigger: greenfield, including the workflow setup case (a stack spec exists but 
 Step 1, ask coding patterns AND tooling. The main thread asks as decision panels, up to 4 per round, as many rounds as it takes. Every panel has exactly one `(recommended)` option and ends with a free text custom slot (Claude Code's picker adds "Other" automatically; in a plain text fallback add it as the last option). Be thorough: this is the one place conventions and tooling get set, so grill the engineer on every choice rather than assuming a default. First read the real scaffolded project (manifest, config, installed tools), then tailor every question: skip one the stack already settles, list an already installed tool first as recommended, phrase options for the actual language and framework. `/audit` records the choices, installs nothing; installing (packages, config, `pre-commit` hooks, CI) is the `/develop tooling` sub task that follows, but ask the tooling questions here where the choice is recorded.
 
 Architecture & code conventions:
+
 - Architecture style: present all four preset options without reading their files into context yet: Clean Architecture (`patterns/clean-architecture.md`), Functional (`patterns/functional.md`), Domain Driven Design (`patterns/domain-driven.md`), and SOLID OOP (`patterns/solid-oop.md`). At write time (Step 3) you read only the chosen preset file.
 - Type strictness (typed languages only; skip if untyped): `strict` (no `any`, exhaustive types) · `gradual` (strict for new code) · `loose`.
 - Module & folder structure: `folder-by-feature` (colocate by feature) · `by-layer` (controllers/services/repos) · match what the scaffold already set.
 - Additional code standards (multi select): documented public APIs · a consistent error handling pattern · validate env vars at startup · named exports only (no default exports) · consistent naming conventions · accessibility baseline on UI (WCAG AA) · conventional commit messages.
 
 Tooling (asked here, installed by `/develop tooling`):
+
 - Linting & formatting (adaptive): the standard linter + formatter for this stack (suggested; list an already installed one first) · a specific alternative · minimal for now.
 - Checks before commit: lint + format + typecheck on every commit (suggested) · format only · none.
 - Testing gate (captured as the convention, the runner is set up by `/test`): unit + integration with a framework (suggested) · typecheck + manual `/check verify` only · tests first (TDD).

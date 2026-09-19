@@ -1,12 +1,13 @@
 ---
 name: develop
 allowed-tools: Bash, Read, Grep, Glob, Write, Edit, Agent, AskUserQuestion
-description: "Run /develop to build a feature, UI or backend, from an approved design, a page, component, API, service, or data slice. If something load bearing is undecided and no spec records it, it stops and routes you to /architect; otherwise it reads the spec plus AGENTS.md, builds, and advances the scope."
+description: 'Run /develop to build a feature, UI or backend, from an approved design, a page, component, API, service, or data slice. If something load bearing is undecided and no spec records it, it stops and routes you to /architect; otherwise it reads the spec plus AGENTS.md, builds, and advances the scope.'
 ---
 
 ## Output style (plain words, no dashes, no hyphens)
 
 <!-- OUTPUT-STYLE:START -->
+
 Write everything this skill produces, files and messages alike, in plain simple language. Talk to the reader as `you`, warm and direct like a colleague, and present every step as a recommendation they may run or skip, never an order. Keep technical terms that carry real meaning; explain each in plain words. Never use a dash or a hyphen as punctuation: no em dash, no en dash, and no hyphenated compounds. Write `read only`, not `read-only`. Say it in simple words, or reword the sentence. Code, file paths, command flags, and values other skills match on keep their hyphens. Use short sentences, commas, or parentheses. Clear beats clever.
 <!-- OUTPUT-STYLE:END -->
 
@@ -22,7 +23,7 @@ Gates, then acts: no upfront question rounds like `/architect`. Read the decisio
 
 - Writes app code (plus CSS/tokens for UI).
 - Scope (`docs/scope/`): only the Step 4 touches (feature status → `in-progress`, milestone sub boxes, `Build it` box, code pointer). Marks a feature `done` only at the `Prototype` workflow tier (build plus its own self check; the engineer opted out of separate verification); an `Assumed` spec does not block this, it stays flagged as owing ratification. At `Alpha`/`Beta`/`GA` it leaves the feature `in-progress` for `/check verify` and `/test` to close, and never ticks `Verify it` or `Test it`. Never creates files in `docs/scope/` (scopes only; analysis/research is `/architect`'s, in the spec's `rationale.md`).
-- Never writes spec content or deliberates a decision (flags the need, defers to `/architect`); never restructures root `AGENTS.md` (that's `/audit`); new area conventions go via `/sync` afterwards. **One narrow exception:** on `Build now, record it as an assumed spec` (Step 0), `/develop` may *create* a spec, but only in `Status: Assumed`, and only the assumption record fields (owed decision, assumption built on, authorized by, code area, requirements seeds). It never writes rationale and never advances an `Assumed` spec past that state; `/architect` owns clearing it. This is the only spec `/develop` creates.
+- Never writes spec content or deliberates a decision (flags the need, defers to `/architect`); never restructures root `AGENTS.md` (that's `/audit`); new area conventions go via `/sync` afterwards. **One narrow exception:** on `Build now, record it as an assumed spec` (Step 0), `/develop` may _create_ a spec, but only in `Status: Assumed`, and only the assumption record fields (owed decision, assumption built on, authorized by, code area, requirements seeds). It never writes rationale and never advances an `Assumed` spec past that state; `/architect` owns clearing it. This is the only spec `/develop` creates.
 - One spec touch on an existing spec: the `**Status**:` line (umbrella decision → the `index.md`'s, never a child's), plus filling the feature's spec pointer line. Build start: `Proposed` → `In Progress`; build lands (feature → `done`): `In Progress` → `Accepted` (a spec is not `Accepted` until its feature ships). Never edit spec content, only that line, surgically: read it again right before writing; unexpected state (already `Accepted`, `Superseded`) → flag, don't clobber. **Never move a spec out of `Assumed`** (that is ratification, `/architect`'s job): an `Assumed` spec stays `Assumed` through the build even while the feature is `in-progress`, so it can never reach `Accepted` until `/architect` ratifies it. The feature itself can still be marked `done` (the engineer's call); the `Assumed` spec stays flagged as owing ratification, it does not block `done`.
 - Artifact base: `docs/` by default, `.workflow/` if `docs/` is a published docs site. Read from whichever exists (paths here assume `docs/`).
 - Shared scope: read it again right before ticking, edit only the specific checkbox, status, or pointer line (never rewrite the file); feature not as expected (already `done`, reworked) → flag, don't overwrite.
@@ -51,7 +52,7 @@ Before mutating anything (skip silently if solo, offline, or not using git): `gi
 
 - Behind (count > 0) → stop and warn: "You're N commits behind `origin/$BASE`. A teammate may have already changed or shipped this. Pull first, then run again."
 - Uncommitted work in the area you'll touch → warn: "You have uncommitted changes here. Commit or stash first so this build doesn't tangle with them." Let them proceed if they insist.
-- Feature `in-progress` in the scope AND its code area (pointer line's path) has recent commits by another author (`git log --format='%an' -- <area>`) → warn: "*<feature>* looks like it's partway through the build by someone else. Coordinate before continuing it." Confirm before proceeding.
+- Feature `in-progress` in the scope AND its code area (pointer line's path) has recent commits by another author (`git log --format='%an' -- <area>`) → warn: "_<feature>_ looks like it's partway through the build by someone else. Coordinate before continuing it." Confirm before proceeding.
 
 Warnings, not hard blocks, but surface them.
 
@@ -76,6 +77,7 @@ Don't hardcode to page names or to any one example (timezone is an illustration 
 Read only what this feature needs, never the whole `docs/` tree: its one scope file and its one governing spec (single file, or umbrella `index.md` plus the one child speccing this sub task). No other features' rows, scope files, workspaces, or unrelated specs.
 
 **Check, in order:**
+
 1. **Locate this feature's scope file (only that one).** Monorepo → `docs/scope/<workspace>/` for the task's package. Pick the file (`scope.md`, or the matching `<epic>.md` in a split) from the At a glance table alone; read just this feature's section. `needs a decision` with no spec pointer yet → decision owed and missing. Malformed → flag and ask, don't guess.
 2. **Open the governing spec via the feature's `spec` pointer**, reading only its build spec sections as defined in the build flow (`flow/build.md`), Step 2 item 1. Found → it's the spec; proceed. No pointer and no linked spec → targeted look in `docs/specs/<workspace>/` for one matching this feature's scope, never a blanket read.
 3. The **nearest** `AGENTS.md` (workspace/area) may already capture the decision, synced from an earlier feature (e.g. "the auth provider is already chosen") → proceed without a new spec.
@@ -101,18 +103,23 @@ On `Build now, record it as an assumed spec`, write a minimal `Assumed` spec **b
 **Authorized by**: <engineer>, during /develop
 
 ## Owed decision
+
 <the specific load bearing choice that was not made>
 
 ## Assumption built on
+
 <the concrete assumption this build will use>
 
 ## Code area
+
 <the paths this build will touch>
 
 ## Requirements
+
 <acceptance criteria seeds carried from the scope Done when, if any>
 
 ## Ratify
+
 This decision was recorded by /develop, not deliberated. Run `/architect <feature>`
 to deliberate and ratify it. Until then it stays flagged as an owed decision; it does not block marking the feature `done`.
 ```
@@ -122,9 +129,11 @@ Point the feature's scope `spec` line at this file. The assumption is now durabl
 On `Architect it first`, end with:
 
 > Run this next, then come back to `/develop`:
+>
 > ```
 > /architect <feature>: <the specific decision to settle>
 > ```
+>
 > Once the spec exists, run `/develop <task>` again and I'll build to it.
 
 No decision owed (pure implementation) → skip the question, proceed.

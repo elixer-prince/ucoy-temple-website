@@ -1,12 +1,13 @@
 ---
 name: document
 allowed-tools: Bash, Read, Grep, Glob, Write, Edit, Agent, AskUserQuestion
-description: "Run /document `pr` | `changelog` | `release-note` | `postmortem` (or let it ask) to write the human facing prose about a change. Drafts from the real commits and diff, writing to the right place. Does not write code, tests, or specs."
+description: 'Run /document `pr` | `changelog` | `release-note` | `postmortem` (or let it ask) to write the human facing prose about a change. Drafts from the real commits and diff, writing to the right place. Does not write code, tests, or specs.'
 ---
 
 ## Output style (plain words, no dashes, no hyphens)
 
 <!-- OUTPUT-STYLE:START -->
+
 Write everything this skill produces, files and messages alike, in plain simple language. Talk to the reader as `you`, warm and direct like a colleague, and present every step as a recommendation they may run or skip, never an order. Keep technical terms that carry real meaning; explain each in plain words. Never use a dash or a hyphen as punctuation: no em dash, no en dash, and no hyphenated compounds. Write `read only`, not `read-only`. Say it in simple words, or reword the sentence. Code, file paths, command flags, and values other skills match on keep their hyphens. Use short sentences, commas, or parentheses. Clear beats clever.
 <!-- OUTPUT-STYLE:END -->
 
@@ -16,12 +17,12 @@ Write everything this skill produces, files and messages alike, in plain simple 
 
 Generates one of four document types from the real change history. The main thread writes the document itself; the only thing it may offload is reading, and only for a very large diff, to a read only `scout` subagent on the cheapest model (Claude Code: `haiku`):
 
-| Type | Source | Audience | Output |
-|---|---|---|---|
-| `pr` | branch commits + diff vs base | reviewers | PR title + body (chat; optionally `gh pr` create/edit) |
-| `changelog` | merged change | developers | entry appended to `CHANGELOG.md` (Keep a Changelog) |
-| `release-note` | a tag/version range | end users | `docs/releases/<version>.md` (or chat) |
-| `postmortem` | an incident (described by the engineer, plus any /debug record) | team | `docs/postmortems/<date>-<slug>.md` |
+| Type           | Source                                                          | Audience   | Output                                                 |
+| -------------- | --------------------------------------------------------------- | ---------- | ------------------------------------------------------ |
+| `pr`           | branch commits + diff vs base                                   | reviewers  | PR title + body (chat; optionally `gh pr` create/edit) |
+| `changelog`    | merged change                                                   | developers | entry appended to `CHANGELOG.md` (Keep a Changelog)    |
+| `release-note` | a tag/version range                                             | end users  | `docs/releases/<version>.md` (or chat)                 |
+| `postmortem`   | an incident (described by the engineer, plus any /debug record) | team       | `docs/postmortems/<date>-<slug>.md`                    |
 
 Acts. Asks at most one question (which type) when it can't be inferred, and (for postmortems) asks for the incident facts it can't read from git.
 
@@ -34,6 +35,7 @@ PR text, `CHANGELOG.md`, `docs/releases/`, `docs/postmortems/` (owned by this sk
 ## Portability (any OS, any agent)
 
 Written for any Agent Skills client on macOS, Linux, or Windows:
+
 - **Commands**: `git` (and optionally `gh`) are the only CLIs, and behave the same on every OS, run the `git` lines as shown. Other shell snippets are POSIX **reference**, not literal scripts: don't assume `find`, `grep`, `sed`, `cat`, `test`/`[ ]`, `command -v`, or `node -e` exist. Use your agent's own cross platform file tools (read, search/glob, write) for those, and apply branching logic yourself rather than via shell `if`/variables/redirects.
 - **Bundled files**: referenced by paths relative to this skill's folder. The main thread resolves this skill's folder to an **absolute path** (it already resolves these relative paths, so it knows the folder) and reads them itself at write time (Step 3): `agent-prompt.md` and the one template for the chosen type.
 - **No interactive question support?** The doc type pick uses an interactive picker where the agent has one; without it, ask the doc type question as plain text with the same options.
@@ -82,6 +84,7 @@ git tag --sort=-creatordate
   - Does a PR already exist? Run `gh pr view --json number -q .number`. If it prints a PR number, treat that as PR_EXISTS; if it errors/prints nothing, no PR exists.
 
 **Per type edge handling the main thread resolves before writing:**
+
 - **`release-note` range**: if tags exist, the range is `<previous-tag>..<latest-tag>` (or a range the engineer named). **If `NO_TAGS`**, don't guess, ask: "No version tags found. Give me a version name and range (e.g. `v1.0.0`, covering `<commit>..HEAD`), or I'll cover all commits since the first one." Pass the resolved range/version to the subagent.
 - **pr + gh**: only offer to create/update the PR via `gh` when **`GH_INSTALLED` and `HAS_REMOTE`**. If `PR_EXISTS`, the action is `gh pr edit` (update the body), **not** `gh pr create`. If gh isn't usable or no remote, the PR text is chat only, don't attempt `gh`. **Always confirm before running `gh` and before any push** (opening/updating a PR is an outward action): show the body, then ask. This holds regardless of the `AGENTS.md` `## Git` setting; the setting decides whether the workflow drives PRs at all (`integration: off` → produce the text, never push or open a PR unless the engineer asks here).
 - **postmortem**: git won't contain the incident narrative. Ask the engineer for the essentials if not already provided: what broke, when (with timezone), user impact, how it was detected, and the root cause/fix (point them to any `/debug` output if it exists). Pass their account as the incident facts. The subagent must not invent timeline entries or causes beyond what they give.
@@ -91,13 +94,14 @@ git tag --sort=-creatordate
 Resolve this skill's folder to an absolute path (you already resolve these relative paths, so you know the folder) and Read `agent-prompt.md` and the **one** template for the chosen type, `templates/<type>.md`, now (only now, at write time). Follow `agent-prompt.md` and write the document yourself. Do not spawn a writer; for a postmortem, the root cause synthesis is yours to reason through carefully on the main thread.
 
 The inputs to apply:
-  1. Document type + its template (the chosen one only; read it)
-  2. Source: commit list, diff command, and (postmortem) the incident facts. Read the diff yourself; for a very large diff (e.g. >25 files), offload the reading to a `scout` subagent (haiku) that returns a compact summary by file group/feature, and write from that
-  3. Project context contents (project name, conventions), read `AGENTS.md`, or `CLAUDE.md` fallback, + recent spec paths for the "why"
-  4. Output target for the type and today's date
-  5. **pr**: the gh action, `none (chat-only)` | `gh pr create` | `gh pr edit` (from the `GH_INSTALLED`/`HAS_REMOTE`/`PR_EXISTS` checks)
-  6. **changelog**: **match the existing `CHANGELOG.md` format** if the file exists (don't impose Keep a Changelog over a different established style)
-  7. **`release-note`**: the resolved version + range
+
+1. Document type + its template (the chosen one only; read it)
+2. Source: commit list, diff command, and (postmortem) the incident facts. Read the diff yourself; for a very large diff (e.g. >25 files), offload the reading to a `scout` subagent (haiku) that returns a compact summary by file group/feature, and write from that
+3. Project context contents (project name, conventions), read `AGENTS.md`, or `CLAUDE.md` fallback, + recent spec paths for the "why"
+4. Output target for the type and today's date
+5. **pr**: the gh action, `none (chat-only)` | `gh pr create` | `gh pr edit` (from the `GH_INSTALLED`/`HAS_REMOTE`/`PR_EXISTS` checks)
+6. **changelog**: **match the existing `CHANGELOG.md` format** if the file exists (don't impose Keep a Changelog over a different established style)
+7. **`release-note`**: the resolved version + range
 
 ### 4. Relay the result
 

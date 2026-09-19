@@ -34,6 +34,7 @@ _Released <DATE>_
 ```
 
 Rules:
+
 - Lead with user value, not implementation. "You can now export reports as CSV" beats "Added CSV serialization to the export module".
 - Group by importance: Highlights first, then Improvements, then Fixes.
 - Be honest about breaking changes. Never bury them. They get their own clearly labelled section.

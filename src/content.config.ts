@@ -10,14 +10,14 @@
  * Uses Astro 7 Content Layer API (glob loaders) and astro/zod for
  * type-safe schemas.
  */
-import { defineCollection } from 'astro:content';
-import { glob } from 'astro/loaders';
-import { z } from 'astro/zod';
+import { defineCollection } from 'astro:content'
+import { glob } from 'astro/loaders'
+import { z } from 'astro/zod'
 
 const pages = defineCollection({
   loader: glob({
     base: './src/content/pages',
-    pattern: '**/*.{md,mdx}',
+    pattern: '**/*.{md,mdx}'
   }),
   schema: ({ image }) =>
     z.object({
@@ -28,22 +28,22 @@ const pages = defineCollection({
       // Optional hero image for the page.
       image: image().optional(),
       // Optional alt text for the hero image.
-      imageAlt: z.string().optional(),
-    }),
-});
+      imageAlt: z.string().optional()
+    })
+})
 
 const announcements = defineCollection({
   loader: glob({
     base: './src/content/announcements',
-    pattern: '**/*.{md,mdx}',
+    pattern: '**/*.{md,mdx}'
   }),
   schema: z.object({
     title: z.string().min(1, 'Title is required'),
     date: z.coerce.date(),
     summary: z.string().max(200).optional(),
     // Hidden from the public announcement list until the date arrives.
-    draft: z.boolean().default(false),
-  }),
-});
+    draft: z.boolean().default(false)
+  })
+})
 
-export const collections = { pages, announcements };
+export const collections = { pages, announcements }

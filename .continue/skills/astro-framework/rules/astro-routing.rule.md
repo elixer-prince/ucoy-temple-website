@@ -1,7 +1,7 @@
 ---
 description: Rules for Astro routing and pages
 globs:
-  - "src/pages/**/*"
+  - 'src/pages/**/*'
 ---
 
 # Astro Routing Rules
@@ -40,18 +40,18 @@ src/pages/
 ```astro
 ---
 // src/pages/blog/[slug].astro
-import { getCollection } from 'astro:content';
+import { getCollection } from 'astro:content'
 
 export async function getStaticPaths() {
-  const posts = await getCollection('blog');
-  return posts.map(post => ({
+  const posts = await getCollection('blog')
+  return posts.map((post) => ({
     params: { slug: post.slug },
-    props: { post },
-  }));
+    props: { post }
+  }))
 }
 
-const { post } = Astro.props;
-const { Content } = await post.render();
+const { post } = Astro.props
+const { Content } = await post.render()
 ---
 
 <article>
@@ -67,13 +67,13 @@ const { Content } = await post.render();
 // src/pages/docs/[...path].astro
 export function getStaticPaths() {
   return [
-    { params: { path: undefined } },      // /docs
-    { params: { path: 'intro' } },        // /docs/intro
-    { params: { path: 'guides/start' } }, // /docs/guides/start
-  ];
+    { params: { path: undefined } }, // /docs
+    { params: { path: 'intro' } }, // /docs/intro
+    { params: { path: 'guides/start' } } // /docs/guides/start
+  ]
 }
 
-const { path } = Astro.params;
+const { path } = Astro.params
 ---
 ```
 
@@ -81,29 +81,29 @@ const { path } = Astro.params;
 
 ```typescript
 // src/pages/api/posts.ts
-import type { APIRoute } from 'astro';
+import type { APIRoute } from 'astro'
 
 export const GET: APIRoute = async ({ params, request }) => {
-  const data = await fetchPosts();
+  const data = await fetchPosts()
 
   return new Response(JSON.stringify(data), {
     status: 200,
-    headers: { 'Content-Type': 'application/json' },
-  });
-};
+    headers: { 'Content-Type': 'application/json' }
+  })
+}
 
 export const POST: APIRoute = async ({ request }) => {
-  const body = await request.json();
+  const body = await request.json()
 
   if (!body.title) {
     return new Response(JSON.stringify({ error: 'Title required' }), {
-      status: 400,
-    });
+      status: 400
+    })
   }
 
-  const post = await createPost(body);
-  return new Response(JSON.stringify(post), { status: 201 });
-};
+  const post = await createPost(body)
+  return new Response(JSON.stringify(post), { status: 201 })
+}
 ```
 
 ## Pagination
@@ -112,17 +112,20 @@ export const POST: APIRoute = async ({ request }) => {
 ---
 // src/pages/blog/[...page].astro
 export async function getStaticPaths({ paginate }) {
-  const posts = await getCollection('blog');
-  return paginate(posts.sort((a, b) =>
-    b.data.pubDate.valueOf() - a.data.pubDate.valueOf()
-  ), { pageSize: 10 });
+  const posts = await getCollection('blog')
+  return paginate(
+    posts.sort((a, b) => b.data.pubDate.valueOf() - a.data.pubDate.valueOf()),
+    { pageSize: 10 }
+  )
 }
 
-const { page } = Astro.props;
+const { page } = Astro.props
 ---
 
 <ul>
-  {page.data.map(post => <li>{post.data.title}</li>)}
+  {page.data.map((post) => (
+    <li>{post.data.title}</li>
+  ))}
 </ul>
 
 {page.url.prev && <a href={page.url.prev}>Previous</a>}
@@ -136,7 +139,7 @@ const { page } = Astro.props;
 export default defineConfig({
   redirects: {
     '/old': '/new',
-    '/blog/[...slug]': '/posts/[...slug]',
-  },
-});
+    '/blog/[...slug]': '/posts/[...slug]'
+  }
+})
 ```

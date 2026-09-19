@@ -8,8 +8,8 @@ Astro provides built-in image optimization through the `astro:assets` module.
 
 ```astro
 ---
-import { Image } from 'astro:assets';
-import heroImage from '../images/hero.jpg';
+import { Image } from 'astro:assets'
+import heroImage from '../images/hero.jpg'
 ---
 
 <Image src={heroImage} alt="Hero image" />
@@ -21,8 +21,8 @@ Output: Optimized image with proper format, dimensions, and lazy loading.
 
 ```astro
 ---
-import { Image } from 'astro:assets';
-import photo from '../images/photo.jpg';
+import { Image } from 'astro:assets'
+import photo from '../images/photo.jpg'
 ---
 
 <Image
@@ -42,7 +42,7 @@ import photo from '../images/photo.jpg';
 
 ```astro
 ---
-import { Image } from 'astro:assets';
+import { Image } from 'astro:assets'
 ---
 
 <Image
@@ -59,11 +59,7 @@ For remote images, `width` and `height` are required (or use `inferSize`).
 ### Infer Size for Remote Images
 
 ```astro
-<Image
-  src="https://example.com/image.jpg"
-  alt="Remote image"
-  inferSize
-/>
+<Image src="https://example.com/image.jpg" alt="Remote image" inferSize />
 ```
 
 ## Picture Component
@@ -72,8 +68,8 @@ Provides responsive images with multiple formats:
 
 ```astro
 ---
-import { Picture } from 'astro:assets';
-import photo from '../images/photo.jpg';
+import { Picture } from 'astro:assets'
+import photo from '../images/photo.jpg'
 ---
 
 <Picture
@@ -89,9 +85,9 @@ Output:
 
 ```html
 <picture>
-  <source srcset="..." type="image/avif" sizes="...">
-  <source srcset="..." type="image/webp" sizes="...">
-  <img src="..." alt="Responsive image" loading="lazy" decoding="async">
+  <source srcset="..." type="image/avif" sizes="..." />
+  <source srcset="..." type="image/webp" sizes="..." />
+  <img src="..." alt="Responsive image" loading="lazy" decoding="async" />
 </picture>
 ```
 
@@ -101,20 +97,18 @@ For programmatic image processing:
 
 ```astro
 ---
-import { getImage } from 'astro:assets';
-import background from '../images/background.jpg';
+import { getImage } from 'astro:assets'
+import background from '../images/background.jpg'
 
 const optimizedBg = await getImage({
   src: background,
   format: 'webp',
   width: 1920,
-  quality: 80,
-});
+  quality: 80
+})
 ---
 
-<div style={`background-image: url(${optimizedBg.src})`}>
-  Content with background
-</div>
+<div style={`background-image: url(${optimizedBg.src})`}>Content with background</div>
 ```
 
 ## Image Paths
@@ -124,8 +118,8 @@ const optimizedBg = await getImage({
 ```astro
 ---
 // Import from src directory
-import hero from '../images/hero.jpg';
-import logo from '@/assets/logo.png'; // Using alias
+import hero from '../images/hero.jpg'
+import logo from '@/assets/logo.png' // Using alias
 ---
 
 <Image src={hero} alt="Hero" />
@@ -141,28 +135,21 @@ Images in `public/` are not optimized:
 <img src="/images/static-image.jpg" alt="Static" />
 
 <!-- Can still use Image component with remote-like syntax -->
-<Image
-  src="/images/static-image.jpg"
-  alt="Static"
-  width={400}
-  height={300}
-/>
+<Image src="/images/static-image.jpg" alt="Static" width={400} height={300} />
 ```
 
 ### Dynamic Imports
 
 ```astro
 ---
-const images = import.meta.glob<{ default: ImageMetadata }>(
-  '../images/*.{jpg,png,gif}'
-);
+const images = import.meta.glob<{ default: ImageMetadata }>('../images/*.{jpg,png,gif}')
 
-const imagePaths = Object.keys(images);
+const imagePaths = Object.keys(images)
 ---
 
 {imagePaths.map(async (path) => {
-  const image = await images[path]();
-  return <Image src={image.default} alt="" />;
+  const image = await images[path]()
+  return <Image src={image.default} alt="" />
 })}
 ```
 
@@ -172,27 +159,28 @@ const imagePaths = Object.keys(images);
 
 ```typescript
 // src/content/config.ts
-import { defineCollection, z } from 'astro:content';
+import { defineCollection, z } from 'astro:content'
 
 const blog = defineCollection({
   type: 'content',
-  schema: ({ image }) => z.object({
-    title: z.string(),
-    cover: image(),
-    coverAlt: z.string(),
-  }),
-});
+  schema: ({ image }) =>
+    z.object({
+      title: z.string(),
+      cover: image(),
+      coverAlt: z.string()
+    })
+})
 
-export const collections = { blog };
+export const collections = { blog }
 ```
 
 ### Markdown Frontmatter
 
 ```markdown
 ---
-title: "My Post"
-cover: "./images/cover.jpg"
-coverAlt: "Post cover image"
+title: 'My Post'
+cover: './images/cover.jpg'
+coverAlt: 'Post cover image'
 ---
 
 Content here...
@@ -202,10 +190,10 @@ Content here...
 
 ```astro
 ---
-import { Image } from 'astro:assets';
-import { getEntry } from 'astro:content';
+import { Image } from 'astro:assets'
+import { getEntry } from 'astro:content'
 
-const post = await getEntry('blog', 'my-post');
+const post = await getEntry('blog', 'my-post')
 ---
 
 <Image src={post.data.cover} alt={post.data.coverAlt} />
@@ -214,6 +202,7 @@ const post = await getEntry('blog', 'my-post');
 ## Image Formats
 
 Supported output formats:
+
 - `webp` (default for optimization)
 - `avif` (best compression, slower)
 - `png` (lossless)
@@ -262,12 +251,7 @@ Supported output formats:
 ### With densities
 
 ```astro
-<Image
-  src={logo}
-  alt="Logo"
-  width={200}
-  densities={[1, 2, 3]}
-/>
+<Image src={logo} alt="Logo" width={200} densities={[1, 2, 3]} />
 
 <!-- Output srcset with 1x, 2x, 3x versions -->
 ```
@@ -284,8 +268,8 @@ export default defineConfig({
     service: {
       entrypoint: 'astro/assets/services/sharp',
       config: {
-        limitInputPixels: false,
-      },
+        limitInputPixels: false
+      }
     },
 
     // Allowed remote domains
@@ -295,11 +279,11 @@ export default defineConfig({
     remotePatterns: [
       {
         protocol: 'https',
-        hostname: '**.amazonaws.com',
-      },
-    ],
-  },
-});
+        hostname: '**.amazonaws.com'
+      }
+    ]
+  }
+})
 ```
 
 ### External Image Service
@@ -311,11 +295,11 @@ export default defineConfig({
     service: {
       entrypoint: '@astrojs/cloudinary',
       config: {
-        cloudName: 'your-cloud-name',
-      },
-    },
-  },
-});
+        cloudName: 'your-cloud-name'
+      }
+    }
+  }
+})
 ```
 
 ## Markdown Images
@@ -324,6 +308,7 @@ export default defineConfig({
 
 ```markdown
 <!-- src/content/blog/post.md -->
+
 ![Alt text](./images/image.jpg)
 ```
 
@@ -334,8 +319,8 @@ export default defineConfig({
 title: My Post
 ---
 
-import { Image } from 'astro:assets';
-import photo from './images/photo.jpg';
+import { Image } from 'astro:assets'
+import photo from './images/photo.jpg'
 
 # My Post
 
@@ -349,10 +334,10 @@ Regular markdown images still work:
 
 ```astro
 ---
-import { getImage } from 'astro:assets';
-import bg from '../images/background.jpg';
+import { getImage } from 'astro:assets'
+import bg from '../images/background.jpg'
 
-const optimizedBg = await getImage({ src: bg, format: 'webp' });
+const optimizedBg = await getImage({ src: bg, format: 'webp' })
 ---
 
 <section class="hero" style={`background-image: url(${optimizedBg.src})`}>

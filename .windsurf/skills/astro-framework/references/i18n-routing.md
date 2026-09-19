@@ -6,14 +6,14 @@ Astro's built-in i18n routing helps you build multilingual sites with URL-based 
 
 ```javascript
 // astro.config.mjs
-import { defineConfig } from 'astro/config';
+import { defineConfig } from 'astro/config'
 
 export default defineConfig({
   i18n: {
     defaultLocale: 'en',
-    locales: ['en', 'es', 'fr', 'de'],
-  },
-});
+    locales: ['en', 'es', 'fr', 'de']
+  }
+})
 ```
 
 ### Folder Structure
@@ -82,15 +82,15 @@ Then implement your own middleware using helpers from `astro:i18n`:
 
 ```typescript
 // src/middleware.ts
-import { defineMiddleware } from 'astro:middleware';
-import { redirectToDefaultLocale } from 'astro:i18n';
+import { defineMiddleware } from 'astro:middleware'
+import { redirectToDefaultLocale } from 'astro:i18n'
 
 export const onRequest = defineMiddleware(async (ctx, next) => {
   if (ctx.url.startsWith('/about')) {
-    return next();
+    return next()
   }
-  return redirectToDefaultLocale(302);
-});
+  return redirectToDefaultLocale(302)
+})
 ```
 
 ### Custom Locale Paths
@@ -138,15 +138,15 @@ import {
   getRelativeLocaleUrlList,
   getAbsoluteLocaleUrlList,
   getPathByLocale,
-  getLocaleByPath,
-} from 'astro:i18n';
+  getLocaleByPath
+} from 'astro:i18n'
 
 // Generate localized URLs
-const aboutES = getRelativeLocaleUrl('es', 'about');
+const aboutES = getRelativeLocaleUrl('es', 'about')
 // → /es/about
 
 // Get all locale variants of a page
-const allAboutUrls = getRelativeLocaleUrlList('about');
+const allAboutUrls = getRelativeLocaleUrlList('about')
 // → ['/about', '/es/about', '/fr/about']
 ---
 
@@ -173,18 +173,18 @@ src/content/blog/
 ```astro
 ---
 // src/pages/[lang]/blog/[...slug].astro
-import { getCollection, render } from 'astro:content';
+import { getCollection, render } from 'astro:content'
 
 export async function getStaticPaths() {
-  const pages = await getCollection('blog');
-  return pages.map(page => {
-    const [lang, ...slug] = page.id.split('/');
-    return { params: { lang, slug: slug.join('/') || undefined }, props: page };
-  });
+  const pages = await getCollection('blog')
+  return pages.map((page) => {
+    const [lang, ...slug] = page.id.split('/')
+    return { params: { lang, slug: slug.join('/') || undefined }, props: page }
+  })
 }
 
-const page = Astro.props;
-const { Content } = await render(page);
+const page = Astro.props
+const { Content } = await render(page)
 ---
 
 <Content />

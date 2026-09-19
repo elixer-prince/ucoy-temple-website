@@ -1,12 +1,13 @@
 ---
 name: test
 allowed-tools: Bash, Read, Grep, Glob, Write, Edit, Agent, AskUserQuestion
-description: "Run /test to write a test suite for code you just built or changed, after implementing a feature, route, or fix. Targets uncommitted changes automatically, reads test preferences.json for your framework (asks and saves it if absent), and picks the right strategy per file: happy path, edge cases, error states, accessibility."
+description: 'Run /test to write a test suite for code you just built or changed, after implementing a feature, route, or fix. Targets uncommitted changes automatically, reads test preferences.json for your framework (asks and saves it if absent), and picks the right strategy per file: happy path, edge cases, error states, accessibility.'
 ---
 
 ## Output style (plain words, no dashes, no hyphens)
 
 <!-- OUTPUT-STYLE:START -->
+
 Write everything this skill produces, files and messages alike, in plain simple language. Talk to the reader as `you`, warm and direct like a colleague, and present every step as a recommendation they may run or skip, never an order. Keep technical terms that carry real meaning; explain each in plain words. Never use a dash or a hyphen as punctuation: no em dash, no en dash, and no hyphenated compounds. Write `read only`, not `read-only`. Say it in simple words, or reword the sentence. Code, file paths, command flags, and values other skills match on keep their hyphens. Use short sentences, commas, or parentheses. Clear beats clever.
 <!-- OUTPUT-STYLE:END -->
 
@@ -35,6 +36,7 @@ Does not write application code. Does not update `AGENTS.md`/`CLAUDE.md` context
 ## Portability (any OS, any agent)
 
 Any Agent Skills client on macOS, Linux, or Windows:
+
 - `git` is the only required CLI, identical everywhere; run the `git` lines as shown. Other shell snippets are POSIX reference, not literal scripts: do not assume `find`, `grep`, `sed`, `cat`, `test`/`[ ]`, `xargs`, `mkdir -p`, or `node -e` exist. Use your agent's cross platform file tools (read, search/glob, write) and apply branching logic yourself, not via shell `if`/variables/redirects.
 - Bundled files: referenced relative to this skill's folder. The main thread resolves the folder to an absolute path and reads the bundled files itself at write time (Step 8): `agent-prompt.md` and `writing-guide.md`.
 - No interactive question support? Ask any multiple choice question as plain text with the same options.
@@ -48,11 +50,13 @@ In the Ask blocks below, each option is `"label": "description"`; render them th
 #### 1. Determine scope from git (do this first, if empty, no point asking anything)
 
 Changed but uncommitted files (cross platform git):
+
 - Tracked (staged + unstaged), excluding deletions: `git diff --name-only --diff-filter=ACMR HEAD`
 - Untracked, and not ignored: `git ls-files --others --exclude-standard`
 - No commits yet (`git diff HEAD` errors): use `git diff --name-only --diff-filter=ACMR --cached`.
 
 Combine, remove duplicates, filter out files that cannot be tested:
+
 - Test files: `*.test.*`, `*.spec.*`, `test_*.py`, `*_test.go`, anything under `__tests__/`, `e2e/`, `tests/`, `cypress/`
 - Config: `*.config.*`, `.*rc`, `tsconfig*`, `*.json` (except where logic lives in JSON), `Dockerfile`, CI yaml
 - Lock files, `.lock`, generated/build output (`dist/`, `build/`, `.next/`, `coverage/`)
@@ -65,13 +69,13 @@ The remainder is the scope. Empty: go to Step 3. Otherwise continue.
 
 Classify from path and filename alone, cheaply; if genuinely ambiguous, tag `logic` and tag it again when you read the file at write time. Record each file's class for the write step.
 
-| Signals in path / filename | Class | Test strategy |
-|---|---|---|
-| `*.tsx`/`*.jsx`/`*.vue`/`*.svelte` not under a route/page path | **component** | Component test (render + interact + assert DOM/ARIA) |
-| `app/**/page.*`, `pages/**` (not `pages/api`), `*Screen.*`, `*View.*` | **page/flow** | E2E candidate + component test of pieces |
-| `app/**/route.*`, `pages/api/**`, `*.controller.*`, `*.handler.*`, `*.resolver.*`, `actions.*` | **api/server** | Integration test (call handler, mock at boundary) |
-| Plain `.ts`/`.js`/`.py`/`.go`/`.rs`, utils, hooks, services, domain logic | **logic** | Unit test (inputs → outputs, edge cases, errors) |
-| `cli.*`, `bin/**`, `*.command.*`, `cmd/**` | **cli** | Integration test invoking the command |
+| Signals in path / filename                                                                     | Class          | Test strategy                                        |
+| ---------------------------------------------------------------------------------------------- | -------------- | ---------------------------------------------------- |
+| `*.tsx`/`*.jsx`/`*.vue`/`*.svelte` not under a route/page path                                 | **component**  | Component test (render + interact + assert DOM/ARIA) |
+| `app/**/page.*`, `pages/**` (not `pages/api`), `*Screen.*`, `*View.*`                          | **page/flow**  | E2E candidate + component test of pieces             |
+| `app/**/route.*`, `pages/api/**`, `*.controller.*`, `*.handler.*`, `*.resolver.*`, `actions.*` | **api/server** | Integration test (call handler, mock at boundary)    |
+| Plain `.ts`/`.js`/`.py`/`.go`/`.rs`, utils, hooks, services, domain logic                      | **logic**      | Unit test (inputs → outputs, edge cases, errors)     |
+| `cli.*`, `bin/**`, `*.command.*`, `cmd/**`                                                     | **cli**        | Integration test invoking the command                |
 
 `E2E_RELEVANT = yes` if any file is **page/flow**; otherwise `no`.
 
@@ -91,6 +95,7 @@ Monorepo resolution: find each scoped file's nearest enclosing `package.json` (w
 #### 2. Load preferences
 
 Read `test-preferences.json` at the project root (file tool; "not found" = no prefs). Branch on whether it names a `tool`, not on whether the file exists:
+
 - **`tool` is set** (the common write path): load `tool`, `additionalTools`, `e2eTool`, `testDir`, `filePattern`, `packageManager`; skip to Step 5.
 - **`tool` is `null` and `gate` is set** (`GATE_ONLY`): this project gates without a test runner, by an earlier deliberate choice. Do not write a suite, do not install a runner, do not ask again, and do not read `modes/setup.md`. Run the project's typecheck/lint gate, then stop and report: "This project gates on `<gate>`, not a test suite. Ran the typecheck gate; use `/check verify` to confirm behavior."
 - **No file** (`NO_PREFS`, first run): read `modes/setup.md` and do its Step 4 (stack detection and framework questions), then return here for Step 5 (installation check), then do its Step 6 (save preferences), then continue at Step 7. Do not read `modes/setup.md` on a write run.
@@ -118,6 +123,7 @@ Ask: "No uncommitted source changes found. What should I test?"  (header: "No ch
 #### 5. Installation check
 
 Check the chosen unit tool, E2E tool (if any), and addon (if any) with file tools:
+
 - JS/TS: under `node_modules/<pkg>`, or in `package.json` devDependencies?
 - Python: in `pyproject.toml`/`requirements.txt` (or `pip show <tool>` where Python is available)?
 - Go: `stretchr/testify` in `go.sum`?
@@ -150,6 +156,7 @@ go get <testify module path>                                      # Go
 Paths and cheap signals only; the heavy reading happens at write time (by you, or a `scout` if offloaded). Do not read specs, `design.md`, or source files in full here.
 
 With file tools:
+
 - List the 3 most recently modified spec paths under `docs/specs/` (paths only).
 - Identify the governing spec: the feature dir `docs/specs/NNNN-<feature>/` (or single `docs/specs/NNNN-<feature>.md`) these files implement, matched by branch/feature name or touched surfaces (a `docs/scope/` entry, if present, points to it). Note its path and whether a `verify.md` sits beside it (`docs/specs/NNNN-<feature>/verify.md`). This contract is what tests trace to; it may not be among the 3 recent paths. Set `TRACE_TO_CONTRACT = yes` when a governing spec exists, else `no`.
 - Note whether `design.md` exists at the project root; use its path only when a **component** or **page/flow** file is in scope, else `none`.
@@ -173,6 +180,7 @@ Set `RUN_AFTER = yes | no` and apply it at write time.
 The main thread writes the tests itself. Do not spawn a writer. Resolve this skill's folder to an absolute path and Read `agent-prompt.md` and `writing-guide.md` now (only now, at write time): `agent-prompt.md` is your operating template, `writing-guide.md` is the strategy, tool rules, iteration loop, and report format you follow. Reading the changed files under test is the one expensive part; for a large or unfamiliar set, offload just the reading to a read only `scout` subagent on the cheapest model (Claude Code: `haiku`, not inheriting the session model) that returns a compact map, then write from it.
 
 The inputs to apply (the labeled values you gathered):
+
 1. unit tool, E2E tool, additional tools, `INSTALL` state; `testDir`, `filePattern`, package manager, stack/framework, `packageRoot`; the classified scope (each file path with its class: logic / component / page flow / api server / cli); `RUN_COMMAND`, `RUN_AFTER`; project context plus the build approach line; the 3 recent spec paths or `none` (read only if relevant to what you're testing); the design.md path or `none`; `TRACE_TO_CONTRACT`, the governing spec path, and the `verify.md` path (each `none` if absent).
 2. Two rules to apply: (a) let the build approach calibrate which behaviors are durably real for this slice (lock those in as stable assertions) versus deliberate scaffolding the slice fakes by design (don't assert a real implementation the plan hasn't built yet, e.g. a real backend expectation on a shell that stubs its data). (b) when `TRACE_TO_CONTRACT = yes`, read the acceptance criteria (from `verify.md` if present, preferring its already resolved `AC-N`-tagged checklist, else the spec's `## Requirements`) and lock in the durable ones: an automated test for every criterion that can be pinned as a stable assertion, each test tagged with the `AC-N` it covers (e.g. a `covers: AC-3` comment, or `AC-3` in the test title) so the suite traces back to the contract. Never fake a criterion that can't be automated (visual/manual/environmental, e.g. "email actually arrives"); record it in `NOT_COVERED` as `AC-N, <why not automatable> → defer to /check verify manual step`.
 
@@ -199,8 +207,10 @@ Heads up: <bugs the tests caught Â· file:line + the failing expectation> · <u
 Only when `RUN_AFTER = no`, append the run steps: `<setup if INSTALL=deferred>` then `<RUN_COMMAND>` (watch one file with `<focused command>`). The framework choice is in `test-preferences.json`; the per test detail and AC traceability live in the test files, so don't reprint them.
 
 **Not covered** (consider adding):
+
 - <gap and why>
-- AC-N, <criterion that can't be automated (visual/manual/env)> → defer to /check verify manual step   ← when TRACE_TO_CONTRACT=yes
+- AC-N, <criterion that can't be automated (visual/manual/env)> → defer to /check verify manual step ← when TRACE_TO_CONTRACT=yes
+
 ```
 
 If `BUGS_FOUND` is not empty, lead with it: a test that correctly fails on real broken code is a genuine finding, not something to silence. /test does not modify application code to make a test pass.
@@ -214,3 +224,4 @@ This skill is complete after relaying the report: it does not invoke other skill
 - `modes/setup.md`: first run only steps (stack detection, framework questions, save preferences); read on the main thread only when `NO_PREFS`
 - `agent-prompt.md`: the operating template the main thread reads at write time (Step 8)
 - `writing-guide.md`: strategy, tool rules, iteration loop, report format; the main thread reads it at write time too
+```

@@ -7,6 +7,7 @@ description: "Run /audit on a greenfield project, an existing codebase with miss
 ## Output style (plain words, no dashes, no hyphens)
 
 <!-- OUTPUT-STYLE:START -->
+
 Write everything this skill produces, files and messages alike, in plain simple language. Talk to the reader as `you`, warm and direct like a colleague, and present every step as a recommendation they may run or skip, never an order. Keep technical terms that carry real meaning; explain each in plain words. Never use a dash or a hyphen as punctuation: no em dash, no en dash, and no hyphenated compounds. Write `read only`, not `read-only`. Say it in simple words, or reword the sentence. Code, file paths, command flags, and values other skills match on keep their hyphens. Use short sentences, commas, or parentheses. Clear beats clever.
 <!-- OUTPUT-STYLE:END -->
 
@@ -62,14 +63,14 @@ Gather several signals (a file count alone misleads: a scaffold inflates it, an 
 
 Pick the phase. The order of checks matters: the workflow setup signal outranks the raw code count, because a fresh scaffold has a manifest and source files yet is still greenfield.
 
-| Condition | Phase |
-|---|---|
-| Area path given as argument | Phase 3 |
-| `ROOT_EXISTS` (or `ROOT_LEGACY` after migration) | Phase 4 |
-| `ROOT_MISSING` and `WORKFLOW_SETUP` (stack spec and/or scope stack feature) | **Phase 1**, even though a manifest and scaffold source now exist. Ask the coding standards; seed root from the spec's stack. Never treat a just scaffolded workflow project as brownfield. |
-| `ROOT_MISSING`, no `WORKFLOW_SETUP`, no source files AND no manifest | Phase 1 |
-| `ROOT_MISSING`, no `WORKFLOW_SETUP`, has code (source ≥ 10 or a manifest), ≥ 2 commits and clearly real feature code (not just scaffold) | Phase 2, any language |
-| `ROOT_MISSING`, no `WORKFLOW_SETUP`, has code but it looks like untouched scaffold, or ≤ 1 commit, or you can't tell greenfield from brownfield | Phase 0, ask |
+| Condition                                                                                                                                       | Phase                                                                                                                                                                                       |
+| ----------------------------------------------------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| Area path given as argument                                                                                                                     | Phase 3                                                                                                                                                                                     |
+| `ROOT_EXISTS` (or `ROOT_LEGACY` after migration)                                                                                                | Phase 4                                                                                                                                                                                     |
+| `ROOT_MISSING` and `WORKFLOW_SETUP` (stack spec and/or scope stack feature)                                                                     | **Phase 1**, even though a manifest and scaffold source now exist. Ask the coding standards; seed root from the spec's stack. Never treat a just scaffolded workflow project as brownfield. |
+| `ROOT_MISSING`, no `WORKFLOW_SETUP`, no source files AND no manifest                                                                            | Phase 1                                                                                                                                                                                     |
+| `ROOT_MISSING`, no `WORKFLOW_SETUP`, has code (source ≥ 10 or a manifest), ≥ 2 commits and clearly real feature code (not just scaffold)        | Phase 2, any language                                                                                                                                                                       |
+| `ROOT_MISSING`, no `WORKFLOW_SETUP`, has code but it looks like untouched scaffold, or ≤ 1 commit, or you can't tell greenfield from brownfield | Phase 0, ask                                                                                                                                                                                |
 
 Why this order: a fresh scaffold has a manifest and starter files but is still greenfield, so a raw code count alone would misread it as brownfield and skip the standards questions; the workflow setup signal catches that and routes to greenfield. Truly brownfield (Phase 2) means real feature code, real history, and no workflow setup in progress. Anything ambiguous falls to Phase 0; never default a maybe greenfield project to brownfield.
 
@@ -91,6 +92,7 @@ Do not read the other mode files. The greenfield and whole-repo modes additional
 ### Phase 0: Classify (only when `pre-flight` is ambiguous)
 
 Don't guess. Ask once via your agent's interactive option picker (`AskUserQuestion` on Claude Code), or plain text with the same options. Mark one option `(recommended)` by whichever signal is stronger (a scaffold like tree with a manifest but little history leans New; real feature code and deep history leans Existing), and the picker adds a free text custom slot last:
+
 - question: "I can't tell if this is a new project or an existing codebase (<state why: e.g. 'a manifest exists but I see no source in a language I recognise', or 'files look like untouched scaffolding'>). Which is it?"
 - header: "Project state"
 - options: 1. `New project`, "I'll ask for your coding standards and seed the context." → Phase 1 (read the manifest/scaffold for the stack; still ask standards). 2. `Existing codebase`, "I'll scan what's here and document it." → Phase 2.

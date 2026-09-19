@@ -29,6 +29,7 @@ Artifact base: findings live under `docs/` by default. If `docs/` is a published
 ## Portability (any OS, any agent)
 
 Any Agent Skills client on macOS, Linux, or Windows:
+
 - Commands: `git` is the only required CLI and behaves the same on every OS; run the `git` lines as shown. Other shell snippets are POSIX reference, not literal scripts: don't assume `find`, `grep`, `sed`, `cat`, `test`/`[ ]`, `ls`, `xargs`, or `for` exist. Use your agent's cross-platform file tools (read, search/glob, write) for those, and apply branching logic yourself rather than via shell `if`/variables/redirects.
 - Bundled files: referenced by paths relative to this skill's folder. The main agent resolves the folder to an absolute path (it already resolves these relative paths, so it knows the folder) and passes absolute file paths in the subagent prompt; it must not read the bundled files' contents into the main context; the subagent reads them by path. Fallback: if your client's subagents cannot read files, read and inline the contents instead.
 - No subagent support? The cross-model benefit then needs you to switch your active model (or open the diff in another assistant) and run the review there; otherwise run it inline, noting the reviewer shares the author model's blind spots.
@@ -60,19 +61,21 @@ Skip the question only when detection was unambiguous and the user passed an exp
 **1c: Map to the contrasting Claude reviewer.** No API keys, no external setup; a subagent spawns a different-model reviewer and that model does the review:
 
 | Author model | Reviewer model to spawn |
-|---|---|
-| `opus` | `sonnet` |
-| `sonnet` | `opus` |
-| `fable` | `opus` |
-| `haiku` | `sonnet` |
+| ------------ | ----------------------- |
+| `opus`       | `sonnet`                |
+| `sonnet`     | `opus`                  |
+| `fable`      | `opus`                  |
+| `haiku`      | `sonnet`                |
 
 Rules:
+
 - The reviewer must never be the same family as the author, the one invariant this skill exists to guarantee.
 - Never review with `haiku`; review is high-value reasoning, use a strong model.
 - If no differing strong model is available (an org `availableModels`/`enforceAvailableModels` restriction, or a client whose subagents inherit the parent's model, e.g. Antigravity's `invoke_subagent`, which runs on the parent model), fall back to the strongest available model that differs from the author. If none differs, run the review inline on the author's model and say so plainly: a degraded review that shares the author's blind spots, not the cross-model guarantee. When independence matters, prefer switching your active model (below) over accepting the same-model review.
 - If the user passed `with <model>`: honor it only if it differs from the author. If they named the author's own model, refuse and explain: "That's the model that wrote the code. Reviewing with it shares its blind spots. Using `<contrast>` instead."
 
 State the final choice plainly before spawning:
+
 > "Author on `opus`; running the review on `sonnet`, a second model catches what the author model is blind to."
 
 Want a different provider (GPT, Gemini)? Don't wire up API keys; switch your active model in your AI tool (`/model` for a different Claude, or open the change in your other assistant) and run the review there. The skill recommends this in its closing note for high-stakes changes; it never sends your code anywhere itself.
@@ -80,6 +83,7 @@ Want a different provider (GPT, Gemini)? Don't wire up API keys; switch your act
 ### 2. Scope the change set (cheap, names only, let the subagent read the diff)
 
 Keep the main context lean: gather file names and the base ref only. The subagent runs the actual `git diff` and reads files. Choose a mode (apply the branching logic yourself, not via shell `if`/variables):
+
 - Base branch `BASE`: `git rev-parse --verify main`; on success use `main`, otherwise `master`.
 - Current branch `CUR`: `git rev-parse --abbrev-ref HEAD`.
 - If `CUR` equals `BASE` (working directly on the base branch) → `MODE=uncommitted`. Gather changed names with `git diff --name-only HEAD` plus untracked files via `git ls-files --others --exclude-standard`.
@@ -94,6 +98,7 @@ If the change set is empty: stop and tell the engineer there's nothing to review
 ### 3. Gather lightweight pointers (do NOT read heavy files here)
 
 Paths and cheap signals only; the subagent reads on demand. Using your file tools: list the 3 most-recent spec files under `docs/specs/` (paths only), and resolve the test signal, one of three states, not a yes/no:
+
 - `TESTS = configured`: `test-preferences.json` sets `"tool"` to a framework (a runner is set up). Judge test adequacy normally.
 - `TESTS = none-by-design`: `test-preferences.json` has `"tool": null` and a `"gate"` (e.g. `"typecheck+verify"`), or the nearest `AGENTS.md`/governing spec states a "no test runner" convention. Deliberate: the gate is typecheck + `/check verify`, not a suite.
 - `TESTS = none-yet`: no `test-preferences.json` at all, and no stated convention. A genuine gap.
@@ -132,6 +137,7 @@ Major (<count>):
 Lead with the verdict; show every blocker and major (they are the action); collapse minors/nits, strengths, and the reviewer/scope to the one tail line plus the file pointer. Zero blockers and zero majors → just the verdict line and the tail, nothing more.
 
 For a high-stakes change (verdict was Blocked or Changes requested, or the change is high/critical severity), append one line:
+
 > "For an independent second opinion from a different provider, switch your model with `/model` (or paste the diff into another assistant) and re-run /check review, no API keys needed."
 
 **Tick the scope box (closing gate).** If the reviewed feature has a row in `docs/scope/`, tick its `Review it` box (the review ran; the box marks that, not that it passed) and confirm it in the report: "Scope: ticked `Review it`." No matching row → say so ("no scope row matched `<feature>`, tick it manually or enroll it"). This is the only scope edit review makes; it writes no code, tests, or specs.

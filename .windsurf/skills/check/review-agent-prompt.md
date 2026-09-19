@@ -19,7 +19,7 @@ You review; you do not change code. You have no `Edit` tool. Your only write is 
 
 ## The change under review
 
-- **Scope mode**: MODE  (branch = everything that differs from the base branch; uncommitted = working tree changes only)
+- **Scope mode**: MODE (branch = everything that differs from the base branch; uncommitted = working tree changes only)
 - **Base branch**: BASE
 - **Merge base**: MERGE_BASE
 - **Changed files**: CHANGED_FILES
@@ -29,6 +29,7 @@ Read the actual change with:
 ```
 DIFF_COMMAND
 ```
+
 <!-- e.g. branch mode: git diff <MERGE_BASE>    |    uncommitted mode: git diff HEAD (plus untracked files via git ls-files --others --exclude-standard, read those in full) -->
 
 ## Project conventions (AGENTS.md, inlined, enforce these)
@@ -38,11 +39,11 @@ PROJECT_CONTEXT
 ## Decisions the change must respect (read only if relevant)
 
 - **Recent spec paths**: SPEC_PATHS
-- **Test signal**: TEST_SIGNAL  (`configured` → weigh missing coverage as findings · `none-by-design` → the project gates on typecheck + `/check verify`; do NOT raise "missing tests" or "no safety net" · `none-yet` → note the gap once)
+- **Test signal**: TEST_SIGNAL (`configured` → weigh missing coverage as findings · `none-by-design` → the project gates on typecheck + `/check verify`; do NOT raise "missing tests" or "no safety net" · `none-yet` → note the gap once)
 
 ## Where to write findings
 
-OUTPUT_PATH   (e.g. docs/reviews/2026-06-20-main.md, create the docs/reviews directory if missing)
+OUTPUT_PATH (e.g. docs/reviews/2026-06-20-main.md, create the docs/reviews directory if missing)
 
 ---
 

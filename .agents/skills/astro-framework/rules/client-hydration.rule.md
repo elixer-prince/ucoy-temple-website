@@ -1,11 +1,11 @@
 ---
 description: Rules for client-side hydration and islands architecture
 globs:
-  - "**/*.astro"
-  - "**/components/**/*.tsx"
-  - "**/components/**/*.jsx"
-  - "**/components/**/*.vue"
-  - "**/components/**/*.svelte"
+  - '**/*.astro'
+  - '**/components/**/*.tsx'
+  - '**/components/**/*.jsx'
+  - '**/components/**/*.vue'
+  - '**/components/**/*.svelte'
 ---
 
 # Client Hydration Rules
@@ -51,11 +51,11 @@ Does the component need interactivity?
 
 ```astro
 ---
-import Header from './Header.astro';        // Static - no JS
-import SearchBox from './SearchBox.jsx';    // Needs hydration
-import Comments from './Comments.jsx';       // Below fold
-import MobileMenu from './MobileMenu.jsx';  // Mobile only
-import Chart from './Chart.jsx';            // Browser APIs only
+import Header from './Header.astro' // Static - no JS
+import SearchBox from './SearchBox.jsx' // Needs hydration
+import Comments from './Comments.jsx' // Below fold
+import MobileMenu from './MobileMenu.jsx' // Mobile only
+import Chart from './Chart.jsx' // Browser APIs only
 ---
 
 <!-- Static, no JavaScript -->
@@ -77,6 +77,7 @@ import Chart from './Chart.jsx';            // Browser APIs only
 ## Measuring Impact
 
 Use browser DevTools to verify:
+
 1. Network tab: Check JS bundle sizes
 2. Performance tab: Measure TTI (Time to Interactive)
 3. Lighthouse: Verify Core Web Vitals
@@ -85,8 +86,8 @@ Use browser DevTools to verify:
 
 ```astro
 ---
-import Counter from './Counter.jsx';
-const initialCount = 10;
+import Counter from './Counter.jsx'
+const initialCount = 10
 ---
 
 <!-- Props are serialized to the client -->

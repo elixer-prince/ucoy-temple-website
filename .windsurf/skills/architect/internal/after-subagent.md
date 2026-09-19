@@ -7,6 +7,7 @@ You wrote the spec yourself on the main thread. Now check your own work for comp
 **First: did the write land?** If the spec file is missing or empty, something went wrong in the write; report it and write it again, never fabricate a spec summary. Only if the file exists, continue:
 
 **Check your own work before presenting**: Read the spec you just wrote again. For a directory spec read both `index.md` and its `rationale.md` (the decision record sections live in `rationale.md`; the single file shape has everything in the one file). Verify all required sections exist across the file(s):
+
 - All modes: `## Summary` (the plain words human quick read, no dashes, in `index.md`/the file), `## Requirements` (IDed acceptance criteria, the confirmed spine), `## Decision`, `## Consequences` (build spec, in `index.md`/the file); and `## Context`, `## Options considered` (unless "Documenting a made decision"), `## Rationale` (decision record, in `rationale.md` for a directory spec, inline otherwise). A directory `index.md` also carries the one line `## Rationale` pointer to `rationale.md`.
 - Data backed modes: `## Build plan`: ordered tasks, each tagged with the AC(s) it satisfies, the data model migration sized to the feature (one normally; sliced for a large feature or thin thread/Facade); every AC traces to at least one task
 - Feature mode: `## Feature design` with the confirmed data model, the **Value sourcing** table (every value each action produces, computes, or displays has a named source; no blank source for a value an AC requires, that would be an undecided input left for the build), and Critical test scenarios (mapped to ACs) populated
@@ -18,11 +19,13 @@ You wrote the spec yourself on the main thread. Now check your own work for comp
 If a required section is missing or a field is blank/placeholder, add this line directly after the spec path in the presentation: `⚠️ Incomplete: [section name] came out blank, e.g. "⚠️ Incomplete: ## Feature design > Security model was left as a placeholder. Request it in your feedback."`
 
 **Cross check (independent read of the spec, especially for decision completeness).** An independent model catches load bearing gaps the author is blind to. **Always ASK; never run it, and never skip it, on the engineer's behalf** (the point is to keep the engineer aware of load bearing decisions, so the decision to run it is theirs). Present the panel below; set the recommended option by the feature's effective workflow tier (its own tier tag if set, else the project default on the scope `**Workflow:**` line, read in pre-flight), and always make the recommendation explicit with a one line why:
+
 - **`GA` or `Beta` tier** → recommend `Another model` **strongly**: these are where a load bearing gap does real damage, and the kind of bug that motivates it is typically a `Beta` feature. Recommend it clearly, but the engineer chooses.
 - **`Alpha` tier** → recommend `Another model` for a foundational or risky spec, else offer without a strong push.
 - **`Prototype` tier, or no scope row** → recommend `Skip` (or `Same model` for a foundational spec).
 
 Present the panel (capability first: `AskUserQuestion` on Claude Code, else the same options as plain text; exactly one option marked recommended per the tier rule above, the picker adds the custom slot):
+
 - **question**: "Cross check this spec before you review it? (Recommended: `<tier-based pick>`.)"
 - **header**: "Cross check"
 - **options**:
@@ -32,10 +35,11 @@ Present the panel (capability first: `AskUserQuestion` on Claude Code, else the 
   - `Skip`: go straight to accept.
 
 Act on the pick:
+
 - **Another model / Same model** → spawn a READ-ONLY cross check subagent that reads the drafted spec and returns its critique only; it writes nothing, the main thread applies any fix. Set its model explicitly, not inherited: for `Another model`, a capable model different from the one that wrote the spec; for `Same model`, this session's model. Brief it to stress test the design from the spec text and its own knowledge only, covering two jobs:
   1. **Decision completeness (the primary job).** List every value each action, endpoint, or read path must produce, compute, or display to satisfy the acceptance criteria whose **source the spec does not name**, and every decision the builder will have to make that this spec does not settle. This is the check that catches a load bearing gap the spec author's own introspection missed (e.g. an AC that needs "the user's local day" with no timezone source named). Report each as a gap to close before build, not a nitpick.
   2. **Soundness.** Does the design hold up? Is there a materially simpler option? What failure mode is missed?
-  Brief it to NOT fetch the spec's reference links, now or later (human facing). Surface its findings as a short "Cross check" note. **Do NOT silently resolve or auto edit a decision completeness gap** (each one is a load bearing decision, and those are the engineer's, not yours): list every gap with the resolution you recommend (the source you would name, or the answer you would pick, always give your best recommendation, do not just present options), then ASK how to proceed, `Apply the recommended fixes` (recommended) · `Let me answer each one` · `Leave them, I'll decide later`. Edit the spec only on the engineer's pick. Pure soundness nitpicks (not a decision, e.g. a clearer wording) you may fix directly and note. No subagent capability → do the same model pass inline on the main thread (weaker, note that the independent check did not run).
+     Brief it to NOT fetch the spec's reference links, now or later (human facing). Surface its findings as a short "Cross check" note. **Do NOT silently resolve or auto edit a decision completeness gap** (each one is a load bearing decision, and those are the engineer's, not yours): list every gap with the resolution you recommend (the source you would name, or the answer you would pick, always give your best recommendation, do not just present options), then ASK how to proceed, `Apply the recommended fixes` (recommended) · `Let me answer each one` · `Leave them, I'll decide later`. Edit the spec only on the engineer's pick. Pure soundness nitpicks (not a decision, e.g. a clearer wording) you may fix directly and note. No subagent capability → do the same model pass inline on the main thread (weaker, note that the independent check did not run).
 - **I'll review it myself** → run no AI critique. Present the spec for the engineer to read, and say they are reviewing it themselves.
 - **Skip** → no critique.
 
@@ -54,8 +58,9 @@ Act on the pick:
    - **question**: "Accept this spec, or change it?"
    - **header**: "spec"
    - **options**: `Accept, looks solid (recommended)` · `Change something, I'll tell you what` · `Rethink the approach`
-   On **Change something**, ask what to change (this also covers overriding a ⚠️ Premise note: if the engineer disagrees with it, remove it and proceed with their direction) and apply targeted **Edit**s to the sections called out, never a from scratch rewrite. On **Rethink the approach**, revisit the relevant stage(s)/options and revise. Either way, present the SAME panel again (not a plain "reply yes") and loop until the engineer picks **Accept**.
-2. **On Accept: ratify the decision; the status follows the spec kind** (per the status model in *What this skill does*; discriminator: whether a buildable scope feature links this spec, computed in step 3):
+     On **Change something**, ask what to change (this also covers overriding a ⚠️ Premise note: if the engineer disagrees with it, remove it and proceed with their direction) and apply targeted **Edit**s to the sections called out, never a from scratch rewrite. On **Rethink the approach**, revisit the relevant stage(s)/options and revise. Either way, present the SAME panel again (not a plain "reply yes") and loop until the engineer picks **Accept**.
+
+2. **On Accept: ratify the decision; the status follows the spec kind** (per the status model in _What this skill does_; discriminator: whether a buildable scope feature links this spec, computed in step 3):
    - Feature linked spec: do not edit the status line; a confirmed but unbuilt spec correctly stays `Proposed` (/develop advances it).
    - Standalone decision spec: set `**Status**:` to `Accepted` on this confirmation (ratification is the deliverable; /develop won't advance it, `Proposed` would strand it).
    - Already shipped documentation path: born `Accepted`; leave it, /sync reconciles against the scope.
@@ -73,8 +78,10 @@ Act on the pick:
      6. Enroll what the spec surfaced: a `## Follow-up` item that is really a separate feature (not part of this one) becomes a new scope feature tagged `from spec NNNN`. Deferred follow ups that block nothing go to the Deferred list.
 
      Edit only this feature (and any newly enrolled follow-up), never other features' contents. The result stays coarse (a milestone rollup, not a task dump) while every box is a command or a tracked milestone: Design → Build (+ milestones) → Verify → Test.
+
    - **NO matching feature** → the atomic tasks stay in the spec's `## Build plan`; ask via a panel (capability first): question "Track this feature on the scope?", header "Scope", options `Yes, enroll it` · `No, keep it in the spec only`. On **Yes**, enroll a coarse scope feature (heading + intent + `Done when:` line) with the same built ready shape as above (Design ticked + spec link + the milestone rollup + Verify + Test boxes). On **No**, leave the scope untouched and note in your final message: "This spec isn't on the scope. Its build tasks live in `## Build plan`; run `/scope` later to enroll it." (Silent orphan specs are exactly the drift a later bare `/scope` reconcile has to surface.)
-4. **Spoken summary in chat (plain words, no dashes).** After acceptance and scope linking, show a short plain language summary (per *Output style*): what the spec decided, why in one line, and what happens next (the build tasks it produced, and which skill to run next). A template:
+
+4. **Spoken summary in chat (plain words, no dashes).** After acceptance and scope linking, show a short plain language summary (per _Output style_): what the spec decided, why in one line, and what happens next (the build tasks it produced, and which skill to run next). A template:
 
    ```
    Done. Here is the quick version.

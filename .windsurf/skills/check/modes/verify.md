@@ -32,6 +32,7 @@ Any Agent Skills client on macOS, Linux, or Windows. Run/launch snippets are ref
 ### Step 0a: Refactor mode: before/after diff (spawn a subagent)
 
 Only in refactor mode. It drives the app twice and holds two output sets, so run it in a subagent to keep the main context clean:
+
 - `model`: set explicitly to a strong model, do not inherit the session model (Claude Code: `sonnet`) · `description: "Verify: before/after diff, <scope>"` · Tools: `Read`, `Bash`, `Grep`, `Glob` (+ browser/HTTP driving)
 - Its job:
   1. Identify the affected surfaces from the diff (endpoints, queries, jobs, pages). Pick representative ones per changed area, favoring output that is most observable and most likely to reveal a behavior shift.
@@ -49,11 +50,17 @@ The spec carries the contract: `## Requirements` with IDed acceptance criteria (
 1. Prefer the per feature `verify.md` beside the spec (`docs/specs/NNNN-<feature>/verify.md`) if present; `/develop` emits it as concrete, already resolved verify steps tagged with the `AC-N` each exercises:
    ```markdown
    # Verify: <feature> · spec NNNN
+
    ## UI / manual
-   - [ ] <action> → <expected>   → AC-N
+
+   - [ ] <action> → <expected> → AC-N
+
    ## Commands
+
    - [ ] `<command>` → <expected> → AC-N
+
    ## Acceptance-criteria coverage
+
    - AC-1 … · AC-2 … · …
    ```
 2. Else fall back to the spec's `## Requirements` directly, and turn each `AC-N` into an observable check yourself.
@@ -66,7 +73,7 @@ Know what this slice was meant to be. Read the build approach for THIS feature w
 
 The judgment: what did this slice promise to make real, and what is it still allowed to fake? Verify the former hard; don't fail the slice for the latter. Common framings and their bars: a thin end to end path wired through every layer (the whole path carries a real request to a real result); a thinnest usable core loop (that one loop genuinely works, not the trimmings); a UI first shell wired to placeholders (shell and placeholder flow render and navigate; a stubbed data source is the plan, not a defect); a full user journey per phase (the journey end to end, not isolated screens). Let the label set the bar, then carry it into the scope and conformance verdict. Acceptance criteria say what must be true; the approach says how much of the stack behind them is real yet.
 
-### Step 1: Scope the observable behaviors *(feature mode)*
+### Step 1: Scope the observable behaviors _(feature mode)_
 
 Base branch `BASE`: `git rev-parse --verify main`; on success use `main`, otherwise `master`. List changed files: `git diff --name-status "$BASE"...HEAD` and `git diff --name-status` (uncommitted too).
 
@@ -79,6 +86,7 @@ No spec? From the changed files write the 2 to 5 concrete things a human could w
 Monorepo: run the specific affected app, not the repo root. Find the workspace the change lives in (`apps/<x>/…`) and use its run command (e.g. `<pkgmgr> --filter <x> dev`, the monorepo task runner's filtered command, or that workspace's `package.json` script). A change to a shared package: run the app(s) that consume it.
 
 In order:
+
 1. A project run skill / documented command: a project specific "run/start" skill, then `AGENTS.md`, then `package.json` scripts (`dev`, `start`), `Makefile`, `Procfile`, `docker-compose`. Prefer what the project already uses.
 2. Built in patterns by project type if nothing is documented:
    - Web app → start the dev server, then drive the route: prefer a connected browser automation MCP (real navigation, clicks, form submits, screenshots); else your agent's own browser tool; else, headless, request the route over HTTP and check the returned HTML plus a boot check (server starts, health route responds).
@@ -92,6 +100,7 @@ Can't tell how to launch it? Ask the engineer for the start command before proce
 ### Step 3: Run and exercise
 
 Launch the app (prefer a background process so you can interact with it). Use a connected MCP where it makes the check real: a browser automation MCP to drive the UI (navigate, click, type, submit, screenshot); a database MCP to confirm the live schema for a data layer criterion (the migration applied check in Step 4b: proof the column really exists, not an assumption). For heavier interaction, spawn a subagent with the tools to drive the browser/CLI and capture evidence, keeping the main context clean. Per scoped behavior:
+
 - UI → navigate to the route, interact (click, type, submit), screenshot the result and any error state. Check the rendered output, not just a 200.
 - API → send the request, capture status + body; verify the shape and key fields.
 - CLI / job → run it, capture stdout/stderr and any output artifact.
@@ -100,12 +109,12 @@ Watch server/console logs for errors or warnings even when the UI "looks" fine.
 
 **Keep an evidence ledger as you go.** For every behavior you exercise, write down, at the moment you observe it, the artifact that proves you exercised it:
 
-| Behavior kind | The evidence to record |
-|---|---|
-| UI | the URL you loaded, the screenshot path you saved, and what you saw rendered |
-| API | the exact request line, the HTTP status, and the key fields of the body |
-| CLI / job | the exact command, its exit code, and the stdout/stderr excerpt |
-| Data layer | the query you ran against the live schema, and its result |
+| Behavior kind | The evidence to record                                                       |
+| ------------- | ---------------------------------------------------------------------------- |
+| UI            | the URL you loaded, the screenshot path you saved, and what you saw rendered |
+| API           | the exact request line, the HTTP status, and the key fields of the body      |
+| CLI / job     | the exact command, its exit code, and the stdout/stderr excerpt              |
+| Data layer    | the query you ran against the live schema, and its result                    |
 
 You cite these in the report. A behavior with no recorded evidence is not verified, however sure you are.
 
@@ -113,7 +122,7 @@ You cite these in the report. A behavior with no recorded evidence is not verifi
 
 Per behavior, decide pass / fail / blocked against what should happen. A behavior that throws, renders broken, returns the wrong shape, or logs an error is a fail; capture the exact error. "Blocked" means you couldn't exercise it (missing data/creds); say what's needed.
 
-### Step 4b: Conformance verdict *(only when a spec contract was loaded in Step 0b)*
+### Step 4b: Conformance verdict _(only when a spec contract was loaded in Step 0b)_
 
 Roll observations into a per criterion and per surface verdict. For every `AC-N` and specced surface, assign:
 
@@ -126,7 +135,7 @@ Missing = never built (a scope miss); not applied = built but not live/correct a
 
 ### Step 4c: The evidence gate (a verdict you cannot fabricate)
 
-This skill exists to prove the change works by running it. Reading the code, seeing green tests, or reasoning that it *should* work are not observations, and none of them may produce a ✅ or a PASS. Apply these rules literally:
+This skill exists to prove the change works by running it. Reading the code, seeing green tests, or reasoning that it _should_ work are not observations, and none of them may produce a ✅ or a PASS. Apply these rules literally:
 
 1. **No evidence, no ✅.** A behavior is `met` only if you can cite the ledger entry from Step 3 that proves it: the command and its output, the URL and what rendered, the screenshot path, the query and its result. Cite it inline in the report. If you cannot cite it, the behavior is `blocked`, not `met`.
 2. **Never started, never PASS.** If you did not actually launch and exercise the app in this run (no dev server, no request sent, no command run), you may not emit PASS or ✅ for anything. Report `blocked` for every behavior, say plainly that nothing was exercised and why, and stop.
@@ -149,15 +158,18 @@ On FAIL or BLOCKED, tick nothing and report the gaps. Advise `/clear` before mov
 Lead with the verdict; list only what failed or is owed; point to verify.md for the rest (per `docs/conventions.md`). Template:
 
 ```
+
 ## /check verify <feature> Â· <PASS | FAIL | BLOCKED>
 
-**<PASS: all N behaviors met, every specced surface built · FAIL: M of N failed · BLOCKED: K couldn't be exercised>.**   (never PASS or ✅ if you did not actually run the app; say "not started")
+**<PASS: all N behaviors met, every specced surface built · FAIL: M of N failed · BLOCKED: K couldn't be exercised>.** (never PASS or ✅ if you did not actually run the app; say "not started")
 Next (this feature's next unticked box in the scope): PASS → `/test <feature>` if a `Test it` box remains, else the next feature · FAIL → `/debug <feature>` · missing surface → `/develop <feature>` · BLOCKED → what's needed to run it
 
 Failing / owed (omit if PASS):
+
 - <behavior or AC-N>: <what went wrong + evidence path> → <run /debug | build it, specced but missing | apply the migration, built but not live>
 
 Ran via <command/url>; verified <N> behaviors (evidence recorded). per AC detail in verify.md.
+
 ```
 
 The passing behaviors and their evidence are the record, not the summary; do not list each one. `/test` reads verify.md itself, so no "what to lock in" list here.

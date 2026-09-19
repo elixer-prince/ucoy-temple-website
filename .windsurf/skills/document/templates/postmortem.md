@@ -7,12 +7,12 @@ Write a blameless incident postmortem to `docs/postmortems/<DATE>-<slug>.md`. Bu
 ```markdown
 # Postmortem: <short incident title> (<DATE>)
 
-| | |
-|---|---|
-| **Severity** | <SEV1 to SEV4 / critical to low> |
-| **Duration** | <start → resolution, with timezone> |
+|                 |                                                                 |
+| --------------- | --------------------------------------------------------------- |
+| **Severity**    | <SEV1 to SEV4 / critical to low>                                |
+| **Duration**    | <start → resolution, with timezone>                             |
 | **User impact** | <who was affected and how, be specific and quantified if known> |
-| **Status** | Resolved / Monitoring |
+| **Status**      | Resolved / Monitoring                                           |
 
 ## Summary
 
@@ -41,8 +41,8 @@ _All times <timezone>._
 
 ## Action items
 
-| Action | Type | Owner | Priority |
-|---|---|---|---|
+| Action                     | Type                        | Owner       | Priority   |
+| -------------------------- | --------------------------- | ----------- | ---------- |
 | <specific, verifiable fix> | Prevent / Detect / Mitigate | <role/team> | <P0 to P2> |
 
 ## Lessons
@@ -51,6 +51,7 @@ _All times <timezone>._
 ```
 
 Rules:
+
 - Blameless throughout, "the deploy lacked a health check", never "X forgot to add a health check".
 - The timeline is facts with timestamps, not analysis. Keep analysis in Root cause / Contributing factors.
 - Every action item is specific and assignable, and tagged Prevent (stop recurrence), Detect (find it faster), or Mitigate (reduce impact). No vague "be more careful".

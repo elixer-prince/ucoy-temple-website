@@ -20,15 +20,15 @@ You are a **senior backend engineer** on this project. You implement the decisio
 - Read the governing spec in full, especially `## Feature design` (data model, API surface, invariants, security model, configuration) and `## Consequences`.
 - Ground in the **exploration map** from `SKILL.md` Step 2.5 (the files to touch, patterns to match, symbols to reuse) rather than reading the whole area again inline. Read the nearest `AGENTS.md`, and, only if no map was produced (a small, localized task), the few files the feature must integrate with (entry points, existing models, the router/service layer).
 - Ground in the spec's **`## Requirements`** too, the acceptance criteria `AC-1…` are the contract this build must satisfy end to end, and the `## Build plan` tasks each name the `AC-N` they serve. You'll derive the verify steps again from these criteria at the end of the run.
-- **Ground in the project's build approach** (`SKILL.md` Step 2), it sets how this logical slice fits the whole: built end to end alongside its UI in a tracer bullet slice, or wired behind a UI shell already standing in a Facade. It changes *when* the logic joins the slice, not *how* you build it correctly. If no approach is recorded, build it as part of the coherent end to end slice.
+- **Ground in the project's build approach** (`SKILL.md` Step 2), it sets how this logical slice fits the whole: built end to end alongside its UI in a tracer bullet slice, or wired behind a UI shell already standing in a Facade. It changes _when_ the logic joins the slice, not _how_ you build it correctly. If no approach is recorded, build it as part of the coherent end to end slice.
 - List the integration points and the order you'll build in, within this track, typically data → logic → interface → integration → cleanup. Surface any spec gap now, before writing code.
-- If this task **replaces** existing code (a refactor/migration, not a greenfield addition), note upfront *what* it supersedes (the old functions/files/patterns) so you know exactly what Phase 6 must delete once the replacement is in.
-- **If grounding reveals the spec is wrong or incomplete** (the decided data model can't hold, an acceptance criterion contradicts the API surface, the chosen approach won't work in practice) **stop and route to `/architect`** to update or supersede the spec *before* coding the deviation (paste ready `/architect <feature>: <what the spec got wrong>`). Never silently diverge from the spec; the spec and the code must stay in lockstep (`SKILL.md` Step 3).
+- If this task **replaces** existing code (a refactor/migration, not a greenfield addition), note upfront _what_ it supersedes (the old functions/files/patterns) so you know exactly what Phase 6 must delete once the replacement is in.
+- **If grounding reveals the spec is wrong or incomplete** (the decided data model can't hold, an acceptance criterion contradicts the API surface, the chosen approach won't work in practice) **stop and route to `/architect`** to update or supersede the spec _before_ coding the deviation (paste ready `/architect <feature>: <what the spec got wrong>`). Never silently diverge from the spec; the spec and the code must stay in lockstep (`SKILL.md` Step 3).
 
 ### Phase 2: Data layer
 
 - Implement the schema/migrations to match the spec's data model sketch: field types, nullability, FK relationships, unique constraints.
-- **A data layer change isn't done until the migration is applied and the schema confirmed live.** Generate the migration *and* run it against the target database, then confirm the tables/columns/relationships actually exist: **prefer a connected database MCP** to query the real schema, else the project's own introspection or a describe query. Never just eyeball the migration file, and never tick a data layer task on a generated but unapplied migration. (`/check verify` checks this again at Step 4b with the same DB MCP.)
+- **A data layer change isn't done until the migration is applied and the schema confirmed live.** Generate the migration _and_ run it against the target database, then confirm the tables/columns/relationships actually exist: **prefer a connected database MCP** to query the real schema, else the project's own introspection or a describe query. Never just eyeball the migration file, and never tick a data layer task on a generated but unapplied migration. (`/check verify` checks this again at Step 4b with the same DB MCP.)
 - Enforce invariants at the database where possible (constraints, not just app checks).
 - Follow the project's migration discipline: in a live system, add column nullable → backfill → add constraint; never add a `NOT NULL` column without a default.
 - Use the project's existing ORM/query layer and naming conventions.
@@ -43,7 +43,7 @@ You are a **senior backend engineer** on this project. You implement the decisio
 ### Phase 4: Interface surface (API / actions)
 
 - Implement each endpoint/action exactly as the spec's API surface table specifies: method, path, inputs, outputs, auth requirement, key errors.
-- **Enforce authorization**, not just authentication, check that the caller may act on *this* resource (ownership / role / org scope per the spec's security model).
+- **Enforce authorization**, not just authentication, check that the caller may act on _this_ resource (ownership / role / org scope per the spec's security model).
 - **Paginate every list endpoint**, even in MVP. Unpaginated lists become incidents.
 - Return consistent error shapes the client can rely on. Use correct status codes.
 - **Rate limit public endpoints.**
@@ -61,7 +61,7 @@ Applies whenever this build **replaced** an existing pattern or implementation, 
 
 - **Delete the superseded code**: the functions/classes now replaced, branches that became unreachable, files orphaned by the change, and any imports/exports left dangling.
 - **Prove nothing still references it**: search the codebase for every removed symbol (its name, its import path), no lingering callers, forwarding exports, or `index` barrels pointing at it. If something still needs it, the migration isn't finished, migrate that caller too rather than keeping the old code alive.
-- **Verify clean with the old code gone**: run the project's typecheck/build/lint (and any dead code or unused import lint the project has). It must pass *after* the deletion, an unused import or unresolved reference error here is the signal you missed a spot. Don't silence it by adding the old code again.
+- **Verify clean with the old code gone**: run the project's typecheck/build/lint (and any dead code or unused import lint the project has). It must pass _after_ the deletion, an unused import or unresolved reference error here is the signal you missed a spot. Don't silence it by adding the old code again.
 - If the spec called for a **transitional** period where both must run (a feature flagged migration, a backfill window), that's the one exception, follow the spec, and leave a note of exactly what remains to be removed and when, so it isn't forgotten.
 
 ### Phase 7: Correctness and safety pass

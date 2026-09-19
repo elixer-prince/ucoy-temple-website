@@ -11,6 +11,7 @@ Strategy, rules, tool specifics, iteration loop, and report format. Read at writ
 ### Existing tests: extend, never duplicate or clobber
 
 Before writing a new test file, look for one that already covers the source file (same base name with the test pattern, co-located or under TEST_DIR). If it exists:
+
 - **Extend it** with `Edit`, add the missing cases, keep the engineer's existing tests intact.
 - Never create a second parallel test file for the same source, and never overwrite hand-written tests.
 - If existing tests look wrong or contradict the current code, do not silently rewrite them, note them under `NOT_COVERED` as "existing tests may be stale" so the engineer decides.
@@ -18,6 +19,7 @@ Before writing a new test file, look for one that already covers the source file
 ### Config files: minimal and additive only
 
 You generally write only test files. The one exception: if the chosen runner **cannot execute without a config that does not yet exist**, create the minimal one needed:
+
 - Vitest + Testing Library with no `vitest.config.*`: create one with `environment: 'jsdom'` and a setup file importing `@testing-library/jest-dom`.
 - Playwright with no `playwright.config.*`: create a minimal config (test dir, base webServer if obvious).
 - **Never edit an existing config**, if one is present, respect it and adapt the tests to it. List any conflict under `NOT_COVERED`.
@@ -38,13 +40,13 @@ If `INSTALL_STATE = deferred`, still write complete, correct tests, they simply 
 
 ## Strategy per file class
 
-| Class | What to write |
-|---|---|
-| **logic** | Pure unit tests. Call the function with real inputs, assert outputs. Cover edge and error cases exhaustively. Mock only true boundaries (network, fs, clock, randomness). |
-| **component** | Render the component, interact via user events, assert what the user sees (rendered text, roles, disabled/expanded state) and accessibility. Never assert internal state or class names. |
-| **page/flow** | If E2E_TOOL is set, write a real browser flow test for the primary path through the page (load → act → assert outcome) plus one failure path. Also component test any pieces that are not trivial. If E2E_TOOL is `none`, cover the page at the component level. |
-| **api/server** | Integration test: invoke the handler/route/action with representative requests. Assert status, response shape, and error responses (bad input, unauthorized, not found). Mock the DB/external services at the boundary only. |
-| **cli** | Invoke the command with arguments, assert stdout/exit code/side effects. Cover an invalid args path. |
+| Class          | What to write                                                                                                                                                                                                                                                    |
+| -------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| **logic**      | Pure unit tests. Call the function with real inputs, assert outputs. Cover edge and error cases exhaustively. Mock only true boundaries (network, fs, clock, randomness).                                                                                        |
+| **component**  | Render the component, interact via user events, assert what the user sees (rendered text, roles, disabled/expanded state) and accessibility. Never assert internal state or class names.                                                                         |
+| **page/flow**  | If E2E_TOOL is set, write a real browser flow test for the primary path through the page (load → act → assert outcome) plus one failure path. Also component test any pieces that are not trivial. If E2E_TOOL is `none`, cover the page at the component level. |
+| **api/server** | Integration test: invoke the handler/route/action with representative requests. Assert status, response shape, and error responses (bad input, unauthorized, not found). Mock the DB/external services at the boundary only.                                     |
+| **cli**        | Invoke the command with arguments, assert stdout/exit code/side effects. Cover an invalid args path.                                                                                                                                                             |
 
 ---
 
@@ -76,6 +78,7 @@ A good suite for a changed feature has more than the happy path.
 ## Tool specific rules
 
 ### Vitest / Jest
+
 - `describe` groups by file or function under test
 - `vi.fn()` / `jest.fn()` for simple mocks; `vi.mock()` / `jest.mock()` at top of file for modules
 - Timers: `vi.useFakeTimers()` in `beforeEach`, `vi.advanceTimersByTime()`, `vi.useRealTimers()` in `afterEach`
@@ -83,12 +86,14 @@ A good suite for a changed feature has more than the happy path.
 - `vi.spyOn()` when the call itself is the observable effect (e.g. an analytics event)
 
 ### Testing Library (when ADDITIONAL_TOOLS includes it)
+
 - Query priority: `getByRole` → `getByLabelText` → `getByText` → `getByTestId` (last resort)
 - `userEvent.setup()` before interactions, never `fireEvent`
 - Async render: `await findByRole(...)`, not `waitFor(() => getByRole(...))`
 - Assert what the user perceives: text, role, disabled/expanded, not `className` or React state
 
 ### Playwright (E2E)
+
 - Each test stands on its own: setup in `test.beforeEach`, teardown in `test.afterEach`
 - `page.getByRole()` / `page.getByLabel()` over CSS selectors
 - Wait on assertions, never arbitrary timeouts: `await expect(locator).toBeVisible()`
@@ -96,21 +101,25 @@ A good suite for a changed feature has more than the happy path.
 - Forms: fill → submit → assert success or error state
 
 ### Cypress (E2E)
+
 - `cy.findByRole()` (with @testing library/cypress) or `cy.get()` with data attributes
 - Assert with `.should(...)`; let Cypress retry, no fixed `cy.wait(ms)`
 - Stub network with `cy.intercept()` at the boundary
 
 ### pytest
+
 - `@pytest.fixture` for shared setup; `@pytest.mark.parametrize` for input variations
 - `with pytest.raises(ValueError):` for error assertions
 - Mock with the `mocker` fixture (pytest mock)
 - Async: `@pytest.mark.asyncio`
 
 ### Go testing + testify
+
 - Name `Test<Func>_<scenario>`; `assert.Equal(t, want, got)`; `require.NoError(t, err)` for early exit
 - Table driven tests with `t.Run(tt.name, ...)`; `t.Parallel()` when no shared mutable state
 
 ### Rust (cargo test)
+
 - Unit tests in `#[cfg(test)] mod tests`; integration tests in `tests/`
 - `assert_eq!` / `assert!`; `#[should_panic(expected = "...")]`; `-> Result<(), E>` with `?` for fallible tests
 

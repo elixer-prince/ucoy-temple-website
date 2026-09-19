@@ -1,12 +1,12 @@
 ---
-import type { CollectionEntry } from 'astro:content';
-import { getCollection, render } from 'astro:content';
-import Layout from '@layouts/Layout.astro';
-import '@styles/tokens.css';
-import '@styles/base.css';
+import type { CollectionEntry } from 'astro:content'
+import { getCollection, render } from 'astro:content'
+import Layout from '@layouts/Layout.astro'
+import '@styles/tokens.css'
+import '@styles/base.css'
 
 interface Props {
-  page: CollectionEntry<'pages'>;
+  page: CollectionEntry<'pages'>
 }
 
 /**
@@ -15,24 +15,22 @@ interface Props {
  * (spec 0001, AC-1).
  */
 export async function getStaticPaths() {
-  const pages = await getCollection('pages');
+  const pages = await getCollection('pages')
   return pages.map((page) => ({
     params: { slug: page.id },
-    props: { page },
-  }));
+    props: { page }
+  }))
 }
 
-const { page } = Astro.props;
-const { Content, headings } = await render(page);
+const { page } = Astro.props
+const { Content, headings } = await render(page)
 ---
 
 <Layout title={page.data.title} description={page.data.description}>
   <article class="content-page">
     <h1>{page.data.title}</h1>
 
-    {page.data.description && (
-      <p class="lead">{page.data.description}</p>
-    )}
+    {page.data.description && <p class="lead">{page.data.description}</p>}
 
     {headings.length > 0 && (
       <nav class="table-of-contents" aria-label="Table of contents">

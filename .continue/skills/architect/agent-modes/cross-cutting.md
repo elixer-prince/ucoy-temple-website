@@ -40,15 +40,18 @@ For each: describe the approach, its enforcement strength, and the realistic bla
 
 Standard format. Include a `## Standard definition` section after `## Rationale`:
 
-```markdown
+````markdown
 ## Standard definition
 
 **Canonical pattern**:
+
 ```<language>
 // The one right way, concrete example
 ```
+````
 
 **Replaces**:
+
 - <Pattern A that is now wrong (one line)>
 - <Pattern B that is now wrong (one line)>
 
@@ -60,6 +63,8 @@ Standard format. Include a `## Standard definition` section after `## Rationale`
 
 **Exceptions**:
 <When the standard does not apply, or "None, no exceptions">
+
 ```
 
 ---
+```

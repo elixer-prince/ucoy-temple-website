@@ -14,6 +14,7 @@ The image was provided in chat (not a repo file); use the one in the conversatio
 ### A0: Multiple images?
 
 If more than one image, identify what each represents before analysis:
+
 - **Same UI at different widths** → responsive breakpoints: extract layout changes per width, feed Phase 3
 - **Same UI in different states** → default/hover/active/error: extract the visual diff per state, feed Phase 4
 - **One light + one dark** → `colors:` from the light image, `colors-dark:` from the dark
@@ -23,6 +24,7 @@ Then run A1 on the primary (default/light) image.
 ### A1: Extract tokens from the image
 
 Extract exactly what is visible, never fabricate values.
+
 - **Colors**: canvas, surface(s), ink, body, muted, accent, accent-pressed, border, semantic colors; exact hex, not approximations
 - **Typography**: family name if recognizable, size scale anchored to body = 16px, weights, line-heights, letter-spacing
 - **Spacing**: 4px base unit; pad, gap, section rhythm, max-width

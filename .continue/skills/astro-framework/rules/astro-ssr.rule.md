@@ -1,9 +1,9 @@
 ---
 description: Rules for SSR and hybrid rendering
 globs:
-  - "astro.config.mjs"
-  - "src/pages/**/*"
-  - "src/middleware.ts"
+  - 'astro.config.mjs'
+  - 'src/pages/**/*'
+  - 'src/middleware.ts'
 ---
 
 # Astro SSR Rules
@@ -13,11 +13,11 @@ globs:
 ```javascript
 // astro.config.mjs
 export default defineConfig({
-  output: 'static',  // Default - all prerendered
-  output: 'server',  // All server-rendered
-  output: 'hybrid',  // Static default, opt-in SSR
-  adapter: vercel(), // Required for server/hybrid
-});
+  output: 'static', // Default - all prerendered
+  output: 'server', // All server-rendered
+  output: 'hybrid', // Static default, opt-in SSR
+  adapter: vercel() // Required for server/hybrid
+})
 ```
 
 ## MUST DO
@@ -42,10 +42,10 @@ export default defineConfig({
 ```astro
 ---
 // In hybrid mode (default: prerendered)
-export const prerender = false; // Make this page SSR
+export const prerender = false // Make this page SSR
 
 // In server mode (default: SSR)
-export const prerender = true; // Prerender this page
+export const prerender = true // Prerender this page
 ---
 ```
 
@@ -54,26 +54,26 @@ export const prerender = true; // Prerender this page
 ```astro
 ---
 // SSR page
-const url = Astro.url;
-const pathname = url.pathname;
-const searchParams = url.searchParams;
+const url = Astro.url
+const pathname = url.pathname
+const searchParams = url.searchParams
 
-const method = Astro.request.method;
-const headers = Astro.request.headers;
-const userAgent = headers.get('user-agent');
+const method = Astro.request.method
+const headers = Astro.request.headers
+const userAgent = headers.get('user-agent')
 
 // Cookies
-const session = Astro.cookies.get('session')?.value;
+const session = Astro.cookies.get('session')?.value
 Astro.cookies.set('visited', 'true', {
   path: '/',
   httpOnly: true,
   secure: true,
-  maxAge: 60 * 60 * 24,
-});
+  maxAge: 60 * 60 * 24
+})
 
 // Redirects
 if (!session) {
-  return Astro.redirect('/login');
+  return Astro.redirect('/login')
 }
 ---
 ```
@@ -82,25 +82,25 @@ if (!session) {
 
 ```typescript
 // src/middleware.ts
-import { defineMiddleware, sequence } from 'astro:middleware';
+import { defineMiddleware, sequence } from 'astro:middleware'
 
 const auth = defineMiddleware(async ({ cookies, locals, redirect }, next) => {
-  const token = cookies.get('token')?.value;
-  locals.user = token ? await verifyToken(token) : null;
+  const token = cookies.get('token')?.value
+  locals.user = token ? await verifyToken(token) : null
 
   if (!locals.user && url.pathname.startsWith('/dashboard')) {
-    return redirect('/login');
+    return redirect('/login')
   }
 
-  return next();
-});
+  return next()
+})
 
 const logging = defineMiddleware(async ({ url }, next) => {
-  console.log(`[${new Date().toISOString()}] ${url.pathname}`);
-  return next();
-});
+  console.log(`[${new Date().toISOString()}] ${url.pathname}`)
+  return next()
+})
 
-export const onRequest = sequence(logging, auth);
+export const onRequest = sequence(logging, auth)
 ```
 
 ## Type Locals
@@ -109,7 +109,7 @@ export const onRequest = sequence(logging, auth);
 // src/env.d.ts
 declare namespace App {
   interface Locals {
-    user: { id: string; name: string } | null;
+    user: { id: string; name: string } | null
   }
 }
 ```
@@ -134,7 +134,7 @@ npx astro add cloudflare
 
 ```astro
 ---
-Astro.response.headers.set('Cache-Control', 'max-age=3600');
-Astro.response.headers.set('X-Custom-Header', 'value');
+Astro.response.headers.set('Cache-Control', 'max-age=3600')
+Astro.response.headers.set('X-Custom-Header', 'value')
 ---
 ```

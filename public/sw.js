@@ -15,7 +15,7 @@
  * in advance.
  */
 
-const VERSION = 'v1';
+const VERSION = 'v1'
 
 /*
  * Bumping VERSION is what replaces the pre-cache after a deploy, which is the
@@ -24,71 +24,69 @@ const VERSION = 'v1';
  * at a moment of their choosing); this worker only guarantees that a fresh
  * install always starts from a clean cache.
  */
-const SHELL_CACHE = `shell-${VERSION}`;
-const RUNTIME_CACHE = `runtime-${VERSION}`;
-const MEDIA_CACHE = `media-${VERSION}`;
+const SHELL_CACHE = `shell-${VERSION}`
+const RUNTIME_CACHE = `runtime-${VERSION}`
+const MEDIA_CACHE = `media-${VERSION}`
 
-const KEEP = new Set([SHELL_CACHE, RUNTIME_CACHE, MEDIA_CACHE]);
+const KEEP = new Set([SHELL_CACHE, RUNTIME_CACHE, MEDIA_CACHE])
 
-const OFFLINE_URL = '/offline.html';
-const MANIFEST_URL = '/sw-manifest.json';
+const OFFLINE_URL = '/offline.html'
+const MANIFEST_URL = '/sw-manifest.json'
 
-const MEDIA_EXTENSIONS = ['.mp4', '.webm', '.ogg', '.m4v', '.mov'];
+const MEDIA_EXTENSIONS = ['.mp4', '.webm', '.ogg', '.m4v', '.mov']
 
 self.addEventListener('install', (event) => {
-  event.waitUntil(precacheShell());
-});
+  event.waitUntil(precacheShell())
+})
 
 self.addEventListener('activate', (event) => {
   event.waitUntil(
     (async () => {
-      const names = await caches.keys();
-      await Promise.all(names.filter((name) => !KEEP.has(name)).map((name) => caches.delete(name)));
-      await self.clients.claim();
-    })(),
-  );
-});
+      const names = await caches.keys()
+      await Promise.all(names.filter((name) => !KEEP.has(name)).map((name) => caches.delete(name)))
+      await self.clients.claim()
+    })()
+  )
+})
 
 self.addEventListener('fetch', (event) => {
-  const { request } = event;
+  const { request } = event
 
-  if (request.method !== 'GET') return;
+  if (request.method !== 'GET') return
 
-  const url = new URL(request.url);
+  const url = new URL(request.url)
 
   // Other origins are none of this worker's business: the calendar embed, the
   // analytics beacon, and anything else stay exactly as they are.
-  if (url.origin !== self.location.origin) return;
-  if (url.pathname === MANIFEST_URL) return;
+  if (url.origin !== self.location.origin) return
+  if (url.pathname === MANIFEST_URL) return
 
   if (request.mode === 'navigate') {
-    event.respondWith(respondToNavigation(request));
-    return;
+    event.respondWith(respondToNavigation(request))
+    return
   }
 
   if (isMedia(url.pathname)) {
-    event.respondWith(respondToMedia(request));
-    return;
+    event.respondWith(respondToMedia(request))
+    return
   }
 
-  event.respondWith(respondToAsset(request));
-});
+  event.respondWith(respondToAsset(request))
+})
 
 /** Lets the page tell a waiting worker to take over immediately. */
 self.addEventListener('message', (event) => {
   if (event.data === 'SKIP_WAITING') {
-    self.skipWaiting();
+    self.skipWaiting()
   }
-});
+})
 
 /**
  * Returns true when the URL path points to a media file (video/audio)
  * that should use the network-first strategy.
  */
 function isMedia(pathname) {
-  return MEDIA_EXTENSIONS.some((ext) =>
-    pathname.toLowerCase().endsWith(ext),
-  );
+  return MEDIA_EXTENSIONS.some((ext) => pathname.toLowerCase().endsWith(ext))
 }
 
 /**
@@ -104,34 +102,32 @@ function isMedia(pathname) {
  * offline page, so a fresh install always works.
  */
 async function precacheShell() {
-  const cache = await caches.open(SHELL_CACHE);
+  const cache = await caches.open(SHELL_CACHE)
 
   // Always cache the offline fallback first.
   try {
     const offlineResponse = await fetch(OFFLINE_URL, {
-      cache: 'reload',
-    });
+      cache: 'reload'
+    })
     if (offlineResponse.ok) {
-      await cache.put(OFFLINE_URL, offlineResponse);
+      await cache.put(OFFLINE_URL, offlineResponse)
     }
   } catch (err) {
-    console.warn('SW: could not cache offline page', err);
+    console.warn('SW: could not cache offline page', err)
   }
 
   // Fetch and cache every file listed in the build manifest.
   try {
     const manifestResponse = await fetch(MANIFEST_URL, {
-      cache: 'reload',
-    });
-    if (!manifestResponse.ok) return;
+      cache: 'reload'
+    })
+    if (!manifestResponse.ok) return
 
-    const manifest = await manifestResponse.json();
-    const requests = manifest.urls.map(
-      (url) => new Request(url, { cache: 'reload' }),
-    );
-    await cache.addAll(requests);
+    const manifest = await manifestResponse.json()
+    const requests = manifest.urls.map((url) => new Request(url, { cache: 'reload' }))
+    await cache.addAll(requests)
   } catch (err) {
-    console.warn('SW: could not pre-cache manifest URLs', err);
+    console.warn('SW: could not pre-cache manifest URLs', err)
   }
 }
 
@@ -147,27 +143,27 @@ async function precacheShell() {
  * visitors get the content online.
  */
 async function respondToNavigation(request) {
-  const cache = await caches.open(SHELL_CACHE);
+  const cache = await caches.open(SHELL_CACHE)
 
   // 1. Cache-first: serve the precached page immediately.
-  const cached = await cache.match(request);
-  if (cached) return cached;
+  const cached = await cache.match(request)
+  if (cached) return cached
 
   // 2. Cache miss — try the network.
   try {
-    const response = await fetch(request);
+    const response = await fetch(request)
     if (response.ok) {
       // Cache for future offline visits.
-      await cache.put(request, response.clone());
+      await cache.put(request, response.clone())
     }
-    return response;
+    return response
   } catch {
     // 3. Network failed — fall back to the offline page.
-    const offline = await cache.match(OFFLINE_URL);
-    if (offline) return offline;
+    const offline = await cache.match(OFFLINE_URL)
+    if (offline) return offline
 
     // Offline page itself wasn't cached — last resort.
-    return new Response('Offline', { status: 503, statusText: 'Service Unavailable' });
+    return new Response('Offline', { status: 503, statusText: 'Service Unavailable' })
   }
 }
 
@@ -185,20 +181,20 @@ async function respondToNavigation(request) {
  */
 async function respondToMedia(request) {
   try {
-    const response = await fetch(request);
+    const response = await fetch(request)
     if (response.ok) {
-      const cache = await caches.open(MEDIA_CACHE);
-      await cache.put(request, response.clone());
+      const cache = await caches.open(MEDIA_CACHE)
+      await cache.put(request, response.clone())
     }
-    return response;
+    return response
   } catch {
     // Network failed — try the cache.
-    const cache = await caches.open(MEDIA_CACHE);
-    const cached = await cache.match(request);
-    if (cached) return cached;
+    const cache = await caches.open(MEDIA_CACHE)
+    const cached = await cache.match(request)
+    if (cached) return cached
 
     // No cached copy and no network.
-    return new Response('', { status: 503, statusText: 'Service Unavailable' });
+    return new Response('', { status: 503, statusText: 'Service Unavailable' })
   }
 }
 
@@ -213,24 +209,24 @@ async function respondToMedia(request) {
  */
 async function respondToAsset(request) {
   // 1. Shell cache (precached build output).
-  const shellCache = await caches.open(SHELL_CACHE);
-  const cached = await shellCache.match(request);
-  if (cached) return cached;
+  const shellCache = await caches.open(SHELL_CACHE)
+  const cached = await shellCache.match(request)
+  if (cached) return cached
 
   // 2. Runtime cache.
-  const runtimeCache = await caches.open(RUNTIME_CACHE);
-  const runtimeCached = await runtimeCache.match(request);
-  if (runtimeCached) return runtimeCached;
+  const runtimeCache = await caches.open(RUNTIME_CACHE)
+  const runtimeCached = await runtimeCache.match(request)
+  if (runtimeCached) return runtimeCached
 
   // 3. Network fallback.
   try {
-    const response = await fetch(request);
+    const response = await fetch(request)
     if (response.ok) {
-      await runtimeCache.put(request, response.clone());
+      await runtimeCache.put(request, response.clone())
     }
-    return response;
+    return response
   } catch {
     // 4. Everything failed.
-    return new Response('', { status: 503, statusText: 'Service Unavailable' });
+    return new Response('', { status: 503, statusText: 'Service Unavailable' })
   }
 }

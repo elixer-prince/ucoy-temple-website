@@ -6,11 +6,11 @@ Astro configuration lives in `astro.config.mjs` at the project root.
 
 ```javascript
 // astro.config.mjs
-import { defineConfig } from 'astro/config';
+import { defineConfig } from 'astro/config'
 
 export default defineConfig({
   // Your configuration options here
-});
+})
 ```
 
 ## Common Options
@@ -20,42 +20,38 @@ export default defineConfig({
 ```javascript
 export default defineConfig({
   site: 'https://example.com',
-  base: '/blog', // For subdirectory deployments
-});
+  base: '/blog' // For subdirectory deployments
+})
 ```
 
 ### Output Mode
 
 ```javascript
-import node from '@astrojs/node';
+import node from '@astrojs/node'
 
 export default defineConfig({
-  output: 'static',    // Default - all pages prerendered
+  output: 'static', // Default - all pages prerendered
   // output: 'server', // All pages server-rendered
   // output: 'hybrid', // Static by default, opt-in to SSR
 
-  adapter: node({      // Required for server/hybrid
-    mode: 'standalone',
-  }),
-});
+  adapter: node({
+    // Required for server/hybrid
+    mode: 'standalone'
+  })
+})
 ```
 
 ### Integrations
 
 ```javascript
-import react from '@astrojs/react';
-import tailwind from '@astrojs/tailwind';
-import mdx from '@astrojs/mdx';
-import sitemap from '@astrojs/sitemap';
+import react from '@astrojs/react'
+import tailwind from '@astrojs/tailwind'
+import mdx from '@astrojs/mdx'
+import sitemap from '@astrojs/sitemap'
 
 export default defineConfig({
-  integrations: [
-    react(),
-    tailwind(),
-    mdx(),
-    sitemap(),
-  ],
-});
+  integrations: [react(), tailwind(), mdx(), sitemap()]
+})
 ```
 
 ### Build Options
@@ -63,21 +59,21 @@ export default defineConfig({
 ```javascript
 export default defineConfig({
   build: {
-    format: 'directory',  // /about/index.html (default)
+    format: 'directory', // /about/index.html (default)
     // format: 'file',    // /about.html
 
     inlineStylesheets: 'auto', // Inline small stylesheets
     // inlineStylesheets: 'always',
     // inlineStylesheets: 'never',
 
-    assets: '_astro',     // Assets directory name
+    assets: '_astro' // Assets directory name
   },
 
-  compressHTML: true,     // Minify HTML output
+  compressHTML: true, // Minify HTML output
 
-  outDir: './dist',       // Build output directory
-  publicDir: './public',  // Static assets directory
-});
+  outDir: './dist', // Build output directory
+  publicDir: './public' // Static assets directory
+})
 ```
 
 ### Dev Server
@@ -85,15 +81,15 @@ export default defineConfig({
 ```javascript
 export default defineConfig({
   server: {
-    port: 4321,           // Default port
-    host: true,           // Expose to network
-    open: true,           // Open browser on start
+    port: 4321, // Default port
+    host: true, // Expose to network
+    open: true // Open browser on start
   },
 
   devToolbar: {
-    enabled: true,        // Show dev toolbar
-  },
-});
+    enabled: true // Show dev toolbar
+  }
+})
 ```
 
 ### Prefetching
@@ -101,10 +97,10 @@ export default defineConfig({
 ```javascript
 export default defineConfig({
   prefetch: {
-    prefetchAll: true,              // Prefetch all links
-    defaultStrategy: 'viewport',    // 'hover' | 'viewport' | 'load'
-  },
-});
+    prefetchAll: true, // Prefetch all links
+    defaultStrategy: 'viewport' // 'hover' | 'viewport' | 'load'
+  }
+})
 ```
 
 ## Vite Configuration
@@ -116,57 +112,55 @@ export default defineConfig({
     resolve: {
       alias: {
         '@': '/src',
-        '@components': '/src/components',
-      },
+        '@components': '/src/components'
+      }
     },
     css: {
       preprocessorOptions: {
         scss: {
-          additionalData: `@import "@/styles/variables.scss";`,
-        },
-      },
+          additionalData: `@import "@/styles/variables.scss";`
+        }
+      }
     },
     build: {
       rollupOptions: {
         output: {
           manualChunks: {
-            vendor: ['react', 'react-dom'],
-          },
-        },
-      },
-    },
-  },
-});
+            vendor: ['react', 'react-dom']
+          }
+        }
+      }
+    }
+  }
+})
 ```
 
 ## Markdown Configuration
 
 ```javascript
-import remarkToc from 'remark-toc';
-import rehypeSlug from 'rehype-slug';
+import remarkToc from 'remark-toc'
+import rehypeSlug from 'rehype-slug'
 
 export default defineConfig({
   markdown: {
-    syntaxHighlight: 'shiki',  // 'shiki' | 'prism' | false
+    syntaxHighlight: 'shiki', // 'shiki' | 'prism' | false
 
     shikiConfig: {
       theme: 'dracula',
-      wrap: true,
+      wrap: true
     },
 
     remarkPlugins: [
       remarkToc,
-      [remarkPlugin, { option: true }],  // With options
+      [remarkPlugin, { option: true }] // With options
     ],
 
-    rehypePlugins: [
-      rehypeSlug,
-    ],
+    rehypePlugins: [rehypeSlug],
 
-    gfm: true,                // GitHub Flavored Markdown
-    smartypants: true,        // Smart quotes
-  },
-});
+    gfm: true, // GitHub Flavored Markdown
+    smartypants: true // Smart quotes
+  }
+})
 ```
 
 ## i18n Configuration
@@ -178,15 +172,15 @@ export default defineConfig({
     locales: ['en', 'es', 'fr', 'de'],
 
     routing: {
-      prefixDefaultLocale: false,  // /about vs /en/about
-      redirectToDefaultLocale: true,
+      prefixDefaultLocale: false, // /about vs /en/about
+      redirectToDefaultLocale: true
     },
 
     fallback: {
-      es: 'en',  // Fallback to English for Spanish
-    },
-  },
-});
+      es: 'en' // Fallback to English for Spanish
+    }
+  }
+})
 ```
 
 ## Image Configuration
@@ -201,19 +195,19 @@ export default defineConfig({
     remotePatterns: [
       {
         protocol: 'https',
-        hostname: '**.amazonaws.com',
-      },
+        hostname: '**.amazonaws.com'
+      }
     ],
 
     // Image service configuration
     service: {
       entrypoint: 'astro/assets/services/sharp',
       config: {
-        limitInputPixels: false,
-      },
-    },
-  },
-});
+        limitInputPixels: false
+      }
+    }
+  }
+})
 ```
 
 ## Redirects
@@ -225,10 +219,10 @@ export default defineConfig({
     '/old-blog/[...slug]': '/blog/[...slug]',
     '/twitter': {
       status: 302,
-      destination: 'https://twitter.com/astrodotbuild',
-    },
-  },
-});
+      destination: 'https://twitter.com/astrodotbuild'
+    }
+  }
+})
 ```
 
 ## TypeScript Configuration
@@ -250,6 +244,7 @@ export default defineConfig({
 ```
 
 Available presets:
+
 - `astro/tsconfigs/base` - Minimal
 - `astro/tsconfigs/strict` - Recommended
 - `astro/tsconfigs/strictest` - Maximum strictness
@@ -261,20 +256,20 @@ Available presets:
 /// <reference types="astro/client" />
 
 interface ImportMetaEnv {
-  readonly PUBLIC_API_URL: string;
-  readonly DATABASE_URL: string;
+  readonly PUBLIC_API_URL: string
+  readonly DATABASE_URL: string
 }
 
 interface ImportMeta {
-  readonly env: ImportMetaEnv;
+  readonly env: ImportMetaEnv
 }
 
 declare namespace App {
   interface Locals {
     user: {
-      id: string;
-      name: string;
-    } | null;
+      id: string
+      name: string
+    } | null
   }
 }
 ```
@@ -295,17 +290,17 @@ SECRET_KEY=abc123
 ```astro
 ---
 // Server-side (all variables)
-const dbUrl = import.meta.env.DATABASE_URL;
+const dbUrl = import.meta.env.DATABASE_URL
 
 // Client-side (only PUBLIC_ prefixed)
-const apiUrl = import.meta.env.PUBLIC_API_URL;
+const apiUrl = import.meta.env.PUBLIC_API_URL
 
 // Built-in variables
-const mode = import.meta.env.MODE;      // 'development' | 'production'
-const prod = import.meta.env.PROD;      // boolean
-const dev = import.meta.env.DEV;        // boolean
-const site = import.meta.env.SITE;      // From astro.config site
-const base = import.meta.env.BASE_URL;  // From astro.config base
+const mode = import.meta.env.MODE // 'development' | 'production'
+const prod = import.meta.env.PROD // boolean
+const dev = import.meta.env.DEV // boolean
+const site = import.meta.env.SITE // From astro.config site
+const base = import.meta.env.BASE_URL // From astro.config base
 ---
 ```
 
@@ -313,7 +308,7 @@ const base = import.meta.env.BASE_URL;  // From astro.config base
 
 ```javascript
 // astro.config.mjs
-import { defineConfig, envField } from 'astro/config';
+import { defineConfig, envField } from 'astro/config'
 
 export default defineConfig({
   env: {
@@ -321,47 +316,47 @@ export default defineConfig({
       PUBLIC_API_URL: envField.string({
         context: 'client',
         access: 'public',
-        default: 'https://api.example.com',
+        default: 'https://api.example.com'
       }),
       DATABASE_URL: envField.string({
         context: 'server',
-        access: 'secret',
+        access: 'secret'
       }),
       PORT: envField.number({
         context: 'server',
         access: 'public',
-        default: 4321,
+        default: 4321
       }),
       FEATURE_FLAG: envField.boolean({
         context: 'client',
         access: 'public',
-        default: false,
-      }),
-    },
-  },
-});
+        default: false
+      })
+    }
+  }
+})
 ```
 
 ```astro
 ---
-import { PUBLIC_API_URL, DATABASE_URL } from 'astro:env/server';
-import { PUBLIC_API_URL } from 'astro:env/client';
+import { PUBLIC_API_URL, DATABASE_URL } from 'astro:env/server'
+import { PUBLIC_API_URL } from 'astro:env/client'
 ---
 ```
 
 ## Session Configuration (Astro 5.7+)
 
 ```javascript
-import { defineConfig, sessionDrivers } from 'astro/config';
+import { defineConfig, sessionDrivers } from 'astro/config'
 
 export default defineConfig({
   session: {
     driver: sessionDrivers.redis({
-      url: process.env.REDIS_URL,
-    }),
+      url: process.env.REDIS_URL
+    })
     // Or use filesystem, memory, etc.
-  },
-});
+  }
+})
 ```
 
 ## Experimental Features
@@ -370,9 +365,9 @@ export default defineConfig({
 export default defineConfig({
   experimental: {
     contentIntellisense: true,
-    clientPrerender: true,
-  },
-});
+    clientPrerender: true
+  }
+})
 ```
 
 > **Note:** Server islands (`server:defer`) are stable since Astro 5 — no experimental flag needed.
@@ -381,12 +376,12 @@ export default defineConfig({
 
 ```javascript
 // astro.config.mjs
-import { defineConfig } from 'astro/config';
-import react from '@astrojs/react';
-import tailwind from '@astrojs/tailwind';
-import mdx from '@astrojs/mdx';
-import sitemap from '@astrojs/sitemap';
-import vercel from '@astrojs/vercel';
+import { defineConfig } from 'astro/config'
+import react from '@astrojs/react'
+import tailwind from '@astrojs/tailwind'
+import mdx from '@astrojs/mdx'
+import sitemap from '@astrojs/sitemap'
+import vercel from '@astrojs/vercel'
 
 export default defineConfig({
   site: 'https://mysite.com',
@@ -397,40 +392,40 @@ export default defineConfig({
   integrations: [
     react(),
     tailwind({
-      applyBaseStyles: false,
+      applyBaseStyles: false
     }),
     mdx(),
-    sitemap(),
+    sitemap()
   ],
 
   prefetch: {
-    prefetchAll: true,
+    prefetchAll: true
   },
 
   i18n: {
     defaultLocale: 'en',
-    locales: ['en', 'es'],
+    locales: ['en', 'es']
   },
 
   image: {
-    domains: ['images.unsplash.com'],
+    domains: ['images.unsplash.com']
   },
 
   markdown: {
     syntaxHighlight: 'shiki',
     shikiConfig: {
-      theme: 'github-dark',
-    },
+      theme: 'github-dark'
+    }
   },
 
   vite: {
     resolve: {
       alias: {
-        '@': '/src',
-      },
-    },
-  },
-});
+        '@': '/src'
+      }
+    }
+  }
+})
 ```
 
 ## Best Practices

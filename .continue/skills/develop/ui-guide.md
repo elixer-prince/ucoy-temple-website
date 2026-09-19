@@ -7,10 +7,12 @@ UI build track for `/develop`, read after the spec gate (`SKILL.md` Step 0) clas
 You are a senior product designer shipping a real product, not a developer wiring a form. Every UI page must leave as a complete, professional product surface, the quality you would expect from a top product or from Claude's own chat app, never a bare minimum stub. This is not optional styling advice. It is the definition of done for a UI build.
 
 **Design first, then integrate.** Build in two passes, so the codebase's constraints (tokens, libraries, accessibility) don't crush the design before it exists:
+
 1. **Design the surface** (bold, complete, opinionated), as if you were shipping it standalone, to the agreed design system. Compose the whole page (`ui/implementation.md` Phase 0).
 2. **Integrate it** into the codebase: installed styling library, real tokens, semantic HTML, accessibility, responsive (Phases 1 to 5).
 
 **Disqualifiers, any one means NOT done, fix before you report:**
+
 - a lone centered form or single input box floating on an empty page
 - large dead zones, or content stranded in a narrow column with blank canvas around it
 - naked / unstyled / full bleed elements (a raw black bar, an unstyled header, a default unstyled platform control)
@@ -45,13 +47,14 @@ Any Agent Skills client, macOS/Linux/Windows. Detection snippets (`find`, `cat |
 
 Check the governing spec first (`/develop` read it in Step 2). The design source is the engineer's choice, so follow what the spec recorded, never ask again, and never default to Figma just because an MCP is connected.
 
-Route on what the spec recorded, using the *Design source* table above:
+Route on what the spec recorded, using the _Design source_ table above:
+
 - Figma or another design MCP → `ui/mcp.md`.
 - A screenshot or a pasted image → `ui/image.md`.
 - An existing design system, or "extract from existing UI" → **Step 0.1**.
 - A described direction, a brand or site URL, or nothing at all → `ui/generate.md` (B1 finds the direction, B2 derives and verifies the tokens into CSS and the character into `design.md`), then implement.
 
-No spec governs this UI, or the spec is silent on the design system → fall through to the detection in Steps 0.1 to 0.3. If detection settles nothing, ask *"How should I get the design for this?"* with options **From Figma (its MCP)** · **From a screenshot / images** · **From the existing `design.md` / current UI** · **No design, suggest a direction** (the picker adds Other), then proceed by their pick.
+No spec governs this UI, or the spec is silent on the design system → fall through to the detection in Steps 0.1 to 0.3. If detection settles nothing, ask _"How should I get the design for this?"_ with options **From Figma (its MCP)** · **From a screenshot / images** · **From the existing `design.md` / current UI** · **No design, suggest a direction** (the picker adds Other), then proceed by their pick.
 
 ## Step 0.1: Check for existing design.md
 
@@ -65,10 +68,12 @@ Not found → **Step 0.2 (brownfield check)**.
 ## Step 0.2: Brownfield check (no design.md, but is there existing UI?)
 
 Before generating a fresh design system, check for an existing visual language to match; a new one over an existing app clashes with what's shipped. Search the project (ignoring dependency dirs) for:
+
 - Styling, token, or theme files: wherever this platform keeps them (a CSS/token/theme file on web, the theme or style module on mobile or desktop).
 - Component directories: the existing component or screen tree.
 
 Found (brownfield): ask before proceeding, via your agent's interactive option picker (`AskUserQuestion` on Claude Code) or plain text options with the same choices:
+
 - **question**: "There's no `design.md`, but this project already has UI. How should I get the design system?"
 - **header**: "Design system"
 - **options**:
@@ -80,7 +85,7 @@ No existing UI (greenfield) → **Step 0.5**.
 
 ### Step 0.3: Capture the design direction from existing code
 
-The project's styling or theme system already holds the token values (the source of truth); do not copy them into `design.md`. Read the token/theme files and 3 to 5 representative components/screens to read the *system*, then write `design.md` as art direction (per `ui/generate.md` B2's schema): `source: extracted-from-code`, the character you observe, the composition and component patterns the app already uses, the build mandate, and a pointer to where the tokens live. Inconsistent codebase: note the dominant patterns and the variance. Show a short summary, confirm before building, then implement to the direction with that styling/theme system as the token source of truth.
+The project's styling or theme system already holds the token values (the source of truth); do not copy them into `design.md`. Read the token/theme files and 3 to 5 representative components/screens to read the _system_, then write `design.md` as art direction (per `ui/generate.md` B2's schema): `source: extracted-from-code`, the character you observe, the composition and component patterns the app already uses, the build mandate, and a pointer to where the tokens live. Inconsistent codebase: note the dominant patterns and the variance. Show a short summary, confirm before building, then implement to the direction with that styling/theme system as the token source of truth.
 
 ---
 
@@ -88,13 +93,14 @@ The project's styling or theme system already holds the token values (the source
 
 Determines prop API design, routing integration, file placement.
 
-| Prompt contains | Build type |
-|---|---|
-| "screen", "page", "layout", "route", "dashboard", "view" | **Screen** |
+| Prompt contains                                                                        | Build type    |
+| -------------------------------------------------------------------------------------- | ------------- |
+| "screen", "page", "layout", "route", "dashboard", "view"                               | **Screen**    |
 | "component", "button", "card", "input", "modal", "badge", "dropdown", "toggle", "chip" | **Component** |
-| Ambiguous | Ask |
+| Ambiguous                                                                              | Ask           |
 
 If ambiguous, ask (as above):
+
 ```
 "Is this a reusable component or a full page?"
   - Reusable component: isolated, takes props, no routing

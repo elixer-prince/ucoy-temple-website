@@ -84,7 +84,7 @@ Make entire style block global:
 ```astro
 ---
 // src/layouts/Layout.astro
-import '../styles/global.css';
+import '../styles/global.css'
 ---
 
 <!doctype html>
@@ -135,21 +135,23 @@ Pass JavaScript values to CSS:
 ---
 const theme = {
   primaryColor: '#3b82f6',
-  fontSize: '16px',
-};
+  fontSize: '16px'
+}
 
-const backgroundUrl = '/images/hero.jpg';
+const backgroundUrl = '/images/hero.jpg'
 ---
 
 <div class="hero">
   <h1>Welcome</h1>
 </div>
 
-<style define:vars={{
-  primaryColor: theme.primaryColor,
-  fontSize: theme.fontSize,
-  bgImage: `url(${backgroundUrl})`
-}}>
+<style
+  define:vars={{
+    primaryColor: theme.primaryColor,
+    fontSize: theme.fontSize,
+    bgImage: `url(${backgroundUrl})`
+  }}
+>
   .hero {
     background-image: var(--bgImage);
     color: var(--primaryColor);
@@ -164,18 +166,20 @@ Conditionally apply classes:
 
 ```astro
 ---
-const isActive = true;
-const isDisabled = false;
-const size = 'large';
+const isActive = true
+const isDisabled = false
+const size = 'large'
 ---
 
-<button class:list={[
-  'btn',                          // Always applied
-  { 'btn-active': isActive },     // Applied if true
-  { 'btn-disabled': isDisabled }, // Not applied (false)
-  size && `btn-${size}`,          // "btn-large"
-  ['extra', 'classes'],           // Arrays flattened
-]}>
+<button
+  class:list={[
+    'btn', // Always applied
+    { 'btn-active': isActive }, // Applied if true
+    { 'btn-disabled': isDisabled }, // Not applied (false)
+    size && `btn-${size}`, // "btn-large"
+    ['extra', 'classes'] // Arrays flattened
+  ]}
+>
   Click Me
 </button>
 
@@ -263,12 +267,8 @@ npx astro add tailwind
 ---
 
 <div class="max-w-4xl mx-auto p-4">
-  <h1 class="text-3xl font-bold text-blue-600">
-    Hello World
-  </h1>
-  <p class="mt-4 text-gray-700 leading-relaxed">
-    Welcome to my site.
-  </p>
+  <h1 class="text-3xl font-bold text-blue-600">Hello World</h1>
+  <p class="mt-4 text-gray-700 leading-relaxed">Welcome to my site.</p>
 </div>
 ```
 
@@ -276,15 +276,17 @@ npx astro add tailwind
 
 ```astro
 ---
-const isLarge = true;
+const isLarge = true
 ---
 
-<button class:list={[
-  'px-4 py-2 rounded',
-  'bg-blue-500 hover:bg-blue-600',
-  'text-white font-medium',
-  { 'text-lg': isLarge },
-]}>
+<button
+  class:list={[
+    'px-4 py-2 rounded',
+    'bg-blue-500 hover:bg-blue-600',
+    'text-white font-medium',
+    { 'text-lg': isLarge }
+  ]}
+>
   Click Me
 </button>
 ```
@@ -313,8 +315,8 @@ const isLarge = true;
 
 ```astro
 ---
-import '../styles/component.css';
-import 'package/styles.css';
+import '../styles/component.css'
+import 'package/styles.css'
 ---
 ```
 
@@ -324,7 +326,7 @@ Astro supports CSS Modules for component-scoped styles:
 
 ```astro
 ---
-import styles from './Button.module.css';
+import styles from './Button.module.css'
 ---
 
 <button class={styles.button}>
@@ -354,9 +356,9 @@ Create `postcss.config.mjs`:
 export default {
   plugins: {
     autoprefixer: {},
-    'postcss-nesting': {},
-  },
-};
+    'postcss-nesting': {}
+  }
+}
 ```
 
 Then use modern CSS features:
@@ -410,10 +412,10 @@ To style child content, use `:global()`:
 ---
 // Button.astro
 interface Props {
-  class?: string;
+  class?: string
 }
 
-const { class: className } = Astro.props;
+const { class: className } = Astro.props
 ---
 
 <button class:list={['btn', className]}>

@@ -5,6 +5,7 @@ File path: `docs/specs/NNNN-kebab-case-title.md`
 ---
 
 === SPEC TEMPLATE START ===
+
 # NNNN. Title (concise, noun-phrase form, e.g. "Adopt a relational database for primary storage")
 
 **Date**: YYYY-MM-DD
@@ -13,6 +14,7 @@ File path: `docs/specs/NNNN-kebab-case-title.md`
 ## Summary
 
 <!-- HUMAN QUICK READ (plain words, no dashes). Everyone reads this first, technical or not. -->
+
 <Plain language overview in 2 to 4 short sentences. Say what this decision is, why it was made,
 and what it means for building. A busy reader (technical or not) should get the gist in about 20
 seconds. Explain any technical term in plain words (a short gloss in parentheses). Use no dashes
@@ -21,6 +23,7 @@ of any kind.>
 ## Context
 
 <!-- DECISION RECORD (the WHY, human context; in a directory spec this section lives in rationale.md, not index.md; /develop skips it) -->
+
 <What is the problem or decision to be made? What forces are at play (technical constraints,
 team capabilities, cost, performance requirements, compliance)? What is the consequence of not
 deciding? 2 to 4 paragraphs. Do not mention options here, only the problem space.>
@@ -33,9 +36,11 @@ deciding? 2 to 4 paragraphs. Do not mention options here, only the problem space
      Acceptance criteria are the contract /develop builds to and /check verify checks. -->
 
 **User stories**:
+
 - As a <role>, I want <capability> so that <outcome>.
 
 **Acceptance criteria** (the contract, each criterion is IDed and independently checkable):
+
 - **AC-1**: <observable, testable outcome that must hold for the feature to be correct>
 - **AC-2**: <the key edge case or failure that must be handled, e.g. "retry after timeout returns the same result (idempotent)">
 - **AC-N**: <…>
@@ -46,14 +51,17 @@ deciding? 2 to 4 paragraphs. Do not mention options here, only the problem space
 ## Options considered
 
 <!-- DECISION RECORD (the WHY, human context; in a directory spec this section lives in rationale.md, not index.md; /develop skips it) -->
+
 ### Option 1: <Name>
 
 <One paragraph describing this option.>
 
 **Pros**:
+
 - <benefit>
 
 **Cons**:
+
 - <drawback or tradeoff>
 
 ### Option 2: <Name>
@@ -61,9 +69,11 @@ deciding? 2 to 4 paragraphs. Do not mention options here, only the problem space
 <One paragraph describing this option.>
 
 **Pros**:
+
 - <benefit>
 
 **Cons**:
+
 - <drawback or tradeoff>
 
 <!-- Add Option 3 / Option 4 if relevant. Maximum 4 options. Omit section entirely only
@@ -72,6 +82,7 @@ deciding? 2 to 4 paragraphs. Do not mention options here, only the problem space
 ## Decision
 
 <!-- BUILD SPEC (the WHAT, /develop reads this) -->
+
 **Chosen option**: Option N: <Name>
 
 <One sentence stating the decision clearly.>
@@ -82,11 +93,13 @@ deciding? 2 to 4 paragraphs. Do not mention options here, only the problem space
 ## Rationale
 
 <!-- DECISION RECORD (the WHY, human context; in a directory spec this section lives in rationale.md, not index.md; /develop skips it) -->
+
 <Why this option over the others? Reference the specific constraints and forces from Context.
 Do not repeat the pros/cons list, explain the reasoning. 1 to 3 paragraphs.>
 
 <!-- Feature design mode only. Include immediately after Rationale. -->
 <!-- BUILD SPEC (the WHAT, /develop reads this) -->
+
 ## Feature design
 
 **Data model sketch**:
@@ -96,14 +109,17 @@ Do not repeat the pros/cons list, explain the reasoning. 1 to 3 paragraphs.>
 <e.g. order: draft → submitted → paid → fulfilled. Omit if no state machine>
 
 **API surface**:
-| Endpoint | Method | Key inputs | Key outputs | Auth | Key errors |
-|---|---|---|---|---|---|
-| /resource | POST | field:type (req) | id, status | bearer | 409, 422 |
+
+| Endpoint  | Method | Key inputs       | Key outputs | Auth   | Key errors |
+| --------- | ------ | ---------------- | ----------- | ------ | ---------- |
+| /resource | POST   | field:type (req) | id, status  | bearer | 409, 422   |
 
 **Value sourcing** (every value each action produces, computes, or displays names where it comes from; a required value with no named source is an undecided input, resolve it before this spec is done, do NOT leave the build to invent it):
-| Action | Value produced / displayed | Source |
-|---|---|---|
-| <action> | <the value> | <an input param · a DB column · derived from X · decided in spec N> |
+
+| Action   | Value produced / displayed | Source                                                              |
+| -------- | -------------------------- | ------------------------------------------------------------------- |
+| <action> | <the value>                | <an input param · a DB column · derived from X · decided in spec N> |
+
 <!-- List every value each acceptance criterion needs this action to produce, not just the obvious ones. The point is to expose inputs the API table omits: a value the AC requires whose source is not an input, a column, or a prior decision is a gap. Diverse illustrations (pattern, not a checklist): a read that must show "the user's local day" names where the timezone comes from; a total shown to a user names the rounding/currency rule's source; a per-tenant list names how the tenant is resolved. Keep it procedural: trace each produced value to a named source; never work from a fixed list of "sources to check". -->
 
 **Key invariants**:
@@ -113,30 +129,34 @@ Do not repeat the pros/cons list, explain the reasoning. 1 to 3 paragraphs.>
 <Who can read/write what. Roles, ownership, public/private. Name compliance scope if applicable.>
 
 **Configuration required**:
+
 - `ENV_VAR_NAME`: purpose (omit section if no new env vars or credentials are needed)
 
 <!-- Acceptance criteria are NOT restated here; they live once, IDed, in ## Requirements (the contract).
      Reference their IDs (AC-N) from the test scenarios below and from ## Build plan tasks. -->
 
 **Critical test scenarios** (each maps to an acceptance criterion in ## Requirements):
+
 - Happy path: <main flow end to end>, verifies **AC-N**
 - Failure case: <most important failure, such as concurrency, timeout, invalid state>, verifies **AC-N**
 - Auth/permission: <who is denied and what they receive>, verifies **AC-N**
 
 <!-- Architecture mode only. Include immediately after Rationale. -->
 <!-- BUILD SPEC (the WHAT, /develop reads this) -->
+
 ## Proposed stack
 
-| Layer | Choice | Reason |
-|---|---|---|
-| Language | | |
-| Framework | | |
-| Primary DB | | |
-| Auth | | |
-| Hosting | | |
-| Observability | | |
+| Layer         | Choice | Reason |
+| ------------- | ------ | ------ |
+| Language      |        |        |
+| Framework     |        |        |
+| Primary DB    |        |        |
+| Auth          |        |        |
+| Hosting       |        |        |
+| Observability |        |        |
 
 <!-- BUILD SPEC (the WHAT, /develop builds these in order; /check verify checks the AC each satisfies) -->
+
 ## Build plan
 
 <!-- Ordered build tasks DERIVED from the surface above (data model, API, stack) and the acceptance
@@ -151,23 +171,28 @@ Do not repeat the pros/cons list, explain the reasoning. 1 to 3 paragraphs.>
 
 1. <Build task, e.g. "Create the migration for the confirmed data model">, satisfies **AC-1**
 2. <Build task>, satisfies **AC-2**, **AC-3**
-N. <Build task>, satisfies **AC-N**
+   N. <Build task>, satisfies **AC-N**
 
 ## Consequences
 
 <!-- BUILD SPEC (the WHAT, /develop reads this: the constraints the build must honor) -->
+
 **Positive**:
+
 - <what improves>
 
 **Negative / tradeoffs**:
+
 - <what gets worse or costs more>
 
 **Neutral**:
+
 - <notable side-effects, migrations needed, new patterns to learn, etc.>
 
 ## Follow-up
 
 - [ ] <Action item or open question>
+
 <!-- Omit section if there are no follow-up actions. -->
 
 ## References
@@ -183,33 +208,41 @@ N. <Build task>, satisfies **AC-N**
      later; these links are here for a human to follow. -->
 
 **Project sources** (verifiable, in this repo):
+
 - <e.g. `AGENTS.md`, the auth convention · spec 0003 · an installed community skill · already on the project's BaaS>
 
 **Practices & standards**:
+
 - <named practice/principle the decision rests on, e.g. idempotency keys for money ops · strangler pattern · OWASP session guidance>
 
 **Links** (web verified only, `sources+links` level only):
+
 - <Title: https://real-fetched-url> · <or "none verified">
 
 <!-- Enhancement mode only, when migration is non-trivial. -->
+
 ## Migration plan
 
 **Strategy**: <strangler | big bang | feature-flagged | no migration needed>
 **Phases**:
+
 1. <Phase 1>
 2. <Phase 2>
-**Rollback**: <how to revert if a phase fails>
-**Risks**: <what could go wrong>
+   **Rollback**: <how to revert if a phase fails>
+   **Risks**: <what could go wrong>
 
 <!-- Cross-cutting mode only. Include immediately after Rationale. -->
+
 ## Standard definition
 
 **Canonical pattern**:
+
 ```<language>
 // The one right way, concrete example
 ```
 
 **Replaces**:
+
 - <Pattern that is now wrong>
 
 **Enforcement**:
@@ -236,15 +269,16 @@ N. <Build task>, satisfies **AC-N**
 
 The spec's status mirrors its feature's build lifecycle (scope: planned→`Proposed`, in-progress→`In Progress`, done→`Accepted`), with one exception: an `Assumed` spec stays `Assumed` until `/architect` ratifies it, even after the feature is `done`:
 
-| Status | Meaning |
-|---|---|
-| `Proposed` | spec written, decision agreed, feature NOT yet built. Set by /architect at creation. |
-| `In Progress` | The feature governed by this spec is being built. Set by /develop when the feature goes in-progress. |
-| `Accepted` | The feature is built and verified (scope `done`), the "done and dusted" state. A spec is NOT `Accepted` until its feature ships. Set by /develop on completion or reconciled by /sync. |
-| `Superseded by [NNNN](NNNN-title.md)` | Replaced by a newer spec |
-| `Assumed` | Built on a decision that was never deliberated, via `/develop`'s build now override. Records the assumption, not a deliberated decision. Stays `Assumed`, and never blocks the feature's `done`, until `/architect` ratifies it (which sets `Accepted`) or supersedes it. Only `/develop` creates it; only `/architect` clears it. |
+| Status                                | Meaning                                                                                                                                                                                                                                                                                                                            |
+| ------------------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `Proposed`                            | spec written, decision agreed, feature NOT yet built. Set by /architect at creation.                                                                                                                                                                                                                                               |
+| `In Progress`                         | The feature governed by this spec is being built. Set by /develop when the feature goes in-progress.                                                                                                                                                                                                                               |
+| `Accepted`                            | The feature is built and verified (scope `done`), the "done and dusted" state. A spec is NOT `Accepted` until its feature ships. Set by /develop on completion or reconciled by /sync.                                                                                                                                             |
+| `Superseded by [NNNN](NNNN-title.md)` | Replaced by a newer spec                                                                                                                                                                                                                                                                                                           |
+| `Assumed`                             | Built on a decision that was never deliberated, via `/develop`'s build now override. Records the assumption, not a deliberated decision. Stays `Assumed`, and never blocks the feature's `done`, until `/architect` ratifies it (which sets `Accepted`) or supersedes it. Only `/develop` creates it; only `/architect` clears it. |
 
 **Which status behavior applies depends on whether a buildable scope feature links this spec:**
+
 - **Feature linked spec** (a `docs/scope/` row's `spec` cell points to it) → **feature mirrored**: `Proposed` → `In Progress` → `Accepted`, tracking the feature's build lifecycle (table above). Confirmation ratifies content but does not set `Accepted`; /develop advances it. Exception: an `Assumed` feature linked spec is not mirrored, it stays `Assumed` (even when the feature is `done`) until `/architect` ratifies it.
 - **Standalone decision spec** (a foundational/stack or cross cutting standard with **no linked buildable feature**) → **decision status**: `Proposed` when written, then **`Accepted` once the engineer ratifies it** (on confirmation). There's no build phase to gate on, so it is not feature mirrored.
 - **spec documenting already shipped work** (the "already built" path, or a feature already `existing`) → **born `Accepted`**, it describes reality that already exists.
@@ -252,6 +286,7 @@ The spec's status mirrors its feature's build lifecycle (scope: planned→`Propo
 **Umbrella child specs carry no lifecycle status.** In an umbrella directory (`NNNN-<x>/`), only the `index.md` has a `**Status**:` line, it mirrors the feature. The **child specs are spec content**, so **omit the `**Status**:` line on children** (they're governed by the umbrella). `/develop` and `/sync` advance the umbrella `index.md`'s status only, never a child's.
 
 **A directory spec splits build spec from reasoning.** A directory spec (`NNNN-<x>/`) always contains exactly two core files, plus optional extras:
+
 - **`index.md`**: the build spec `/develop` reads: `## Summary`, `## Requirements`, `## Decision`, the design/spec section, `## Build plan`, `## Consequences`, `## Follow-up`, and a one line `## Rationale` pointer to `rationale.md`. For an umbrella, `index.md` also opens with a **`## Structure`** section listing and linking every child spec (one line each: what it is + which decision it supports) and holds any **cross child contract**.
 - **`rationale.md`**: everything in the decision record that `/develop` does not need: `## Context`, `## Options considered`, `## Rationale`, the `## References` section, and any supporting evidence (inventories, audits, a landscape scan). There is no separate `research/` folder; bulky evidence goes here, under its own subheading. This is read by humans and by `/architect` on update or supersede, never during a build.
 - Optional: **`verify.md`** (verify steps), and **child specs** `NNNN-<child>.md` for an umbrella (each sufficient on its own to build from, each with a short inline rationale rather than its own `rationale.md`; promote a child to its own directory only if it grows heavy).
@@ -264,6 +299,7 @@ A spec serves two audiences, and its sections divide cleanly between them:
 - **Decision record** (human / future decision maker context, the WHY): **`## Context`**, **`## Options considered`**, **`## Rationale`**, and the **`## References`** section. This is decision history, not build input; `/develop` skips it. (**`## Summary`** stays with the build spec in `index.md`, it is the human quick read that orients before the spec.)
 
 Where each audience's sections physically live depends on the spec shape:
+
 - **Single file spec** (`NNNN-title.md`): both audiences share the one file; the decision record sections stay inline, written tight. Small specs are not split.
 - **Directory spec** (`NNNN-title/`): the build spec is `index.md`, the decision record moves to `rationale.md`. The full reasoning is never removed, only relocated so a build never loads it.
 
@@ -276,4 +312,4 @@ Where each audience's sections physically live depends on the spec shape:
 - Rationale must reference specific forces from Context, not just repeat pros/cons; a few sentences, not paragraphs
 - Consequences must include negatives, a spec with only positives is not credible
 - Follow-up items are optional but recommended for high risk or foundational decisions
-- **One decision per spec: keep it focused and scannable.** Length follows the decision, not a line count: don't pad, and never cut a required design field (data model, state machine, full API table, security model, acceptance criteria) to make the record shorter. If it needs *multiple independent decisions*, or the design won't fit cleanly in one scannable spec, split it into an **umbrella spec + child specs** (the directory shape) rather than letting one file sprawl.
+- **One decision per spec: keep it focused and scannable.** Length follows the decision, not a line count: don't pad, and never cut a required design field (data model, state machine, full API table, security model, acceptance criteria) to make the record shorter. If it needs _multiple independent decisions_, or the design won't fit cleanly in one scannable spec, split it into an **umbrella spec + child specs** (the directory shape) rather than letting one file sprawl.

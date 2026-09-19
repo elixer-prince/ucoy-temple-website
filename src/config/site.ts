@@ -13,15 +13,15 @@ import {
   FORM_ENDPOINT,
   CALENDAR_ID,
   CALENDAR_TIMEZONE,
-  CF_ANALYTICS_TOKEN,
-} from 'astro:env/client';
+  CF_ANALYTICS_TOKEN
+} from 'astro:env/client'
 
 export const SITE_CONFIG = {
   // Identity
   title: "United Congregation of Yisra'Yah",
   description:
     "Public website for the United Congregation of Yisra'Yah. " +
-    "Service times, directions, and Holy Day materials — works offline.",
+    'Service times, directions, and Holy Day materials — works offline.',
   author: "United Congregation of Yisra'Yah",
 
   // Contact (spec 0001, AC-2 / AC-3)
@@ -45,7 +45,7 @@ export const SITE_CONFIG = {
     fridayMorning: 'Friday morning service — see schedule',
     shabbatMorning: 'Shabbat morning service — see schedule',
     shabbatEvening: 'Friday evening service — see schedule',
-    havdalah: 'Saturday evening — see schedule',
+    havdalah: 'Saturday evening — see schedule'
   },
 
   // Meeting location
@@ -53,8 +53,8 @@ export const SITE_CONFIG = {
     name: "United Congregation of Yisra'Yah",
     address: 'Address to be provided by the temple',
     city: '',
-    googleMapsEmbed: '',
-  },
-};
+    googleMapsEmbed: ''
+  }
+}
 
-export default SITE_CONFIG;
+export default SITE_CONFIG

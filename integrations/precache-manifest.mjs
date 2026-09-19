@@ -9,9 +9,9 @@
 // Only files that are safe to pre-cache are listed: video and other heavy media
 // are left to the network first path in the worker, as the spec's offline cache
 // strategy requires.
-import { readdir, writeFile } from 'node:fs/promises';
-import { fileURLToPath } from 'node:url';
-import { join, posix } from 'node:path';
+import { readdir, writeFile } from 'node:fs/promises'
+import { fileURLToPath } from 'node:url'
+import { join, posix } from 'node:path'
 
 const PRECACHE_EXTENSIONS = new Set([
   '.html',
@@ -23,33 +23,33 @@ const PRECACHE_EXTENSIONS = new Set([
   '.png',
   '.jpg',
   '.jpeg',
-  '.webp',
-]);
+  '.webp'
+])
 
 // The worker itself, its manifest, and the offline fallback are handled
 // separately in the worker, so they are left out of the list.
-const SKIP_FILES = new Set(['sw.js', 'sw-manifest.json', 'offline.html']);
+const SKIP_FILES = new Set(['sw.js', 'sw-manifest.json', 'offline.html'])
 
 /** Collects the URL of every pre-cacheable file in the build output. */
 async function collectUrls(directory, base = directory, found = []) {
-  const entries = await readdir(directory, { withFileTypes: true });
+  const entries = await readdir(directory, { withFileTypes: true })
 
   for (const entry of entries) {
-    const absolute = join(directory, entry.name);
+    const absolute = join(directory, entry.name)
 
     if (entry.isDirectory()) {
-      await collectUrls(absolute, base, found);
-      continue;
+      await collectUrls(absolute, base, found)
+      continue
     }
 
-    if (SKIP_FILES.has(entry.name)) continue;
-    if (!PRECACHE_EXTENSIONS.has(posix.extname(entry.name).toLowerCase())) continue;
+    if (SKIP_FILES.has(entry.name)) continue
+    if (!PRECACHE_EXTENSIONS.has(posix.extname(entry.name).toLowerCase())) continue
 
-    const relative = absolute.slice(base.length).split('\\').join('/');
-    found.push(relative);
+    const relative = absolute.slice(base.length).split('\\').join('/')
+    found.push(relative)
   }
 
-  return found;
+  return found
 }
 
 export function precacheManifest() {
@@ -58,21 +58,21 @@ export function precacheManifest() {
 
     hooks: {
       'astro:build:done': async ({ dir, logger }) => {
-        const outputDirectory = fileURLToPath(dir);
-        const urls = (await collectUrls(outputDirectory)).sort();
+        const outputDirectory = fileURLToPath(dir)
+        const urls = (await collectUrls(outputDirectory)).sort()
         const manifest = {
           generatedAt: new Date().toISOString(),
-          urls,
-        };
+          urls
+        }
 
         await writeFile(
           join(outputDirectory, 'sw-manifest.json'),
           `${JSON.stringify(manifest, null, 2)}\n`,
-          'utf8',
-        );
+          'utf8'
+        )
 
-        logger.info(`precache manifest: ${urls.length} files listed in sw-manifest.json`);
-      },
-    },
-  };
+        logger.info(`precache manifest: ${urls.length} files listed in sw-manifest.json`)
+      }
+    }
+  }
 }

@@ -5,6 +5,7 @@ Read this from the greenfield mode (after scaffold) and the whole-repo mode, onc
 ## Step 1: Ask first (the consent gate)
 
 <!-- TOOL-CONSENT:START (identical in /architect, /audit and /sync; edit all or none) -->
+
 **Asking is mandatory. Searching is not.** Nothing is searched, fetched, installed, or spawned for Agent Skill and MCP discovery until the engineer has picked. Offer four choices: find them for me, I will name the ones I want, no and record the decline, or not now. Only the first may run a search command. Never silently skip the offer, and never run a search before the engineer agrees to one.
 <!-- TOOL-CONSENT:END -->
 

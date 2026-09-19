@@ -1,7 +1,7 @@
 // Astro configuration for the United Congregation of Yisra'Yah website.
 // The stack this file configures is recorded in docs/specs/0001-adopt-static-site-stack.md.
-import { defineConfig, fontProviders, envField } from 'astro/config';
-import { precacheManifest } from './integrations/precache-manifest.mjs';
+import { defineConfig, fontProviders, envField } from 'astro/config'
+import { precacheManifest } from './integrations/precache-manifest.mjs'
 
 export default defineConfig({
   // Static output: every page is prebuilt as HTML and served from Cloudflare
@@ -22,33 +22,33 @@ export default defineConfig({
       CONTACT_EMAIL: envField.string({
         context: 'client',
         access: 'public',
-        optional: true,
+        optional: true
       }),
       // Formspree form action URL — the contact form posts here.
       FORM_ENDPOINT: envField.string({
         context: 'client',
         access: 'public',
-        optional: true,
+        optional: true
       }),
       // Google Calendar embed ID for the upcoming-events agenda view.
       CALENDAR_ID: envField.string({
         context: 'client',
         access: 'public',
-        optional: true,
+        optional: true
       }),
       // Temple local timezone for the calendar embed.
       CALENDAR_TIMEZONE: envField.string({
         context: 'client',
         access: 'public',
-        default: 'America/New_York',
+        default: 'America/New_York'
       }),
       // Cloudflare Web Analytics token (cookieless, spec 0001 AC-3).
       CF_ANALYTICS_TOKEN: envField.string({
         context: 'client',
         access: 'public',
-        optional: true,
-      }),
-    },
+        optional: true
+      })
+    }
   },
 
   // Fonts are downloaded at build time and served from this site, never from a
@@ -64,7 +64,7 @@ export default defineConfig({
       weights: [400, 500, 600, 700],
       styles: ['normal'],
       subsets: ['latin', 'latin-ext'],
-      fallbacks: ['system-ui', 'sans-serif'],
+      fallbacks: ['system-ui', 'sans-serif']
     },
     {
       // Hebrew script. Frank Ruhl Libre carries Hebrew and Latin, so it also
@@ -75,11 +75,11 @@ export default defineConfig({
       weights: [400, 500, 700],
       styles: ['normal'],
       subsets: ['hebrew', 'latin'],
-      fallbacks: ['Georgia', 'serif'],
-    },
+      fallbacks: ['Georgia', 'serif']
+    }
   ],
 
   // Writes dist/sw-manifest.json after each build so the hand written service
   // worker knows which files this build produced and can pre-cache them.
-  integrations: [precacheManifest()],
-});
+  integrations: [precacheManifest()]
+})

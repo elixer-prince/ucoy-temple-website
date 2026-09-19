@@ -64,7 +64,7 @@ p {
 
 /* Hebrew text uses the serif family (Frank Ruhl Libre).
    Direction is set here; text-align inherits from the parent. */
-[lang="he"] {
+[lang='he'] {
   font-family: var(--font-serif);
   direction: rtl;
 }
@@ -197,5 +197,9 @@ blockquote {
   border: 0 !important;
 }
 
-.text-center { text-align: center; }
-.text-muted { color: var(--muted); }
+.text-center {
+  text-align: center;
+}
+.text-muted {
+  color: var(--muted);
+}

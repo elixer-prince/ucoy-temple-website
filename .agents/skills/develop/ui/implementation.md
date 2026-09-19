@@ -4,16 +4,16 @@
 
 Identify fonts from `design.md` `typography.*.fontFamily`. System fonts (`system-ui`, `-apple-system`): no action. Proprietary fonts: check the project for font files (`*.ttf`, `*.otf`, `*.woff2`) first; none found → substitute and inform the user:
 
-| Proprietary | Substitute |
-|---|---|
-| Futura / Futura ND | Jost |
-| Circular | DM Sans |
-| Helvetica Now | Inter |
-| Söhne / Graphik | Inter |
-| GT Walsheim | Nunito |
-| Canela | Playfair Display |
-| Tiempos | Libre Baskerville |
-| SF Pro | Inter |
+| Proprietary        | Substitute        |
+| ------------------ | ----------------- |
+| Futura / Futura ND | Jost              |
+| Circular           | DM Sans           |
+| Helvetica Now      | Inter             |
+| Söhne / Graphik    | Inter             |
+| GT Walsheim        | Nunito            |
+| Canela             | Playfair Display  |
+| Tiempos            | Libre Baskerville |
+| SF Pro             | Inter             |
 
 A proprietary font not in this table: substitute the closest free font of the same classification (geometric sans → Jost/Poppins, grotesque/neo grotesque → Inter/Manrope, humanist sans → Source Sans, transitional/old style serif → nearest free serif) and say what you swapped.
 
@@ -30,6 +30,7 @@ Resolve where hero images, avatars, product/gallery photos, logos, illustrations
 **Step 2: Look for matching project assets** (your file tools): search (ignoring `node_modules`, `.git`) for directories named `assets`, `images`, `img`, `media`, or `public`; scan them for filenames plausibly matching what the UI needs (hero, avatar, logo, product, …). Also check `design.md`/the design reference for named or pictured assets.
 
 **Step 3: If no matching assets are found, ask** (as above; never silently invent paths, emoji, or blank boxes):
+
 - **question**: "This UI needs <list what, e.g. a hero image + 3 product photos> but I found no matching assets in the project. How should I source them?"
 - **header**: "Assets"
 - **options**:
@@ -66,6 +67,7 @@ Pass 1 from the guide's bar: design before you integrate. A gate, not advice, on
 **Commit the composition first, in writing.** List the sections top to bottom and the brand, copy, and content in each, in the design system's language. Ship to the ambition of a standalone product; never the bare functional widget (a lone form, an unstyled table, a raw list with no header), the exact stub the bar disqualifies.
 
 A complete product screen carries, cohesive and branded:
+
 - **Brand**: logo/wordmark, consistent; none → derive one from the product name, never an empty corner.
 - **Context and copy**: real product specific copy (headline, supporting line, honest microcopy) from the product's purpose (`AGENTS.md`, spec intent, scope), never lorem ipsum.
 - **A considered layout, not a lone box.** Compose the whole page. Calibrate to what a senior designer ships for THIS screen; the list is a sample, not a checklist:
@@ -79,7 +81,7 @@ A complete product screen carries, cohesive and branded:
 - **Supporting content**: value prop/trust signals where they fit, secondary CTAs, a footer where the page type warrants.
 - **The functional core**: the form/table/flow itself, done well (validation, Phase 4 states, Phase 5 accessibility).
 
-Composition (completeness), not look, the design source decides the visual language. Nothing provided → derive a wordmark, use a tasteful visual (gradient, pattern, illustration, or a placeholder via *Asset resolution*) over blank space, write real copy from purpose. Invent tastefully, but **surface everything invented** (brand, copy, placeholder assets) in the report for correction. If `/architect`'s page design stage already settled the composition, execute that; this phase fills the gap only when it didn't. Real, not busy: every element earns its place.
+Composition (completeness), not look, the design source decides the visual language. Nothing provided → derive a wordmark, use a tasteful visual (gradient, pattern, illustration, or a placeholder via _Asset resolution_) over blank space, write real copy from purpose. Invent tastefully, but **surface everything invented** (brand, copy, placeholder assets) in the report for correction. If `/architect`'s page design stage already settled the composition, execute that; this phase fills the gap only when it didn't. Real, not busy: every element earns its place.
 
 ### Phase 1: Semantic structure
 
@@ -91,7 +93,7 @@ Build from the platform's semantic, accessible primitives: for each piece of con
 
 (On web this is semantic HTML: one `<main>` and one `<h1>`, `<button>` vs `<a href>`, `<ul>`/`<ol>`, `<table>` with headers and scope, `<figure>`, `<time>`, `<details>`/`<dialog>`, `<progress>`/`<meter>`; other platforms have their equivalents.)
 
-**Component build type application:** *Component*: props contract first, exported the codebase's way, no layout wrapper, no navigation imports. *Screen*: include the primary content region, integrate with the platform's navigation system, loading / error / empty states at top level.
+**Component build type application:** _Component_: props contract first, exported the codebase's way, no layout wrapper, no navigation imports. _Screen_: include the primary content region, integrate with the platform's navigation system, loading / error / empty states at top level.
 
 ---
 
@@ -119,6 +121,7 @@ Adapt the layout to the container/screen size using the platform's layout system
 ### Phase 4: States and motion
 
 Every interactive element needs a visible, distinct treatment for each state its platform supports:
+
 - **Default**: base token styles.
 - **Hover** (where a pointer exists): a token driven shift; keep the affordance.
 - **Focus visible**: a clear focus ring/indicator using an accent token, on keyboard/assistive focus.

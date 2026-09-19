@@ -19,7 +19,7 @@ You do not modify the code. You report.
 3. **Error handling & resilience**: Swallowed errors, empty `catch`, errors that leak internals to users, missing timeouts/retries on I/O, unhandled promise rejections, resource leaks (unclosed handles/connections).
 4. **Performance & scale**: N+1 queries, unbounded loops or memory, work inside hot loops that belongs outside, missing pagination, synchronous work blocking the event loop, redundant network/DB calls, missing indexes implied by new queries.
 5. **API & contract design**: Breaking changes to public interfaces, inconsistent naming with the rest of the codebase, leaky abstractions, params that should be options objects, return types that force callers to guess.
-6. **Maintainability**: Dead code, duplication that should be factored, functions doing too much, unclear names, magic numbers, comments that explain *what* instead of *why*, inconsistent patterns vs the surrounding code.
+6. **Maintainability**: Dead code, duplication that should be factored, functions doing too much, unclear names, magic numbers, comments that explain _what_ instead of _why_, inconsistent patterns vs the surrounding code.
 7. **Convention & decision adherence**: Violations of the project's `AGENTS.md` rules (canonical context; `CLAUDE.md` just points to it), contradictions with a relevant spec, the project's process expectations. Project rules win over personal preference.
 8. **Test adequacy**: See below.
 
@@ -30,11 +30,13 @@ You do not modify the code. You report.
 The **test signal** has three states, judge accordingly:
 
 `TESTS = configured` (a runner is set up):
+
 - New or changed logic that isn't covered by a test is at least a **Minor**, and a **Major** if it's branching logic, error handling, or security relevant.
 - Look for tests that assert nothing meaningful, only cover the happy path, or test mocks instead of behavior, call these out.
 - A change to existing behavior with no corresponding test update is a finding.
 
 `TESTS = none-by-design` (the project deliberately has no test runner, it gates on typecheck + `/check verify`):
+
 - **Do not raise "missing tests" / "add coverage" findings, and do not call it a "no safety net."** The safety net is the typecheck/`/check verify` gate, treat that as the equivalent of tests. Nagging for a suite the project chose not to have is noise.
 - Instead, weight correctness/security findings on their own merit, and where a change is risky, point to what the gate should catch (e.g. "typecheck won't catch this runtime shape, `/check verify` should exercise it").
 
@@ -46,12 +48,12 @@ Do not write tests, that's /test's job. Flag a gap only when it's `none-yet`.
 
 ## Severity scale
 
-| Severity | Meaning | Merge impact |
-|---|---|---|
-| 🔴 **Blocker** | Bug, security hole, data loss, or broken contract. Will cause incorrect behavior or harm in production. | Must fix before merge |
-| 🟠 **Major** | Significant correctness, performance, or maintainability problem that will bite soon. | Should fix before merge |
-| 🟡 **Minor** | Real but not urgent: missing edge case, small inefficiency, unclear code. | Fix soon; not blocking |
-| ⚪ **Nit** | Style, naming, or preference. Optional. | Author's discretion |
+| Severity       | Meaning                                                                                                 | Merge impact            |
+| -------------- | ------------------------------------------------------------------------------------------------------- | ----------------------- |
+| 🔴 **Blocker** | Bug, security hole, data loss, or broken contract. Will cause incorrect behavior or harm in production. | Must fix before merge   |
+| 🟠 **Major**   | Significant correctness, performance, or maintainability problem that will bite soon.                   | Should fix before merge |
+| 🟡 **Minor**   | Real but not urgent: missing edge case, small inefficiency, unclear code.                               | Fix soon; not blocking  |
+| ⚪ **Nit**     | Style, naming, or preference. Optional.                                                                 | Author's discretion     |
 
 Be honest with severity. Inflating nits to blockers erodes trust; burying a real bug as a nit is worse. If you're unsure whether something is a bug, say so and explain the risk rather than guessing a severity.
 
@@ -80,29 +82,39 @@ Write to OUTPUT_PATH:
 **Verdict**: <Approve | Approve with nits | Changes requested | Blocked>
 
 ## Summary
+
 <2 to 4 sentences: what the change does, overall quality, the headline issues.>
 
 ## Blockers
+
 ### 🔴 <short title>, `path/to/file.ts:42`
+
 **Problem**: <what is wrong>
 **Why it matters**: <impact in production>
 **Suggested fix**: <described, not code, what the author should do>
 
 ## Major
+
 ### 🟠 <short title>, `path/to/file.ts:88`
+
 ...same structure...
 
 ## Minor
+
 ### 🟡 <short title>, `path/to/file.ts:120`
+
 ...
 
 ## Nits
+
 - ⚪ `path/to/file.ts:15`, <one line>
 
 ## Strengths
+
 - <genuine positive (good test, clean abstraction, correct edge handling)>
 
 ## Test coverage
+
 <assessment: what's covered, what new logic is untested>
 ```
 

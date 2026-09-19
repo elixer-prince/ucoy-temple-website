@@ -1,7 +1,7 @@
 ---
 description: Rules for writing Astro components
 globs:
-  - "**/*.astro"
+  - '**/*.astro'
 ---
 
 # Astro Component Rules
@@ -13,20 +13,20 @@ Always use the frontmatter pattern with proper separation:
 ```astro
 ---
 // 1. Imports
-import Layout from '../layouts/Layout.astro';
-import { getCollection } from 'astro:content';
+import Layout from '../layouts/Layout.astro'
+import { getCollection } from 'astro:content'
 
 // 2. Props interface
 interface Props {
-  title: string;
-  description?: string;
+  title: string
+  description?: string
 }
 
 // 3. Destructure props with defaults
-const { title, description = 'Default' } = Astro.props;
+const { title, description = 'Default' } = Astro.props
 
 // 4. Data fetching and logic
-const posts = await getCollection('blog');
+const posts = await getCollection('blog')
 ---
 
 <!-- 5. Template -->
@@ -36,7 +36,9 @@ const posts = await getCollection('blog');
 
 <!-- 6. Scoped styles -->
 <style>
-  h1 { color: navy; }
+  h1 {
+    color: navy;
+  }
 </style>
 ```
 
@@ -64,16 +66,24 @@ const posts = await getCollection('blog');
 ---
 // Wrapper.astro
 interface Props {
-  title: string;
+  title: string
 }
-const { title } = Astro.props;
-const hasFooter = Astro.slots.has('footer');
+const { title } = Astro.props
+const hasFooter = Astro.slots.has('footer')
 ---
 
 <article>
-  <header><h1>{title}</h1></header>
-  <main><slot /></main>
-  {hasFooter && <footer><slot name="footer" /></footer>}
+  <header>
+    <h1>{title}</h1>
+  </header>
+  <main>
+    <slot />
+  </main>
+  {hasFooter && (
+    <footer>
+      <slot name="footer" />
+    </footer>
+  )}
 </article>
 ```
 
@@ -81,15 +91,11 @@ const hasFooter = Astro.slots.has('footer');
 
 ```astro
 ---
-const id = "main";
-const isActive = true;
+const id = 'main'
+const isActive = true
 ---
 
-<div
-  id={id}
-  class:list={['base', { active: isActive }]}
-  data-active={isActive}
->
+<div id={id} class:list={['base', { active: isActive }]} data-active={isActive}>
   Content
 </div>
 ```
@@ -98,14 +104,16 @@ const isActive = true;
 
 ```astro
 ---
-const show = true;
-const items = ['a', 'b', 'c'];
+const show = true
+const items = ['a', 'b', 'c']
 ---
 
 {show && <p>Visible</p>}
 {show ? <p>Yes</p> : <p>No</p>}
 
 <ul>
-  {items.map(item => <li>{item}</li>)}
+  {items.map((item) => (
+    <li>{item}</li>
+  ))}
 </ul>
 ```

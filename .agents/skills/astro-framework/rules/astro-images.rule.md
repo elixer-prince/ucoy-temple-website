@@ -1,9 +1,9 @@
 ---
 description: Rules for image optimization in Astro
 globs:
-  - "**/*.astro"
-  - "**/*.mdx"
-  - "src/content/**/*"
+  - '**/*.astro'
+  - '**/*.mdx'
+  - 'src/content/**/*'
 ---
 
 # Astro Image Rules
@@ -12,8 +12,8 @@ globs:
 
 ```astro
 ---
-import { Image } from 'astro:assets';
-import heroImage from '../images/hero.jpg';
+import { Image } from 'astro:assets'
+import heroImage from '../images/hero.jpg'
 ---
 
 <Image
@@ -48,35 +48,26 @@ import heroImage from '../images/hero.jpg';
 
 ```astro
 ---
-import { Image } from 'astro:assets';
-import localImage from '../images/photo.jpg';
+import { Image } from 'astro:assets'
+import localImage from '../images/photo.jpg'
 ---
 
 <!-- Local: import required, auto-optimized -->
 <Image src={localImage} alt="Local photo" />
 
 <!-- Remote: dimensions required -->
-<Image
-  src="https://example.com/photo.jpg"
-  alt="Remote photo"
-  width={400}
-  height={300}
-/>
+<Image src="https://example.com/photo.jpg" alt="Remote photo" width={400} height={300} />
 
 <!-- Remote with inferred size (fetches image) -->
-<Image
-  src="https://example.com/photo.jpg"
-  alt="Remote photo"
-  inferSize
-/>
+<Image src="https://example.com/photo.jpg" alt="Remote photo" inferSize />
 ```
 
 ## Picture for Responsive Images
 
 ```astro
 ---
-import { Picture } from 'astro:assets';
-import hero from '../images/hero.jpg';
+import { Picture } from 'astro:assets'
+import hero from '../images/hero.jpg'
 ---
 
 <Picture
@@ -94,12 +85,13 @@ import hero from '../images/hero.jpg';
 // src/content/config.ts
 const blog = defineCollection({
   type: 'content',
-  schema: ({ image }) => z.object({
-    title: z.string(),
-    cover: image(),           // Validates and optimizes
-    coverAlt: z.string(),
-  }),
-});
+  schema: ({ image }) =>
+    z.object({
+      title: z.string(),
+      cover: image(), // Validates and optimizes
+      coverAlt: z.string()
+    })
+})
 ```
 
 ```markdown
@@ -114,19 +106,17 @@ coverAlt: Post cover showing...
 
 ```astro
 ---
-import { getImage } from 'astro:assets';
-import bg from '../images/background.jpg';
+import { getImage } from 'astro:assets'
+import bg from '../images/background.jpg'
 
 const optimizedBg = await getImage({
   src: bg,
   format: 'webp',
-  width: 1920,
-});
+  width: 1920
+})
 ---
 
-<section style={`background-image: url(${optimizedBg.src})`}>
-  Content
-</section>
+<section style={`background-image: url(${optimizedBg.src})`}>Content</section>
 ```
 
 ## Configuration
@@ -136,11 +126,9 @@ const optimizedBg = await getImage({
 export default defineConfig({
   image: {
     domains: ['cdn.example.com'],
-    remotePatterns: [
-      { protocol: 'https', hostname: '**.unsplash.com' },
-    ],
-  },
-});
+    remotePatterns: [{ protocol: 'https', hostname: '**.unsplash.com' }]
+  }
+})
 ```
 
 ## Quality Settings

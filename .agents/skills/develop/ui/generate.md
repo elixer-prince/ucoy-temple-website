@@ -44,14 +44,14 @@ Never emit a palette from memory. Derive it, then verify it, then write it. Stat
 
 **2. Neutrals.** Build one lightness ladder for the whole system, from canvas to ink. Six steps, each a clear visual step from the last, all sharing a slight hue tint from the accent so the greys feel intentional rather than default:
 
-| Token | Role | Light mode | Dark mode |
-|---|---|---|---|
-| `--color-canvas` | page background | lightest | darkest |
-| `--color-surface` | card, panel, raised area | one step in | one step up |
-| `--color-border` | hairline, divider | subtle against surface | subtle against surface |
-| `--color-muted` | captions, placeholders | mid | mid |
-| `--color-body` | secondary text | dark | light |
-| `--color-ink` | primary text, headings | darkest | lightest |
+| Token             | Role                     | Light mode             | Dark mode              |
+| ----------------- | ------------------------ | ---------------------- | ---------------------- |
+| `--color-canvas`  | page background          | lightest               | darkest                |
+| `--color-surface` | card, panel, raised area | one step in            | one step up            |
+| `--color-border`  | hairline, divider        | subtle against surface | subtle against surface |
+| `--color-muted`   | captions, placeholders   | mid                    | mid                    |
+| `--color-body`    | secondary text           | dark                   | light                  |
+| `--color-ink`     | primary text, headings   | darkest                | lightest               |
 
 Then the semantic pair `--color-success` and `--color-error`, and `--color-on-accent` for text sitting on the accent.
 
@@ -107,6 +107,7 @@ You are a senior product designer. Every page ships as a complete, professional 
 ```
 
 **Aesthetic guide** (a described style seeds the direction; you still derive and verify the values):
+
 - **Cyberpunk**: near black canvas, neon cyan or magenta accent, 0 to 2px radius, mono font, dense spacing, fast motion (80ms), harsh easing
 - **Brutalist**: pure black and white, 0px radius, thick borders, oversized type, zero motion
 - **Glassmorphism**: frosted canvas, translucent surfaces, 16 to 24px radius, slow transitions (200 to 400ms), gentle spring
@@ -119,6 +120,7 @@ Fill every design.md section with real, specific direction. No placeholders, and
 ### B3: Write the token file
 
 Write the token values into the project's styling/theme system, however this platform expresses tokens (CSS custom properties in a stylesheet on web; the theme or token object elsewhere). Define:
+
 - All colours (light theme): canvas, surface, ink, body, muted, accent, on accent, border, success, error
 - Icon sizes: small, medium, large
 - Typography: the type family, a size scale, a weight scale

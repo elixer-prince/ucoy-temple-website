@@ -11,13 +11,13 @@ need to know for your first visit.
 
 ## When we meet
 
-| Day | Time | What to expect |
-|-----|------|----------------|
-| **Friday morning** | 9:00 AM | Prayer and brief teaching |
-| **Friday evening** | 6:00 PM (seasonal) | Kabbalat Shabbat — welcoming the Sabbath |
-| **Saturday morning** | 9:30 AM | Shabbat Shacharit with Torah reading |
-| **Saturday afternoon** | Before sunset | Mincha — afternoon service |
-| **Saturday evening** | After dark | Havdalah — closing of Shabbat |
+| Day                    | Time               | What to expect                           |
+| ---------------------- | ------------------ | ---------------------------------------- |
+| **Friday morning**     | 9:00 AM            | Prayer and brief teaching                |
+| **Friday evening**     | 6:00 PM (seasonal) | Kabbalat Shabbat — welcoming the Sabbath |
+| **Saturday morning**   | 9:30 AM            | Shabbat Shacharit with Torah reading     |
+| **Saturday afternoon** | Before sunset      | Mincha — afternoon service               |
+| **Saturday evening**   | After dark         | Havdalah — closing of Shabbat            |
 
 > Times shift with the seasons. Please check the [calendar](#) or our
 > latest [announcements](#) for any changes.

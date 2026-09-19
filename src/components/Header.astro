@@ -1,12 +1,12 @@
 ---
-import { SITE_CONFIG } from '@/config/site';
+import { SITE_CONFIG } from '@/config/site'
 
 interface Props {
   /** Override the label text — defaults to "Menu" (visually only on mobile). */
-  label?: string;
+  label?: string
 }
 
-const { label = 'Menu' } = Astro.props;
+const { label = 'Menu' } = Astro.props
 
 // Navigation order matches the `order` field in content/pages frontmatter,
 // plus the standalone contact page.
@@ -15,8 +15,8 @@ const navItems = [
   { href: '/about', label: 'About' },
   { href: '/history', label: 'History' },
   { href: '/visiting', label: 'Visiting' },
-  { href: '/contact', label: 'Contact' },
-];
+  { href: '/contact', label: 'Contact' }
+]
 ---
 
 <header class="site-header">
@@ -26,8 +26,8 @@ const navItems = [
       <span class="logo-text">{SITE_CONFIG.title}</span>
     </a>
 
-                            <!-- CSS-only, no-JS menu toggle — keyboard accessible (AC-5). -->
-    
+    <!-- CSS-only, no-JS menu toggle — keyboard accessible (AC-5). -->
+
     <!-- CSS-only, no-JS menu toggle — keyboard accessible (AC-5). -->
     <details class="nav-details" role="group" aria-label="Main navigation">
       <summary class="nav-toggle" aria-label={label}>
