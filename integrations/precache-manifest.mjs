@@ -13,7 +13,7 @@ import { readdir, writeFile } from 'node:fs/promises'
 import { fileURLToPath } from 'node:url'
 import { join, posix } from 'node:path'
 
-const PRECACHE_EXTENSIONS = new Set([
+export const PRECACHE_EXTENSIONS = new Set([
   '.html',
   '.css',
   '.js',
@@ -28,10 +28,10 @@ const PRECACHE_EXTENSIONS = new Set([
 
 // The worker itself, its manifest, and the offline fallback are handled
 // separately in the worker, so they are left out of the list.
-const SKIP_FILES = new Set(['sw.js', 'sw-manifest.json', 'offline.html'])
+export const SKIP_FILES = new Set(['sw.js', 'sw-manifest.json', 'offline.html'])
 
 /** Collects the URL of every pre-cacheable file in the build output. */
-async function collectUrls(directory, base = directory, found = []) {
+export async function collectUrls(directory, base = directory, found = []) {
   const entries = await readdir(directory, { withFileTypes: true })
 
   for (const entry of entries) {
@@ -46,7 +46,11 @@ async function collectUrls(directory, base = directory, found = []) {
     if (!PRECACHE_EXTENSIONS.has(posix.extname(entry.name).toLowerCase())) continue
 
     const relative = absolute.slice(base.length).split('\\').join('/')
-    found.push(relative)
+    // Always record an absolute site path. Astro hands `dir` in as a URL that
+    // may or may not carry a trailing separator, so the slice above can leave a
+    // leading slash in place or drop it. Pinning it here keeps every entry
+    // unambiguous for the worker's cache.addAll call.
+    found.push(relative.startsWith('/') ? relative : `/${relative}`)
   }
 
   return found

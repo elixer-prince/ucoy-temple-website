@@ -1,0 +1,64 @@
+---
+import type { CollectionEntry } from 'astro:content'
+import { getCollection, render } from 'astro:content'
+import Layout from '@layouts/Layout.astro'
+import VideoPlayer from '@components/Video.astro'
+import '@styles/tokens.css'
+import '@styles/base.css'
+
+interface Props {
+  shabbaton: CollectionEntry<'services'>
+}
+
+/**
+ * One page per Shabbaton, at /shabbatonim/<slug> (spec 0003, AC-2, AC-5).
+ *
+ * The same page shape as a weekly service, reading the same collection and
+ * told apart only by `kind`, so an author learns one way of writing pages.
+ */
+export async function getStaticPaths() {
+  const shabbatonim = await getCollection('services', ({ data }) => data.kind === 'shabbaton')
+  return shabbatonim.map((shabbaton) => ({
+    params: { slug: shabbaton.id },
+    props: { shabbaton }
+  }))
+}
+
+const { shabbaton } = Astro.props
+const { Content } = await render(shabbaton)
+---
+
+<Layout title={shabbaton.data.title} description={shabbaton.data.description}>
+  <div class="container">
+    <article class="shabbaton">
+      <header class="shabbaton-header">
+        <h1>{shabbaton.data.title}</h1>
+        {(shabbaton.data.day || shabbaton.data.time) && (
+          <p class="shabbaton-when text-muted">
+            {[shabbaton.data.day, shabbaton.data.time].filter(Boolean).join(' · ')}
+          </p>
+        )}
+        {shabbaton.data.description && <p class="lead">{shabbaton.data.description}</p>}
+      </header>
+
+      <Content components={{ Video: VideoPlayer }} />
+    </article>
+  </div>
+</Layout>
+
+<style>
+  .shabbaton-header {
+    margin-bottom: var(--space-m);
+  }
+
+  .shabbaton-when {
+    font-size: 0.9375rem;
+    margin-bottom: var(--space-3xs);
+  }
+
+  .lead {
+    font-size: 1.125rem;
+    line-height: 1.6;
+    color: var(--muted);
+  }
+</style>

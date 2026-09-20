@@ -9,28 +9,28 @@ _These are recommendations to keep your build orderly, not requirements. Skip an
 
 ## At a glance
 
-| #   | Feature                                       | Phase      | Status  |
-| --- | --------------------------------------------- | ---------- | ------- |
-| 1   | Stack & architecture                          | Foundation | done    |
-| 2   | Coding standards & tooling                    | Foundation | done    |
-| 3   | Content model                                 | Foundation | planned |
-| 4   | Design system & UI foundation                 | Foundation | planned |
-| 5   | Site shell, home & first service page offline | Slice 1    | planned |
-| 6   | Friday morning service page                   | Slice 2    | planned |
-| 7   | Sabbath evening & Torah portion page          | Slice 2    | planned |
-| 8   | Closing of Shabbat page                       | Slice 2    | planned |
-| 9   | Content sweep of the current site             | Slice 3    | planned |
-| 10  | High Holy Days section                        | Slice 3    | planned |
-| 11  | Temple information & contact                  | Slice 3    | planned |
-| 12  | Holy Days calendar                            | Slice 4    | planned |
-| 13  | Site search                                   | Slice 4    | planned |
-| 14  | Product analytics                             | Slice 4    | planned |
-| 15  | SEO, metadata & performance                   | Slice 4    | planned |
-| 16  | Site wide offline & install                   | Slice 4    | planned |
-| 17  | Private Temple Treasury                       | Deferred   | planned |
-| 18  | Attendance tracking                           | Deferred   | planned |
-| 19  | Admin dashboard & member accounts             | Deferred   | planned |
-| 20  | Private documents & member area               | Deferred   | planned |
+| #   | Feature                                       | Phase      | Status      |
+| --- | --------------------------------------------- | ---------- | ----------- |
+| 1   | Stack & architecture                          | Foundation | done        |
+| 2   | Coding standards & tooling                    | Foundation | done        |
+| 3   | Content model                                 | Foundation | in-progress |
+| 4   | Design system & UI foundation                 | Foundation | planned     |
+| 5   | Site shell, home & first service page offline | Slice 1    | planned     |
+| 6   | Friday morning service page                   | Slice 2    | planned     |
+| 7   | Sabbath evening & Torah portion page          | Slice 2    | planned     |
+| 8   | Closing of Shabbat page                       | Slice 2    | planned     |
+| 9   | Content sweep of the current site             | Slice 3    | planned     |
+| 10  | High Holy Days section                        | Slice 3    | planned     |
+| 11  | Temple information & contact                  | Slice 3    | planned     |
+| 12  | Holy Days calendar                            | Slice 4    | planned     |
+| 13  | Site search                                   | Slice 4    | planned     |
+| 14  | Product analytics                             | Slice 4    | planned     |
+| 15  | SEO, metadata & performance                   | Slice 4    | planned     |
+| 16  | Site wide offline & install                   | Slice 4    | planned     |
+| 17  | Private Temple Treasury                       | Deferred   | planned     |
+| 18  | Attendance tracking                           | Deferred   | planned     |
+| 19  | Admin dashboard & member accounts             | Deferred   | planned     |
+| 20  | Private documents & member area               | Deferred   | planned     |
 
 ## Foundations
 
@@ -58,12 +58,21 @@ Capture conventions and install enforcement from the real scaffolded project, so
 - [x] Install the tooling: `/develop coding standards & tooling`
       Spec 0002 · code in `./`
 
-### 3. Content model · planned · needs a decision
+### 3. Content model · in-progress
 
 The data model of the site, stated as content: services, pages, Holy Days and their dates, media assets, and resources. Content lives as plain files a developer edits and republishes, so the schema must fit the mirror of the current Google Site and stay easy to extend. A wrong model here is the costliest thing to redo.
 **Done when:** the schema is recorded in a spec, and a sample service page and a sample Holy Day page render from real content files.
 
-- [ ] Decide the content model (spec): `/architect content model`
+- [x] Decide the content model (spec): `/architect content model`
+- [x] Build it: `/develop content model`
+  - [x] Collections and schemas in `src/content.config.ts`, leaving `pages` and `announcements` untouched (AC-1)
+  - [x] MDX wired up with the inline `<Video>` component (AC-4)
+  - [x] Service area: `/services/` landing page and `/services/[slug]`, headings and two videos in order (AC-2, AC-3, AC-4)
+  - [x] Shabbaton at `/shabbatonim/[slug]` from the same collection, with its area landing page (AC-2, AC-5)
+  - [x] PDF resources at `/resources/` and `/resources/[slug]`, linked from the service page (AC-6)
+- [x] Verify it: `/check verify content model`
+- [x] Test it: `/test content model`
+      Spec [0003](../specs/0003-content-model.md) · code in `src/content.config.ts`, `src/components/Video.astro`, `src/content/{services,resources}/`, `src/pages/{services,shabbatonim,resources}/`
 
 ### 4. Design system & UI foundation · planned · needs a decision
 

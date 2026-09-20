@@ -1,0 +1,78 @@
+---
+import { getCollection } from 'astro:content'
+import Layout from '@layouts/Layout.astro'
+import '@styles/tokens.css'
+import '@styles/base.css'
+
+/**
+ * The resources listing (spec 0003, AC-6).
+ * Every PDF the temple publishes, so a booklet can be found without knowing
+ * which service mentions it.
+ */
+const resources = (await getCollection('resources')).sort(
+  (a, b) => a.data.order - b.data.order || a.data.title.localeCompare(b.data.title)
+)
+---
+
+<Layout
+  title="Resources"
+  description="Prayer booklets and teachings published as PDFs by the United Congregation of Yisra'Yah."
+>
+  <div class="container">
+    <h1>Resources</h1>
+    <p class="lead">
+      Prayer booklets and teachings published as PDFs. Each one has its own page with the download
+      link, and any booklet you open once stays readable on your phone afterwards.
+    </p>
+
+    {resources.length > 0 ? (
+      <ul class="listing">
+        {resources.map((resource) => (
+          <li class="listing-item">
+            <h2 class="listing-title">
+              <a href={`/resources/${resource.id}`}>{resource.data.title}</a>
+            </h2>
+            {resource.data.category && (
+              <p class="listing-category text-muted">{resource.data.category}</p>
+            )}
+            {resource.data.description && <p>{resource.data.description}</p>}
+          </li>
+        ))}
+      </ul>
+    ) : (
+      <p class="text-muted">No resources have been published yet.</p>
+    )}
+  </div>
+</Layout>
+
+<style>
+  .lead {
+    font-size: 1.125rem;
+    line-height: 1.6;
+    color: var(--muted);
+    margin-bottom: var(--space-l);
+  }
+
+  .listing {
+    list-style: none;
+    padding-left: 0;
+  }
+
+  .listing-item {
+    border-bottom: var(--border-width) solid var(--border);
+    padding: var(--space-s) 0;
+  }
+
+  .listing-item:last-child {
+    border-bottom: none;
+  }
+
+  .listing-title {
+    margin-bottom: var(--space-3xs);
+  }
+
+  .listing-category {
+    font-size: 0.9375rem;
+    margin-bottom: var(--space-3xs);
+  }
+</style>

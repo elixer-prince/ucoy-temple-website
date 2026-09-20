@@ -1,6 +1,7 @@
 // Astro configuration for the United Congregation of Yisra'Yah website.
 // The stack this file configures is recorded in docs/specs/0001-adopt-static-site-stack.md.
 import { defineConfig, fontProviders, envField } from 'astro/config'
+import mdx from '@astrojs/mdx'
 import { precacheManifest } from './integrations/precache-manifest.mjs'
 
 export default defineConfig({
@@ -81,5 +82,9 @@ export default defineConfig({
 
   // Writes dist/sw-manifest.json after each build so the hand written service
   // worker knows which files this build produced and can pre-cache them.
-  integrations: [precacheManifest()]
+  //
+  // MDX carries service bodies, so a <Video> call can sit inline in the order
+  // of service (spec 0003, AC-4). Service files are the only MDX authored by
+  // hand; page and announcement content stays plain markdown.
+  integrations: [precacheManifest(), mdx()]
 })

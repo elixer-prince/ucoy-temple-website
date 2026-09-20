@@ -1,0 +1,77 @@
+---
+import type { CollectionEntry } from 'astro:content'
+import { getCollection, render } from 'astro:content'
+import Layout from '@layouts/Layout.astro'
+import '@styles/tokens.css'
+import '@styles/base.css'
+
+interface Props {
+  resource: CollectionEntry<'resources'>
+}
+
+/**
+ * One page per PDF, at /resources/<slug> (spec 0003, AC-6).
+ *
+ * The page is the linkable address, so a service body links to
+ * `/resources/<slug>` rather than to a path under `public/`; the file itself is
+ * downloaded from here, and a PDF opened once stays readable offline.
+ */
+export async function getStaticPaths() {
+  const resources = await getCollection('resources')
+  return resources.map((resource) => ({
+    params: { slug: resource.id },
+    props: { resource }
+  }))
+}
+
+const { resource } = Astro.props
+const { Content } = await render(resource)
+---
+
+<Layout title={resource.data.title} description={resource.data.description}>
+  <div class="container">
+    <article class="resource">
+      <h1>{resource.data.title}</h1>
+
+      {resource.data.category && (
+        <p class="resource-category text-muted">{resource.data.category}</p>
+      )}
+
+      {resource.data.description && <p class="lead">{resource.data.description}</p>}
+
+      <!-- An ordinary link, so following it is a navigation the service worker
+           caches: a booklet opened once works offline afterwards (spec 0003). -->
+      <p>
+        <a class="button" href={resource.data.file}>
+          Download the PDF
+        </a>
+      </p>
+
+      {resource.body && (
+        <div class="resource-notes">
+          <Content />
+        </div>
+      )}
+    </article>
+  </div>
+</Layout>
+
+<style>
+  .resource-category {
+    font-size: 0.9375rem;
+    margin-bottom: var(--space-3xs);
+  }
+
+  .lead {
+    font-size: 1.125rem;
+    line-height: 1.6;
+    color: var(--muted);
+    margin-bottom: var(--space-m);
+  }
+
+  .resource-notes {
+    margin-top: var(--space-l);
+    border-top: var(--border-width) solid var(--border);
+    padding-top: var(--space-s);
+  }
+</style>

@@ -1,0 +1,80 @@
+---
+import { getCollection } from 'astro:content'
+import Layout from '@layouts/Layout.astro'
+import '@styles/tokens.css'
+import '@styles/base.css'
+
+/**
+ * Landing page for the regular (weekly) services (spec 0003, AC-5).
+ * Lists only `kind: weekly` entries, sorted by order then title, so the
+ * navigation has somewhere to point.
+ */
+const services = (await getCollection('services', ({ data }) => data.kind === 'weekly')).sort(
+  (a, b) => a.data.order - b.data.order || a.data.title.localeCompare(b.data.title)
+)
+---
+
+<Layout
+  title="Services"
+  description="The regular weekly services of the United Congregation of Yisra'Yah, with the order of each one."
+>
+  <div class="container">
+    <h1>Weekly services</h1>
+    <p class="lead">
+      The order of each service we keep week by week, so you can follow along from a phone at home
+      or in the sanctuary.
+    </p>
+
+    {services.length > 0 ? (
+      <ul class="listing">
+        {services.map((service) => (
+          <li class="listing-item">
+            <h2 class="listing-title">
+              <a href={`/services/${service.id}`}>{service.data.title}</a>
+            </h2>
+            {(service.data.day || service.data.time) && (
+              <p class="listing-when text-muted">
+                {[service.data.day, service.data.time].filter(Boolean).join(' · ')}
+              </p>
+            )}
+            {service.data.description && <p>{service.data.description}</p>}
+          </li>
+        ))}
+      </ul>
+    ) : (
+      <p class="text-muted">No services have been published yet.</p>
+    )}
+  </div>
+</Layout>
+
+<style>
+  .lead {
+    font-size: 1.125rem;
+    line-height: 1.6;
+    color: var(--muted);
+    margin-bottom: var(--space-l);
+  }
+
+  .listing {
+    list-style: none;
+    padding-left: 0;
+  }
+
+  .listing-item {
+    border-bottom: var(--border-width) solid var(--border);
+    padding: var(--space-s) 0;
+  }
+
+  .listing-item:last-child {
+    border-bottom: none;
+  }
+
+  .listing-title {
+    margin-bottom: var(--space-3xs);
+  }
+
+  .listing-when {
+    font-size: 0.9375rem;
+    margin-bottom: var(--space-3xs);
+  }
+</style>

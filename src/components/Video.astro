@@ -1,0 +1,57 @@
+---
+/**
+ * The site's own video player, used inline inside service bodies (spec 0003).
+ *
+ * Service bodies are MDX and call this component as `<Video src="…" />`. The
+ * route that renders the body passes this component in, so no content file
+ * repeats an import (spec 0003, Page body rules).
+ *
+ * The file is served from this site, never from a third party, and the player
+ * is plain HTML with the browser's native controls, so it needs no client side
+ * framework and no JavaScript of ours.
+ */
+interface Props {
+  /** The video file, a path under public/videos/ such as /videos/opening.mp4. */
+  src: string
+  /** Optional caption shown under the player. */
+  caption?: string
+  /** Optional still image shown before the video loads, under public/videos/. */
+  poster?: string
+}
+
+const { src, caption, poster } = Astro.props
+---
+
+<figure class="video">
+  <!-- preload="metadata" keeps a phone from pulling a whole video over a slow
+       connection just to show the page; the poster covers the wait. -->
+  <video class="video-player" controls playsinline preload="metadata" src={src} poster={poster}>
+    <p>
+      Your browser cannot play this video. <a href={src}>Download it instead</a>.
+    </p>
+  </video>
+
+  {caption && <figcaption class="video-caption">{caption}</figcaption>}
+</figure>
+
+<style>
+  .video {
+    margin: 0 0 var(--space-m) 0;
+  }
+
+  .video-player {
+    display: block;
+    width: 100%;
+    max-width: 100%;
+    height: auto;
+    background: var(--ink);
+    border: var(--border-width) solid var(--border);
+    border-radius: var(--radius);
+  }
+
+  .video-caption {
+    margin-top: var(--space-3xs);
+    font-size: 0.9375rem;
+    color: var(--muted);
+  }
+</style>

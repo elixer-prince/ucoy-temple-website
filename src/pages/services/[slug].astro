@@ -1,0 +1,70 @@
+---
+import type { CollectionEntry } from 'astro:content'
+import { getCollection, render } from 'astro:content'
+import Layout from '@layouts/Layout.astro'
+import VideoPlayer from '@components/Video.astro'
+import '@styles/tokens.css'
+import '@styles/base.css'
+
+interface Props {
+  service: CollectionEntry<'services'>
+}
+
+/**
+ * One page per weekly service, at /services/<slug> (spec 0003, AC-2, AC-5).
+ *
+ * Only `kind: weekly` entries build here, so a Shabbaton can never appear under
+ * /services/ (spec 0003, Key invariants). The body is MDX, and the <Video>
+ * component is passed in below, so a body writes `<Video src="…" />` with no
+ * import of its own.
+ */
+export async function getStaticPaths() {
+  const services = await getCollection('services', ({ data }) => data.kind === 'weekly')
+  return services.map((service) => ({
+    params: { slug: service.id },
+    props: { service }
+  }))
+}
+
+const { service } = Astro.props
+// The front-matter title is the page's only h1; the body's own headings start
+// at `##`, so the heading order stays intact (spec 0003, Page body rules).
+const { Content } = await render(service)
+---
+
+<Layout title={service.data.title} description={service.data.description}>
+  <div class="container">
+    <article class="service">
+      <header class="service-header">
+        <h1>{service.data.title}</h1>
+        {(service.data.day || service.data.time) && (
+          <p class="service-when text-muted">
+            {[service.data.day, service.data.time].filter(Boolean).join(' · ')}
+          </p>
+        )}
+        {service.data.description && <p class="lead">{service.data.description}</p>}
+      </header>
+
+      <!-- The site's own player is supplied here, so every service body uses
+           one player and no content file repeats an import (spec 0003). -->
+      <Content components={{ Video: VideoPlayer }} />
+    </article>
+  </div>
+</Layout>
+
+<style>
+  .service-header {
+    margin-bottom: var(--space-m);
+  }
+
+  .service-when {
+    font-size: 0.9375rem;
+    margin-bottom: var(--space-3xs);
+  }
+
+  .lead {
+    font-size: 1.125rem;
+    line-height: 1.6;
+    color: var(--muted);
+  }
+</style>

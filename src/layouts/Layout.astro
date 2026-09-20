@@ -59,9 +59,12 @@ const { title, description = SITE_CONFIG.description } = Astro.props
       </script>
     ) : null}
 
-    <!-- Register the service worker for offline support (AC-7). -->
+    <!-- Register the service worker for offline support (AC-7).
+         Only register in production: the precache manifest is written by the
+         build integration and does not exist in dev, so an active worker there
+         would intercept navigation and serve the offline fallback. -->
     <script type="module">
-      if ('serviceWorker' in navigator) {
+      if ('serviceWorker' in navigator && import.meta.env.PROD) {
         window.addEventListener('load', () => {
           navigator.serviceWorker.register('/sw.js').catch((err) => {
             console.debug('SW registration failed:', err)

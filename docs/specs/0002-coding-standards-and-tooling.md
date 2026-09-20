@@ -28,13 +28,15 @@ Strict. `tsconfig.json` already extends `astro/tsconfigs/strict`; no `any`, exha
 
 ### Testing gate
 
-No test runner yet. The project gates on `astro check` plus `npm run build` via `npm run verify`. Tests come later via `/test` when a feature needs them.
+Vitest is installed and `npm run test` runs the suite (`.test.ts` files under `src/`, framework and test folder saved in `test-preferences.json`). The primary gate stays `astro check` plus `astro build` via `npm run verify`; at the Beta tier `/test` follows a feature's Verify step and ticks the feature's `Test it` box in the scope.
 
 ### Scripts added
 
 - `npm run lint` — ESLint across the project.
 - `npm run format` — Prettier write across the project.
 - `npm run format:check` — Prettier check without writing.
+- `npm run test` — run the Vitest suite (`.test.ts` under `src/`).
+- `npm run test:watch` — Vitest in watch mode.
 - `prepare` — husky (installs git hooks on `npm install`).
 
 ### Globals

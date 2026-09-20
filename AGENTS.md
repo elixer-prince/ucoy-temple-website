@@ -12,19 +12,27 @@ This is the public website for the United Congregation of Yisra'Yah, a temple re
 
 ## What exists now
 
-- `astro.config.mjs` configures static output, the two font families (Inter for sans, Frank Ruhl Libre for Hebrew and display), and the `precacheManifest` integration
-- `integrations/precache-manifest.mjs` writes `dist/sw-manifest.json` after each build so the hand written service worker can pre-cache shell HTML, stylesheets, scripts, fonts, and media
+- `astro.config.mjs` configures static output, the two font families (Inter for sans, Frank Ruhl Libre for Hebrew and display), the `mdx` integration for service bodies, and the `precacheManifest` integration
+- `src/content.config.ts` defines the four content collections: `pages` and `announcements` (unchanged), plus `services` (weekly services and Shabbatonim, told apart by `kind`, authored as `.mdx`) and `resources` (the temple's PDFs)
+- `src/components/Video.astro` is the site's own player, called inline as `<Video src="…" />` inside a service body with no import of its own; the service routes pass it into the rendered content
+- `src/pages/services/` and `src/pages/shabbatonim/` hold a landing page plus a `[slug]` route for each area; `src/pages/resources/` does the same for the PDFs
+- `integrations/precache-manifest.mjs` writes `dist/sw-manifest.json` after each build so the hand written service worker can pre-cache shell HTML, stylesheets, scripts, fonts, and images. Video (`.mp4`) and PDFs are deliberately left out of the pre-cache
 - `docs/scope/scope.md` is the feature trail map with 20 features across foundation, four slices, and a deferred list
 - `docs/specs/0001-adopt-static-site-stack.md` records the stack decision and acceptance criteria
 - `docs/specs/0002-coding-standards-and-tooling.md` records the coding standards and tooling decisions
-- `public/` holds `favicon.svg`, `_headers`, `offline.html`, and `sw.js` (the hand written service worker)
+- `docs/specs/0003-content-model.md` records the content model: one `services` collection with videos inline in an MDX body, and a `resources` collection for PDFs
+- `public/` holds `favicon.svg`, `_headers`, `offline.html`, and `sw.js` (the hand written service worker), plus `videos/` and `pdfs/` for the local media
 - Skills are installed and pinned in `skills-lock.json`: architect, astro-framework, audit, check, debug, develop, document, scope, sync, test, web-perf, wrangler
-- Tooling installed: ESLint 10, TypeScript ESLint, eslint-plugin-astro, Prettier 3 with prettier-plugin-astro, husky, lint-staged, editorconfig
+- Tooling installed: ESLint 10, TypeScript ESLint, eslint-plugin-astro, Prettier 3 with prettier-plugin-astro, husky, lint-staged, editorconfig, Vitest, @types/node
 
 ## Key conventions
 
 - Content lives as text files in the repository, every change is a commit, no database or content API
 - Upcoming events come from the temple's Google Calendar, not from the repository
+- A service (weekly or Shabbaton) is one `.mdx` file under `src/content/services/`; `kind` decides the area and route, and the written order of the body is the order the service runs in
+- A video goes inline in a service body as `<Video src="/videos/…" />` with no import line; `caption` and `poster` are optional
+- Service bodies start at `##`, because the front-matter title is the page's only `h1`
+- A PDF lives under `public/pdfs/` and is linked through its resource page (`/resources/<slug>`), never by its `public/` path
 - No accounts, no sign in, no cookies, no tracking beyond cookieless Cloudflare Web Analytics
 - The contact form sends to one site config value that holds the temple's email address
 - Fonts are downloaded at build time and served from this site, never from a third party at runtime
@@ -45,16 +53,16 @@ This is the public website for the United Congregation of Yisra'Yah, a temple re
 
 ESLint 10 flat config plus Prettier 3 with the Astro plugin.
 
-- `.eslint.config.js` — flat config: JavaScript recommended, TypeScript ESLint recommended, Astro plugin recommended, Prettier absorbs all formatting rules
+- `eslint.config.js` — flat config: JavaScript recommended, TypeScript ESLint recommended, Astro plugin recommended, Prettier absorbs all formatting rules. ESLint covers `.js`, `.mjs`, `.ts`, and `.astro`; `.mdx` is formatted but not linted
 - `.prettierrc` — no semicolons, single quotes, no trailing commas, print width 100, LF line endings, 2-space indent
 - `.editorconfig` — 2-space indent, LF, UTF-8, trim trailing whitespace, final newline on text files (root = true)
-- `.lintstagedrc.json` — Prettier on `{ts,tsx,mjs,cjs,js,json,md}`, Prettier + ESLint fix on `*.astro`
+- `.lintstagedrc.json` — Prettier on `{ts,tsx,mjs,cjs,js,json,md,mdx}`, Prettier + ESLint fix on `*.astro`
 
 Pre-commit: husky runs lint-staged on every commit. The hook runs `npx lint-staged`.
 
 Type strictness: strict, no `any`, exhaustive types. The tsconfig extends `astro/tsconfigs/strict`.
 
-Testing gate: no test runner installed yet. The project gates on `astro check` plus `npm run build` via `npm run verify`. Tests come later via `/test` when a feature needs them.
+Testing gate: Vitest is installed and `npm run test` runs the suite (`.test.ts` files under `src/`; framework and location saved in `test-preferences.json`). The primary gate stays `npm run verify` (`astro check` plus `astro build`); at the Beta tier `/test` follows a feature's Verify step and ticks the feature's `Test it` box in the scope.
 
 ## Available skills
 
@@ -86,7 +94,10 @@ Two MCP servers are referenced by the stack spec and should be connected in your
 
 - Scope and trail map: `docs/scope/scope.md`
 - Stack spec: `docs/specs/0001-adopt-static-site-stack.md`
-- Astro config (fonts, output, integration): `astro.config.mjs`
+- Content model spec: `docs/specs/0003-content-model.md`
+- Content collections and their schemas: `src/content.config.ts`
+- Sample service, Shabbaton, and resource: `src/content/services/` and `src/content/resources/`
+- Astro config (fonts, output, integrations): `astro.config.mjs`
 - Service worker + precache integration: `integrations/precache-manifest.mjs` and `public/sw.js`
 - Environment variable template: `.env.example`
 - TypeScript config and path aliases: `tsconfig.json`

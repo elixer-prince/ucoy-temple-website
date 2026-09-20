@@ -1,0 +1,7 @@
+{
+  "tool": "vitest",
+  "additionalTools": [],
+  "testDir": "src",
+  "filePattern": "**/*.{test,spec}.ts",
+  "packageManager": "npm"
+}

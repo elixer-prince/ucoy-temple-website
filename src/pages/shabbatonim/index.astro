@@ -1,0 +1,79 @@
+---
+import { getCollection } from 'astro:content'
+import Layout from '@layouts/Layout.astro'
+import '@styles/tokens.css'
+import '@styles/base.css'
+
+/**
+ * Landing page for the Shabbatonim (the High Sabbaths) (spec 0003, AC-5).
+ * The same page shape as the weekly services, listing only `kind: shabbaton`.
+ */
+const shabbatonim = (await getCollection('services', ({ data }) => data.kind === 'shabbaton')).sort(
+  (a, b) => a.data.order - b.data.order || a.data.title.localeCompare(b.data.title)
+)
+---
+
+<Layout
+  title="Shabbatonim"
+  description="The High Sabbaths kept by the United Congregation of Yisra'Yah, with the order of each one."
+>
+  <div class="container">
+    <h1>Shabbatonim</h1>
+    <p class="lead">
+      The High Sabbaths we keep through the year, each with the order of its day. Dates are given on
+      the temple calendar, since the appointed times follow the Hebrew months.
+    </p>
+
+    {shabbatonim.length > 0 ? (
+      <ul class="listing">
+        {shabbatonim.map((shabbaton) => (
+          <li class="listing-item">
+            <h2 class="listing-title">
+              <a href={`/shabbatonim/${shabbaton.id}`}>{shabbaton.data.title}</a>
+            </h2>
+            {(shabbaton.data.day || shabbaton.data.time) && (
+              <p class="listing-when text-muted">
+                {[shabbaton.data.day, shabbaton.data.time].filter(Boolean).join(' · ')}
+              </p>
+            )}
+            {shabbaton.data.description && <p>{shabbaton.data.description}</p>}
+          </li>
+        ))}
+      </ul>
+    ) : (
+      <p class="text-muted">No Shabbatonim have been published yet.</p>
+    )}
+  </div>
+</Layout>
+
+<style>
+  .lead {
+    font-size: 1.125rem;
+    line-height: 1.6;
+    color: var(--muted);
+    margin-bottom: var(--space-l);
+  }
+
+  .listing {
+    list-style: none;
+    padding-left: 0;
+  }
+
+  .listing-item {
+    border-bottom: var(--border-width) solid var(--border);
+    padding: var(--space-s) 0;
+  }
+
+  .listing-item:last-child {
+    border-bottom: none;
+  }
+
+  .listing-title {
+    margin-bottom: var(--space-3xs);
+  }
+
+  .listing-when {
+    font-size: 0.9375rem;
+    margin-bottom: var(--space-3xs);
+  }
+</style>
