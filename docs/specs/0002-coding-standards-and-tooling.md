@@ -16,6 +16,10 @@ Install lint, format, and pre-commit enforcement on the scaffolded Astro 7 + Typ
 - **Prettier config**: no semicolons, single quotes, no trailing commas, print width 100, 2-space indent, LF line endings.
 - **Editor consistency**: `.editorconfig` at the repo root (2-space indent, LF, UTF-8, trim trailing whitespace, final newline on text files).
 
+### Formatting scope
+
+Prettier reads `.gitignore` by default, so build output (`dist/`, `.astro/`) and `node_modules/` are skipped without any extra file. `.prettierignore` covers what `.gitignore` cannot: files that are committed on purpose but must not be reformatted. The vendored skills in `.agents/` are the important entry, since they are pinned by `skills-lock.json` and nobody edits them by hand. Also listed: the `.continue` and `.windsurf` config dirs, husky's generated `.husky/_/` shims, `.tmp-*` scratch files, `package-lock.json`, and `wrangler.toml`, which has no TOML parser installed. Formats that generate or own their own files stay out of the formatter's reach.
+
 ### Pre-commit
 
 - Husky + lint-staged run on every commit.

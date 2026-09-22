@@ -2,8 +2,7 @@
 import type { CollectionEntry } from 'astro:content'
 import { getCollection, render } from 'astro:content'
 import Layout from '@layouts/Layout.astro'
-import '@styles/tokens.css'
-import '@styles/base.css'
+import Tag from '@components/Tag.astro'
 
 interface Props {
   resource: CollectionEntry<'resources'>
@@ -29,12 +28,14 @@ const { Content } = await render(resource)
 ---
 
 <Layout title={resource.data.title} description={resource.data.description}>
-  <div class="container">
+  <div class="prose">
     <article class="resource">
       <h1>{resource.data.title}</h1>
 
       {resource.data.category && (
-        <p class="resource-category text-muted">{resource.data.category}</p>
+        <p>
+          <Tag label={resource.data.category} />
+        </p>
       )}
 
       {resource.data.description && <p class="lead">{resource.data.description}</p>}
@@ -57,21 +58,16 @@ const { Content } = await render(resource)
 </Layout>
 
 <style>
-  .resource-category {
-    font-size: 0.9375rem;
-    margin-bottom: var(--space-3xs);
-  }
-
   .lead {
-    font-size: 1.125rem;
-    line-height: 1.6;
-    color: var(--muted);
+    font-size: var(--text-lead);
+    line-height: var(--body-line-height);
+    color: var(--color-text-muted);
     margin-bottom: var(--space-m);
   }
 
   .resource-notes {
     margin-top: var(--space-l);
-    border-top: var(--border-width) solid var(--border);
+    border-top: var(--border-width) solid var(--color-border);
     padding-top: var(--space-s);
   }
 </style>

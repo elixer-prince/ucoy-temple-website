@@ -1,0 +1,32 @@
+---
+/**
+ * Skip link (spec 0004, AC-11).
+ * Hidden until focused, then jumps to the main content.
+ */
+---
+
+<a class="skip-link" href="#main-content">
+  Skip to main content
+</a>
+
+<style>
+  .skip-link {
+    position: absolute;
+    left: var(--space-s);
+    top: -100px;
+    z-index: 100;
+    padding: var(--space-2xs) var(--space-s);
+    background: var(--color-accent);
+    color: var(--color-on-accent);
+    border-radius: var(--radius-sm);
+    font-weight: 600;
+    text-decoration: none;
+    transition: top 0.15s ease;
+  }
+
+  .skip-link:focus-visible {
+    top: var(--space-xs);
+    outline: var(--focus-width) solid var(--color-focus);
+    outline-offset: var(--focus-offset);
+  }
+</style>

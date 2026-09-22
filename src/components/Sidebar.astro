@@ -1,0 +1,396 @@
+---
+/**
+ * Sidebar navigation (spec 0004, AC-5).
+ * Plain nav landmark: one group per service kind, then fixed entries,
+ * then pages collection entries. Planned routes render as quiet text.
+ */
+import { getCollection } from 'astro:content'
+import { FIXED_NAV_BEFORE_PAGES, FIXED_NAV_AFTER_PAGES, NAV_GROUPS } from '@/config/nav'
+import Icon from '@components/Icon.astro'
+
+interface Props {
+  currentPath?: string
+}
+
+const { currentPath = Astro.url.pathname } = Astro.props
+
+function normalise(path: string): string {
+  return path.length > 1 && path.endsWith('/') ? path.slice(0, -1) : path
+}
+
+const here = normalise(currentPath)
+const isCurrent = (href: string): boolean => normalise(href) === here
+
+const byOrder = (
+  a: { data: { order: number; title: string } },
+  b: { data: { order: number; title: string } }
+): number => a.data.order - b.data.order || a.data.title.localeCompare(b.data.title)
+
+const services = await getCollection('services')
+
+/**
+ * One entry per group in `src/config/nav.ts`: its service files by `kind`,
+ * ordered by `order` then title, and whether it holds the current page.
+ */
+const groups = NAV_GROUPS.map((group) => {
+  const entries = services
+    .filter((service) => service.data.kind === group.kind)
+    .sort(byOrder)
+    .map((service) => ({ id: service.id, title: service.data.title }))
+
+  return {
+    group,
+    entries,
+    open: isCurrent(group.href) || entries.some((entry) => isCurrent(`${group.href}/${entry.id}`))
+  }
+})
+
+const pages = (await getCollection('pages')).sort(byOrder)
+---
+
+<nav class="sidebar-nav" aria-label="Site">
+  <a class="sidebar-brand" href="/">
+    <img class="brand-mark" src="/favicon.png" alt="" width="48" height="43" />
+    <span class="brand-text">
+      United Congregation
+      <br />
+      of Yisra'Yah
+    </span>
+  </a>
+  <ul class="menu">
+    {FIXED_NAV_BEFORE_PAGES.slice(0, 1).map((entry) => (
+      <li>
+        {entry.kind === 'planned' ? (
+          <span class="planned">
+            {entry.label} <span class="planned-note">(planned)</span>
+          </span>
+        ) : (
+          <a href={entry.href} aria-current={isCurrent(entry.href) ? 'page' : undefined}>
+            {entry.label}
+          </a>
+        )}
+      </li>
+    ))}
+
+    {groups.map(({ group, entries, open }) => (
+      <li>
+        <details class="group" open={open}>
+          <summary>
+            <span class="summary-icon">
+              <span class="icon-open">
+                <Icon name="chevron-up" size={18} />
+              </span>
+              <span class="icon-closed">
+                <Icon name="chevron-down" size={18} />
+              </span>
+            </span>
+            <span>{group.label}</span>
+          </summary>
+          <div class="group-list">
+            <div class="group-entries">
+              <a href={group.href} aria-current={isCurrent(group.href) ? 'page' : undefined}>
+                {group.allLabel}
+              </a>
+              {entries.map((entry) => (
+                <a
+                  href={`${group.href}/${entry.id}`}
+                  aria-current={isCurrent(`${group.href}/${entry.id}`) ? 'page' : undefined}
+                >
+                  {entry.title}
+                </a>
+              ))}
+            </div>
+          </div>
+        </details>
+      </li>
+    ))}
+
+    {FIXED_NAV_BEFORE_PAGES.slice(1).map((entry) => (
+      <li>
+        {entry.kind === 'planned' ? (
+          <span class="planned">
+            {entry.label} <span class="planned-note">(planned)</span>
+          </span>
+        ) : (
+          <a href={entry.href} aria-current={isCurrent(entry.href) ? 'page' : undefined}>
+            {entry.label}
+          </a>
+        )}
+      </li>
+    ))}
+
+    {pages.map((page) => (
+      <li>
+        <a href={`/${page.id}`} aria-current={isCurrent(`/${page.id}`) ? 'page' : undefined}>
+          {page.data.title}
+        </a>
+      </li>
+    ))}
+
+    {FIXED_NAV_AFTER_PAGES.map((entry) => (
+      <li>
+        <a href={entry.href} aria-current={isCurrent(entry.href) ? 'page' : undefined}>
+          {entry.label}
+        </a>
+      </li>
+    ))}
+  </ul>
+</nav>
+
+<style>
+  .sidebar-nav {
+    font-family: var(--font-sans);
+    font-size: var(--text-body);
+    color: var(--color-sidebar-text);
+  }
+
+  /* The masthead is one home link over mark and name. */
+  .sidebar-brand {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    margin: var(--space-l) 0 var(--space-s) 0;
+    padding: var(--space-xs) var(--space-s);
+    border-radius: var(--radius-sm);
+    font-size: var(--text-brand);
+    font-weight: 600;
+    line-height: var(--heading-line-height);
+    color: var(--color-sidebar-text);
+    text-decoration: none;
+    text-align: center;
+  }
+
+  /* Hide sidebar branding on mobile since the header already shows it */
+  @media (max-width: 47.99em) {
+    .sidebar-brand {
+      display: none;
+    }
+  }
+
+  .sidebar-brand:focus-visible {
+    outline: var(--focus-width) solid var(--color-sidebar-marker);
+    outline-offset: var(--focus-offset);
+  }
+
+  /* The PNG export carries an opaque white background, so the mark reads
+     as a seal on the panel rather than sitting naked on black. Sharp
+     corners, matching the icon set; sized in markup for a clean scan. */
+  .brand-mark {
+    display: block;
+    margin-bottom: var(--space-3xs);
+  }
+
+  .brand-text {
+    display: block;
+    line-height: 1.2;
+  }
+
+  .menu {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    display: flex;
+    flex-direction: column;
+    /* No gap: rows sit flush and only the touch target sets the height. */
+  }
+
+  .menu a {
+    display: block;
+    padding: var(--space-2xs) var(--space-s);
+    border-radius: var(--radius-sm);
+    text-decoration: none;
+    color: var(--color-sidebar-text);
+    min-height: var(--touch-target);
+  }
+
+  .menu a:hover {
+    background: var(--color-sidebar-hover);
+    color: var(--color-sidebar-text);
+    text-decoration: none;
+  }
+
+  .menu a[aria-current='page'] {
+    background: var(--color-sidebar-hover);
+    font-weight: 700;
+    color: var(--color-sidebar-text);
+    border-inline-start: var(--border-width-heavy) solid var(--color-sidebar-marker);
+  }
+
+  .menu a:focus-visible {
+    outline: var(--focus-width) solid var(--color-sidebar-marker);
+    outline-offset: var(--focus-offset);
+  }
+
+  .group {
+    border: none;
+    border-radius: var(--radius-sm);
+    background: transparent;
+  }
+
+  .group summary {
+    cursor: pointer;
+    padding: var(--space-2xs) var(--space-s);
+    font-size: var(--text-body);
+    font-weight: 700;
+    color: var(--color-sidebar-text);
+    border-radius: var(--radius-sm);
+    min-height: var(--touch-target);
+    list-style: none;
+    display: flex;
+    align-items: baseline;
+    gap: var(--space-3xs);
+  }
+
+  .group summary::-webkit-details-marker {
+    display: none;
+  }
+
+  /* Icon swap without JavaScript: CSS reads the live open state,
+     so toggling the group always flips the chevron. */
+  .summary-icon {
+    flex: none;
+    display: inline-flex;
+    color: var(--color-sidebar-muted);
+  }
+
+  .summary-icon .icon-closed {
+    display: inline-flex;
+  }
+
+  .summary-icon .icon-open {
+    display: none;
+  }
+
+  .group[open] .summary-icon .icon-closed {
+    display: none;
+  }
+
+  .group[open] .summary-icon .icon-open {
+    display: inline-flex;
+  }
+
+  .group summary:hover {
+    background: var(--color-sidebar-hover);
+  }
+
+  .group summary:focus-visible {
+    outline: var(--focus-width) solid var(--color-sidebar-marker);
+    outline-offset: var(--focus-offset);
+  }
+
+  /* Smooth opening. The list is a one track grid and the track's size is
+     what animates, which every engine in reach supports (Safari 16+,
+     Chrome 107+, Firefox 66+). Closing is instant, because a closed
+     details stops rendering its content in a single step.
+     Inline start indent only: no block padding, so the rows sit flush
+     with the summary above and the next group below. */
+  .group-list {
+    margin: 0;
+    padding: 0 0 0 var(--space-s);
+    display: grid;
+    grid-template-rows: 1fr;
+    transition: grid-template-rows 0.15s ease;
+    font-size: var(--text-body);
+  }
+
+  .group:not([open]) .group-list {
+    grid-template-rows: 0fr;
+  }
+
+  .group-entries {
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+    min-height: 0;
+  }
+
+  /* Closing glides too, where the engine can interpolate to auto. The
+     height then belongs to the details content pseudo, and allow-discrete
+     delays its content-visibility step so the list stays painted while
+     it shrinks. Safari has no interpolate-size yet (WebKit issue 348 is
+     still open), so it keeps the grid above: a gliding open, instant
+     close, which is as far as CSS alone reaches.
+     Where it does apply the pseudo owns the height, so the list stays
+     open there and must not animate a second time. */
+  @supports (interpolate-size: allow-keywords) {
+    .group {
+      interpolate-size: allow-keywords;
+    }
+
+    .group::details-content {
+      block-size: 0;
+      overflow: clip;
+      transition-property: block-size, content-visibility;
+      transition-duration: 0.15s;
+      transition-timing-function: ease;
+      transition-behavior: allow-discrete;
+    }
+
+    .group[open]::details-content {
+      block-size: auto;
+    }
+
+    .group-list {
+      grid-template-rows: 1fr;
+      transition: none;
+    }
+
+    .group:not([open]) .group-list {
+      grid-template-rows: 1fr;
+    }
+  }
+
+  /* The base reset walks *, ::before and ::after, which misses
+     ::details-content, so the group animation is stopped here by hand. */
+  @media (prefers-reduced-motion: reduce) {
+    .group-list {
+      transition: none;
+    }
+
+    .group::details-content {
+      transition: none;
+    }
+  }
+
+  /* Entries sit flush: the touch target minimum, not padding, sets the
+     height, so tightening the block padding removes the airy gaps
+     without shrinking the tap area. */
+  .group-list a {
+    font-size: inherit;
+    display: block;
+    padding: var(--space-2xs) var(--space-s);
+    border-radius: var(--radius-sm);
+    text-decoration: none;
+    color: var(--color-sidebar-text);
+    min-height: var(--touch-target);
+  }
+
+  .group-list a:hover {
+    background: var(--color-sidebar-hover);
+    text-decoration: none;
+  }
+
+  .group-list a[aria-current='page'] {
+    background: var(--color-sidebar-hover);
+    font-weight: 700;
+    border-inline-start: var(--border-width-heavy) solid var(--color-sidebar-marker);
+  }
+
+  /* The list is clipped so it can animate, so an outward ring would be
+     sliced off the first and last row. Drawing the ring inside the link
+     keeps it whole and needs no padding to make room for it. */
+  .group-list a:focus-visible {
+    outline: var(--focus-width) solid var(--color-sidebar-marker);
+    outline-offset: calc(-1 * var(--focus-offset));
+  }
+
+  .planned {
+    display: block;
+    padding: var(--space-3xs) var(--space-xs);
+    color: var(--color-sidebar-muted);
+  }
+
+  .planned-note {
+    font-size: var(--text-small);
+  }
+</style>

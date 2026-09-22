@@ -54,29 +54,29 @@ export default defineConfig({
 
   // Fonts are downloaded at build time and served from this site, never from a
   // third party at runtime, so they keep working offline once the service
-  // worker has cached them (spec 0001, AC-7). The families may change when the
-  // design system is decided (scope feature 4); change them here only, since
-  // every rule in the stylesheets points at these two variables.
+  // worker has cached them (spec 0001, AC-7). Roboto carries body text and
+  // Oswald carries the display face. Latin subsets only: the Hebrew subset
+  // claim could not be confirmed, so Hebrew falls back to the device Hebrew
+  // face rather than risking a failed build (spec 0004 Follow-up).
   fonts: [
     {
-      name: 'Inter',
+      name: 'Roboto',
       cssVariable: '--font-sans',
       provider: fontProviders.fontsource(),
-      weights: [400, 500, 600, 700],
+      weights: [400, 500, 700],
       styles: ['normal'],
       subsets: ['latin', 'latin-ext'],
       fallbacks: ['system-ui', 'sans-serif']
     },
     {
-      // Hebrew script. Frank Ruhl Libre carries Hebrew and Latin, so it also
-      // serves as the display face.
-      name: 'Frank Ruhl Libre',
+      // Display face. Latin only; Hebrew falls back to the device face.
+      name: 'Oswald',
       cssVariable: '--font-serif',
       provider: fontProviders.fontsource(),
-      weights: [400, 500, 700],
+      weights: [400, 500, 600, 700],
       styles: ['normal'],
-      subsets: ['hebrew', 'latin'],
-      fallbacks: ['Georgia', 'serif']
+      subsets: ['latin', 'latin-ext'],
+      fallbacks: ['Arial Narrow', 'sans-serif']
     }
   ],
 

@@ -3,8 +3,6 @@ import type { CollectionEntry } from 'astro:content'
 import { getCollection, render } from 'astro:content'
 import Layout from '@layouts/Layout.astro'
 import VideoPlayer from '@components/Video.astro'
-import '@styles/tokens.css'
-import '@styles/base.css'
 
 interface Props {
   shabbaton: CollectionEntry<'services'>
@@ -29,7 +27,7 @@ const { Content } = await render(shabbaton)
 ---
 
 <Layout title={shabbaton.data.title} description={shabbaton.data.description}>
-  <div class="container">
+  <div class="prose">
     <article class="shabbaton">
       <header class="shabbaton-header">
         <h1>{shabbaton.data.title}</h1>
@@ -52,13 +50,13 @@ const { Content } = await render(shabbaton)
   }
 
   .shabbaton-when {
-    font-size: 0.9375rem;
+    font-size: var(--text-caption);
     margin-bottom: var(--space-3xs);
   }
 
   .lead {
-    font-size: 1.125rem;
-    line-height: 1.6;
-    color: var(--muted);
+    font-size: var(--text-lead);
+    line-height: var(--body-line-height);
+    color: var(--color-text-muted);
   }
 </style>

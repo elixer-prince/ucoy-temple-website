@@ -2,8 +2,6 @@
 import type { CollectionEntry } from 'astro:content'
 import { getCollection, render } from 'astro:content'
 import Layout from '@layouts/Layout.astro'
-import '@styles/tokens.css'
-import '@styles/base.css'
 
 interface Props {
   page: CollectionEntry<'pages'>
@@ -27,7 +25,7 @@ const { Content, headings } = await render(page)
 ---
 
 <Layout title={page.data.title} description={page.data.description}>
-  <article class="content-page">
+  <article class="content-page prose">
     <h1>{page.data.title}</h1>
 
     {page.data.description && <p class="lead">{page.data.description}</p>}
@@ -51,24 +49,21 @@ const { Content, headings } = await render(page)
 
 <style>
   .content-page {
-    max-width: var(--max-content-width);
-    margin-inline: auto;
-    padding: var(--space-l) 0;
+    padding: 0;
   }
 
   .lead {
-    font-size: 1.125rem;
-    line-height: 1.6;
-    color: var(--muted);
+    font-size: var(--text-lead);
+    line-height: var(--body-line-height);
+    color: var(--color-text-muted);
     margin-bottom: var(--space-l);
   }
 
   .toc-title {
-    font-size: 1rem;
+    font-size: var(--text-body);
     font-family: var(--font-sans);
-    color: var(--muted);
-    text-transform: uppercase;
-    letter-spacing: 0.05em;
+    color: var(--color-text-muted);
+    letter-spacing: var(--tracking-wide);
   }
 
   .table-of-contents ul {
@@ -77,10 +72,10 @@ const { Content, headings } = await render(page)
   }
 
   .table-of-contents li {
-    margin-bottom: 0.25rem;
+    margin-bottom: var(--space-3xs);
   }
 
   .table-of-contents a {
-    font-size: 0.9375rem;
+    font-size: var(--text-caption);
   }
 </style>

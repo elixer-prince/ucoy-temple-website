@@ -15,7 +15,7 @@
  * in advance.
  */
 
-const VERSION = 'v1'
+const VERSION = 'v2'
 
 /*
  * Bumping VERSION is what replaces the pre-cache after a deploy, which is the

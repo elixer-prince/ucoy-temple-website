@@ -12,7 +12,7 @@ This is the public website for the United Congregation of Yisra'Yah, a temple re
 
 ## What exists now
 
-- `astro.config.mjs` configures static output, the two font families (Inter for sans, Frank Ruhl Libre for Hebrew and display), the `mdx` integration for service bodies, and the `precacheManifest` integration
+- `astro.config.mjs` configures static output, the two font families (Roboto for sans and body, Oswald for display), the `mdx` integration for service bodies, and the `precacheManifest` integration
 - `src/content.config.ts` defines the four content collections: `pages` and `announcements` (unchanged), plus `services` (weekly services and Shabbatonim, told apart by `kind`, authored as `.mdx`) and `resources` (the temple's PDFs)
 - `src/components/Video.astro` is the site's own player, called inline as `<Video src="…" />` inside a service body with no import of its own; the service routes pass it into the rendered content
 - `src/pages/services/` and `src/pages/shabbatonim/` hold a landing page plus a `[slug]` route for each area; `src/pages/resources/` does the same for the PDFs
@@ -21,7 +21,9 @@ This is the public website for the United Congregation of Yisra'Yah, a temple re
 - `docs/specs/0001-adopt-static-site-stack.md` records the stack decision and acceptance criteria
 - `docs/specs/0002-coding-standards-and-tooling.md` records the coding standards and tooling decisions
 - `docs/specs/0003-content-model.md` records the content model: one `services` collection with videos inline in an MDX body, and a `resources` collection for PDFs
-- `public/` holds `favicon.svg`, `_headers`, `offline.html`, and `sw.js` (the hand written service worker), plus `videos/` and `pdfs/` for the local media
+- `src/components/Icon.astro` is the site's only icon source: sharp outline SVGs at a fixed stroke width, drawn in `currentColor`, with no icon package and no icon font
+- `src/layouts/Layout.astro` holds the shell: the fixed, self-scrolling black sidebar, the content column, and the theme switch that cycles System, Light, Dark
+- `public/` holds `favicon.png`, `_headers`, `offline.html`, and `sw.js` (the hand written service worker), plus `videos/` and `pdfs/` for the local media
 - Skills are installed and pinned in `skills-lock.json`: architect, astro-framework, audit, check, debug, develop, document, scope, sync, test, web-perf, wrangler
 - Tooling installed: ESLint 10, TypeScript ESLint, eslint-plugin-astro, Prettier 3 with prettier-plugin-astro, husky, lint-staged, editorconfig, Vitest, @types/node
 
@@ -57,6 +59,7 @@ ESLint 10 flat config plus Prettier 3 with the Astro plugin.
 - `.prettierrc` — no semicolons, single quotes, no trailing commas, print width 100, LF line endings, 2-space indent
 - `.editorconfig` — 2-space indent, LF, UTF-8, trim trailing whitespace, final newline on text files (root = true)
 - `.lintstagedrc.json` — Prettier on `{ts,tsx,mjs,cjs,js,json,md,mdx}`, Prettier + ESLint fix on `*.astro`
+- `.prettierignore` — Prettier reads `.gitignore` by default, so build output is already skipped; this file adds what `.gitignore` cannot cover, namely the vendored skills in `.agents/`, the `.continue` and `.windsurf` config dirs, husky's generated `.husky/_/` shims, `.tmp-*` scratch files, `package-lock.json`, and `wrangler.toml` (no TOML parser is installed). Keep `.agents/` out of every check: it is 99 pinned files that no one edits by hand
 
 Pre-commit: husky runs lint-staged on every commit. The hook runs `npx lint-staged`.
 

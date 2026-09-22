@@ -1,8 +1,6 @@
 ---
 import { getCollection } from 'astro:content'
 import Layout from '@layouts/Layout.astro'
-import '@styles/tokens.css'
-import '@styles/base.css'
 
 /**
  * Landing page for the Shabbatonim (the High Sabbaths) (spec 0003, AC-5).
@@ -17,7 +15,7 @@ const shabbatonim = (await getCollection('services', ({ data }) => data.kind ===
   title="Shabbatonim"
   description="The High Sabbaths kept by the United Congregation of Yisra'Yah, with the order of each one."
 >
-  <div class="container">
+  <div class="prose">
     <h1>Shabbatonim</h1>
     <p class="lead">
       The High Sabbaths we keep through the year, each with the order of its day. Dates are given on
@@ -48,9 +46,9 @@ const shabbatonim = (await getCollection('services', ({ data }) => data.kind ===
 
 <style>
   .lead {
-    font-size: 1.125rem;
-    line-height: 1.6;
-    color: var(--muted);
+    font-size: var(--text-lead);
+    line-height: var(--body-line-height);
+    color: var(--color-text-muted);
     margin-bottom: var(--space-l);
   }
 
@@ -60,7 +58,7 @@ const shabbatonim = (await getCollection('services', ({ data }) => data.kind ===
   }
 
   .listing-item {
-    border-bottom: var(--border-width) solid var(--border);
+    border-bottom: var(--border-width) solid var(--color-border);
     padding: var(--space-s) 0;
   }
 
@@ -73,7 +71,7 @@ const shabbatonim = (await getCollection('services', ({ data }) => data.kind ===
   }
 
   .listing-when {
-    font-size: 0.9375rem;
+    font-size: var(--text-caption);
     margin-bottom: var(--space-3xs);
   }
 </style>

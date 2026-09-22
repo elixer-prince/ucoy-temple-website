@@ -1,16 +1,24 @@
 ---
+/**
+ * Layout shell (spec 0004, AC-5).
+ * Imports stylesheets once, renders header, sidebar, content, footer.
+ */
 import { SITE_CONFIG } from '@/config/site'
 import Header from '@components/Header.astro'
 import Footer from '@components/Footer.astro'
+import Sidebar from '@components/Sidebar.astro'
+import SkipLink from '@components/SkipLink.astro'
 import '@styles/tokens.css'
 import '@styles/base.css'
+import '@styles/prose.css'
 
 interface Props {
   title: string
   description?: string
+  robots?: string
 }
 
-const { title, description = SITE_CONFIG.description } = Astro.props
+const { title, description = SITE_CONFIG.description, robots } = Astro.props
 ---
 
 <!doctype html>
@@ -20,32 +28,109 @@ const { title, description = SITE_CONFIG.description } = Astro.props
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <title>{title} — {SITE_CONFIG.title}</title>
     <meta name="description" content={description} />
-
-    <!-- Preconnect to font source for faster font loading -->
-    <link rel="preconnect" href="https://cdn.fontsource.com" />
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    {robots && <meta name="robots" content={robots} />}
 
     <!-- Canonical link -->
     <link rel="canonical" href={Astro.url.pathname} />
 
-    <!-- Favicon -->
-    <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
-    <link rel="apple-touch-icon" href="/favicon.svg" />
+    <!-- Favicon: one PNG for every surface. A 32px context is the tab,
+         the touch icon is iOS's home screen, and the header mark is the
+         same file drawn small. -->
+    <link rel="icon" href="/favicon.png" type="image/png" />
+    <link rel="apple-touch-icon" href="/favicon.png" />
 
-    <!-- Theme colour (matches canvas token) -->
-    <meta name="theme-color" content="#fbfaf7" />
+    <!-- Theme colour follows the canvas role in each mode. -->
+    <meta name="theme-color" media="(prefers-color-scheme: light)" content="#fbfaf7" />
+    <meta name="theme-color" media="(prefers-color-scheme: dark)" content="#14151b" />
     <meta name="color-scheme" content="light dark" />
+
+    <!-- Theme choice on device, applied before paint. -->
+    <script is:inline>
+      try {
+        const saved = localStorage.getItem('ucoy-theme')
+        if (saved === 'light' || saved === 'dark') {
+          document.documentElement.setAttribute('data-theme', saved)
+        }
+      } catch {
+        /* storage unavailable: fall through to OS setting */
+      }
+    </script>
   </head>
 
   <body>
+    <SkipLink />
     <Header />
 
-    <main>
-      <slot />
-    </main>
+    <input class="sidebar-toggle" type="checkbox" id="sidebar-toggle" aria-label="Show menu" />
+
+    <div class="shell">
+      <label class="sidebar-backdrop" for="sidebar-toggle" aria-hidden="true"></label>
+      <aside class="sidebar" id="sidebar">
+        <Sidebar />
+        <div class="theme-switch">
+          <button class="theme-button" id="theme-button" type="button" hidden>
+            Theme: System
+          </button>
+          <noscript>
+            <p class="theme-note">The theme follows your device setting.</p>
+          </noscript>
+        </div>
+      </aside>
+
+      <main id="main-content" class="content">
+        <slot />
+      </main>
+    </div>
 
     <Footer />
 
+    <!-- Theme switch: one button cycling System, Light, Dark.
+         The button starts hidden and is shown by this script, so nothing
+         renders when JavaScript is off (spec 0004, AC-4). -->
+    <script is:inline>
+      ;(function () {
+        const button = document.getElementById('theme-button')
+        if (!button) return
+        button.hidden = false
+        const order = ['system', 'light', 'dark']
+        function label(mode) {
+          return 'Theme: ' + mode.charAt(0).toUpperCase() + mode.slice(1)
+        }
+        function apply(mode) {
+          try {
+            if (mode === 'system') {
+              document.documentElement.removeAttribute('data-theme')
+              localStorage.removeItem('ucoy-theme')
+            } else {
+              document.documentElement.setAttribute('data-theme', mode)
+              localStorage.setItem('ucoy-theme', mode)
+            }
+          } catch {
+            if (mode !== 'system') document.documentElement.setAttribute('data-theme', mode)
+          }
+          button.textContent = label(mode)
+        }
+        let start = 'system'
+        try {
+          const saved = localStorage.getItem('ucoy-theme')
+          if (saved === 'light' || saved === 'dark') start = saved
+        } catch {
+          /* keep system */
+        }
+        apply(start)
+        button.addEventListener('click', function () {
+          let current = 'system'
+          try {
+            const savedNow = localStorage.getItem('ucoy-theme')
+            if (savedNow === 'light' || savedNow === 'dark') current = savedNow
+          } catch {
+            /* keep system */
+          }
+          const next = order[(order.indexOf(current) + 1) % order.length]
+          apply(next)
+        })
+      })()
+    </script>
     <!-- Cloudflare Web Analytics (cookieless, AC-3).
          Only loaded when a token is provided. -->
     {SITE_CONFIG.cfAnalyticsToken ? (
@@ -76,8 +161,175 @@ const { title, description = SITE_CONFIG.description } = Astro.props
 </html>
 
 <style>
-  /* Ensure the body font-family is set after token import */
   body {
     font-family: var(--font-sans);
+  }
+
+  .sidebar-toggle {
+    position: absolute;
+    width: var(--focus-width);
+    height: var(--focus-width);
+    overflow: hidden;
+    clip: rect(0, 0, 0, 0);
+    white-space: nowrap;
+  }
+
+  .sidebar-toggle:focus-visible {
+    width: var(--touch-target);
+    height: var(--touch-target);
+    clip: auto;
+    white-space: normal;
+    outline: var(--focus-width) solid var(--color-focus);
+    outline-offset: var(--focus-offset);
+  }
+
+  .sidebar-backdrop {
+    display: none;
+    position: fixed;
+    inset: 0;
+    background: rgba(0, 0, 0, 0.5);
+    z-index: 30;
+  }
+
+  .sidebar-toggle:checked ~ .shell .sidebar-backdrop {
+    display: block;
+  }
+
+  .shell {
+    display: block;
+  }
+
+  /* The panel is chrome, not content: tapping or dragging on it should
+     not pick up its labels by accident. Content stays selectable. */
+  .sidebar {
+    display: none;
+    position: fixed;
+    inset: 4rem auto 0 0;
+    width: var(--sidebar-width);
+    height: calc(100dvh - 4rem);
+    overflow-y: auto;
+    overscroll-behavior: contain;
+    z-index: 40;
+    border-right: var(--border-width) solid var(--color-sidebar-bg);
+    background: var(--color-sidebar-bg);
+    color: var(--color-sidebar-text);
+    padding: var(--space-m);
+    -webkit-user-select: none;
+    user-select: none;
+    scrollbar-width: thin;
+    scrollbar-color: var(--color-sidebar-scroll) var(--color-sidebar-bg);
+  }
+
+  .sidebar-toggle:checked ~ .shell .sidebar {
+    display: block;
+  }
+
+  /* Slim themed scrollbar for the sidebar (Firefox + WebKit).
+     Thumb is the sidebar scroll token on a black track, like the old site.
+     Widths come from shape tokens so the literal scan stays clean. */
+  .sidebar::-webkit-scrollbar {
+    width: var(--border-width-heavy);
+  }
+
+  .sidebar::-webkit-scrollbar-track {
+    background: var(--color-sidebar-bg);
+  }
+
+  .sidebar::-webkit-scrollbar-thumb {
+    background: var(--color-sidebar-scroll);
+    border-radius: var(--radius-sm);
+  }
+
+  .sidebar::-webkit-scrollbar-thumb:hover {
+    background: var(--color-sidebar-muted);
+  }
+
+  .content {
+    min-width: 0;
+    width: min(100% - var(--space-l), var(--max-content-width));
+    margin: 6rem auto var(--space-l);
+    padding: 0 var(--space-s);
+  }
+
+  .theme-switch {
+    margin-top: var(--space-s);
+    padding-top: var(--space-s);
+    border-top: var(--border-width) solid var(--color-sidebar-hover);
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-2xs);
+  }
+
+  .theme-button {
+    min-height: var(--touch-target);
+    border: var(--border-width) solid var(--color-sidebar-hover);
+    border-radius: var(--radius-sm);
+    background: var(--color-sidebar-hover);
+    color: var(--color-sidebar-text);
+    font: inherit;
+    font-weight: 600;
+    cursor: pointer;
+    padding: var(--space-2xs) var(--space-s);
+  }
+
+  .theme-button:focus-visible {
+    outline: var(--focus-width) solid var(--color-sidebar-marker);
+    outline-offset: var(--focus-offset);
+  }
+
+  .theme-note {
+    font-size: var(--text-small);
+    color: var(--color-sidebar-muted);
+    margin: 0;
+  }
+
+  @media (min-width: 48em) {
+    .shell {
+      display: block;
+      padding-inline-start: var(--sidebar-width);
+    }
+
+    .sidebar {
+      display: block;
+      inset: 0 auto 0 0;
+      height: 100dvh;
+      padding: var(--space-m);
+    }
+
+    .content {
+      min-width: 0;
+      width: min(100% - var(--space-m), var(--max-content-width));
+      margin-inline: auto;
+      padding: var(--space-l) var(--space-2xs);
+    }
+
+    /* The footer sits outside .shell, so it needs the left offset too. */
+    :global(.site-footer) {
+      margin-inline-start: var(--sidebar-width);
+    }
+  }
+
+  @media print {
+    .sidebar,
+    .sidebar-toggle,
+    :global(.menu-button),
+    :global(.site-footer),
+    :global(.skip-link) {
+      display: none !important;
+    }
+
+    :global(.site-footer) {
+      margin-inline-start: 0;
+    }
+
+    .shell {
+      display: block;
+      padding-inline-start: 0;
+    }
+
+    .content {
+      width: 100%;
+      padding: 0;
+    }
   }
 </style>

@@ -3,8 +3,8 @@
 // public/sw.js is copied to the site root unchanged, so it cannot know the
 // names of the files a given build produced (every stylesheet and script is
 // content hashed). This integration walks the build output and records them,
-// so the service worker can pre-cache the shell, the pages, the stylesheets and
-// the Hebrew fonts at install time (spec 0001, AC-7).
+// so the service worker can pre-cache the shell, the pages, the stylesheets, the
+// web fonts and the favicon at install time (spec 0001, AC-7).
 //
 // Only files that are safe to pre-cache are listed: video and other heavy media
 // are left to the network first path in the worker, as the spec's offline cache

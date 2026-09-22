@@ -1,4 +1,9 @@
 ---
+/**
+ * Site footer (spec 0004).
+ * Temple name, contact address, copyright, analytics line,
+ * and the line about the theme choice kept on the device.
+ */
 import { SITE_CONFIG } from '@/config/site'
 
 interface Props {
@@ -9,68 +14,67 @@ const { compact = false } = Astro.props
 ---
 
 <footer class="site-footer">
-  <div class="container footer-inner">
-    <div class="footer-main">
-      <span class="footer-title">{SITE_CONFIG.title}</span>
+  <div class="footer-inner">
+    <span class="footer-title">{SITE_CONFIG.title}</span>
 
-      {compact ? (
+    {compact ? (
+      <p class="footer-small">
+        © {new Date().getFullYear()} {SITE_CONFIG.author}
+      </p>
+    ) : (
+      <>
+        <p class="footer-contact">
+          Contact: <a href={`mailto:${SITE_CONFIG.contactEmail}`}>{SITE_CONFIG.contactEmail}</a>
+        </p>
+
         <p class="footer-small">
           © {new Date().getFullYear()} {SITE_CONFIG.author}
         </p>
-      ) : (
-        <>
-          <p class="footer-contact">
-            Contact: <a href={`mailto:${SITE_CONFIG.contactEmail}`}>{SITE_CONFIG.contactEmail}</a>
-          </p>
 
-          <p class="footer-small">
-            © {new Date().getFullYear()} {SITE_CONFIG.author}
-          </p>
+        <p class="footer-small">
+          This site uses{' '}
+          <a href="https://developers.cloudflare.com/web-analytics/">Cloudflare Web Analytics</a>{' '}
+          (cookieless) and is served as static HTML with no cookies or tracking beyond that.
+        </p>
 
-          <p class="footer-small">
-            This site uses{' '}
-            <a href="https://developers.cloudflare.com/web-analytics/">Cloudflare Web Analytics</a>{' '}
-            (cookieless) and is served as static HTML with no cookies or tracking beyond that.
-          </p>
-        </>
-      )}
-    </div>
+        <p class="footer-small">
+          The display theme choice (light or dark) is kept on your own device only.
+        </p>
+      </>
+    )}
   </div>
 </footer>
 
 <style>
   .site-footer {
-    border-top: var(--border-width) solid var(--border);
-    background: var(--surface);
+    border-top: var(--border-width) solid var(--color-border);
+    background: var(--color-surface);
     margin-top: var(--space-xl);
   }
 
   .footer-inner {
-    padding: var(--space-l) 0;
-  }
-
-  .footer-main {
     display: flex;
     flex-direction: column;
-    gap: 0.5rem;
+    gap: var(--space-2xs);
+    padding: var(--space-l) var(--space-s);
   }
 
   .footer-title {
     font-family: var(--font-serif);
-    font-size: 1.125rem;
+    font-size: var(--text-lead);
     font-weight: 700;
-    color: var(--ink);
+    color: var(--color-text);
   }
 
   .footer-contact {
     margin: 0;
-    color: var(--body);
+    color: var(--color-text);
   }
 
   .footer-small {
     margin: 0;
-    color: var(--muted);
-    font-size: 0.875rem;
-    line-height: 1.5;
+    color: var(--color-text-muted);
+    font-size: var(--text-small);
+    line-height: var(--body-line-height);
   }
 </style>

@@ -44,14 +44,14 @@ const { src, caption, poster } = Astro.props
     width: 100%;
     max-width: 100%;
     height: auto;
-    background: var(--ink);
-    border: var(--border-width) solid var(--border);
-    border-radius: var(--radius);
+    background: var(--color-text);
+    border: var(--border-width) solid var(--color-border);
+    border-radius: var(--radius-md);
   }
 
   .video-caption {
     margin-top: var(--space-3xs);
-    font-size: 0.9375rem;
-    color: var(--muted);
+    font-size: var(--text-caption);
+    color: var(--color-text-muted);
   }
 </style>

@@ -1,0 +1,67 @@
+---
+/**
+ * Temple icon set (sharp outline, no fill).
+ *
+ * Hand drawn inline SVGs: 1.5px straight stroke, square caps and joins,
+ * currentColor so the parent text colour decides the icon colour.
+ * No dependency, no font download, works offline.
+ */
+interface Props {
+  /** Icon name. Chevron pair backs the sidebar groups. */
+  name:
+    | 'chevron-down'
+    | 'chevron-up'
+    | 'menu'
+    | 'close'
+    | 'book'
+    | 'calendar'
+    | 'candle'
+    | 'scroll'
+    | 'star'
+  /** Pixel box size. Defaults to 16. */
+  size?: number
+  /** Accessible label. Omit for decorative icons (aria-hidden). */
+  label?: string
+}
+
+const { name, size = 16, label } = Astro.props
+
+const paths: Record<Props['name'], string> = {
+  'chevron-down': '<path d="M4 6l4 4 4-4" />',
+  'chevron-up': '<path d="M4 10l4-4 4 4" />',
+  menu: '<path d="M3 5h10M3 8h10M3 11h10" />',
+  close: '<path d="M4 4l8 8M12 4l-8 8" />',
+  book: '<path d="M4 3h6a1 1 0 0 1 1 1v9H5a1 1 0 0 1-1-1V3z" /><path d="M4 3v9" />',
+  calendar: '<rect x="3.5" y="4.5" width="9" height="8" /><path d="M3.5 7h9M6 3v3M10 3v3" />',
+  candle:
+    '<path d="M8 3v8M6 11h4M8 1c1 1.2 1.6 2 1.6 2.8A1.6 1.6 0 0 1 8 5.4 1.6 1.6 0 0 1 6.4 3.8C6.4 3 7 2.2 8 1z" />',
+  scroll:
+    '<path d="M5 3h7v10H5z" /><path d="M5 3a1.5 1.5 0 0 0-1.5 1.5v7A1.5 1.5 0 0 0 5 13M11 13a1.5 1.5 0 0 0 1.5-1.5v-7A1.5 1.5 0 0 0 11 3" />',
+  star: '<path d="M8 2l1.2 3.4L13 6l-3 2.4.9 3.6L8 9.8 5.1 12l.9-3.6-3-2.4 3.8-.6L8 2z" />'
+}
+---
+
+<svg
+  class="icon"
+  width={size}
+  height={size}
+  viewBox="0 0 16 16"
+  fill="none"
+  stroke="currentColor"
+  stroke-width="1.5"
+  stroke-linecap="square"
+  stroke-linejoin="miter"
+  aria-hidden={label ? undefined : 'true'}
+  aria-label={label}
+  role={label ? 'img' : undefined}
+  focusable="false"
+>
+  <Fragment set:html={paths[name]} />
+</svg>
+
+<style>
+  .icon {
+    flex: none;
+    vertical-align: middle;
+  }
+</style>

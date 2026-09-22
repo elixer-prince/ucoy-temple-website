@@ -16,27 +16,79 @@
     <style>
       :root {
         color-scheme: light dark;
-        --canvas: #fbfaf7;
-        --surface: #ffffff;
-        --border: #dedbd0;
-        --ink: #191a20;
-        --body: #383a44;
-        --muted: #5c5e69;
-        --accent: #2b3a6b;
-        --on-accent: #ffffff;
+        --color-canvas: #fbfaf7;
+        --color-surface: #ffffff;
+        --color-border: #6f6c62;
+        --color-text: #191a20;
+        --color-text-muted: #5c5e69;
+        --color-accent: #1c4f79;
+        --color-accent-hover: #143856;
+        --color-on-accent: #ffffff;
+        --color-focus: #1c4f79;
+        --color-tint: #faf0d0;
+        --font-sans: 'Roboto', system-ui, -apple-system, 'Segoe UI', sans-serif;
+        --font-serif: 'Oswald', 'Arial Narrow', sans-serif;
+        --text-body: 1.0625rem;
+        --text-small: 0.875rem;
+        --text-title: clamp(1.5rem, 1.3rem + 1vw, 1.75rem);
+        --body-line-height: 1.65;
+        --heading-line-height: 1.25;
+        --space-2xs: clamp(0.5rem, 1.2vw, 0.75rem);
+        --space-m: clamp(1.25rem, 2.8vw, 1.5rem);
+        --space-s: clamp(1rem, 2vw, 1.25rem);
+        --space-l: clamp(1.5rem, 3.6vw, 2rem);
+        --radius-md: 0.875rem;
+        --radius-pill: 999px;
+        --border-width: 1px;
+        --focus-width: 3px;
+        --focus-offset: 3px;
+        --touch-target: 2.75rem;
+        --max-content-width: 42rem;
       }
 
       @media (prefers-color-scheme: dark) {
-        :root {
-          --canvas: #14151b;
-          --surface: #1c1e26;
-          --border: #33353f;
-          --ink: #f3f2ed;
-          --body: #d4d3cd;
-          --muted: #a7a7ad;
-          --accent: #a8b6ef;
-          --on-accent: #14151b;
+        :root:not([data-theme='light']) {
+          --color-canvas: #14151b;
+          --color-surface: #191a20;
+          --color-border: #8e8d98;
+          --color-text: #f3f2ed;
+          --color-text-muted: #a7a7ad;
+          --color-accent: #7aabdb;
+          --color-accent-hover: #a9cbe9;
+          --color-on-accent: #14151b;
+          --color-focus: #7aabdb;
+          --color-tint: #3a2a06;
         }
+      }
+
+      /* An explicit choice carries the same role values as tokens.css,
+         so a saved light choice wins over a dark device setting here too. */
+      :root[data-theme='light'] {
+        --color-canvas: #fbfaf7;
+        --color-surface: #ffffff;
+        --color-border: #6f6c62;
+        --color-text: #191a20;
+        --color-text-muted: #5c5e69;
+        --color-accent: #1c4f79;
+        --color-accent-hover: #143856;
+        --color-on-accent: #ffffff;
+        --color-focus: #1c4f79;
+        --color-tint: #faf0d0;
+        color-scheme: light;
+      }
+
+      :root[data-theme='dark'] {
+        --color-canvas: #14151b;
+        --color-surface: #191a20;
+        --color-border: #8e8d98;
+        --color-text: #f3f2ed;
+        --color-text-muted: #a7a7ad;
+        --color-accent: #7aabdb;
+        --color-accent-hover: #a9cbe9;
+        --color-on-accent: #14151b;
+        --color-focus: #7aabdb;
+        --color-tint: #3a2a06;
+        color-scheme: dark;
       }
 
       * {
@@ -48,41 +100,36 @@
         flex-direction: column;
         align-items: center;
         justify-content: center;
-        gap: 1.5rem;
+        gap: var(--space-m);
         min-height: 100dvh;
         margin: 0;
-        padding: clamp(1rem, 4vw, 2rem);
-        background: var(--canvas);
-        color: var(--body);
-        font-family:
-          system-ui,
-          -apple-system,
-          'Segoe UI',
-          Roboto,
-          sans-serif;
-        font-size: 1.0625rem;
-        line-height: 1.65;
+        padding: var(--space-m);
+        background: var(--color-canvas);
+        color: var(--color-text);
+        font-family: var(--font-sans);
+        font-size: var(--text-body);
+        line-height: var(--body-line-height);
         text-align: center;
       }
 
       .panel {
-        max-width: 34rem;
-        padding: 2rem;
-        border: 1px solid var(--border);
-        border-radius: 14px;
-        background: var(--surface);
+        max-width: var(--max-content-width);
+        padding: var(--space-l);
+        border: var(--border-width) solid var(--color-border);
+        border-radius: var(--radius-md);
+        background: var(--color-surface);
       }
 
       h1 {
-        margin: 0 0 0.5rem;
-        color: var(--ink);
-        font-family: Georgia, 'Times New Roman', serif;
-        font-size: clamp(1.5rem, 1.2rem + 1.2vw, 1.875rem);
-        line-height: 1.25;
+        margin: 0 0 var(--space-2xs);
+        color: var(--color-text);
+        font-family: var(--font-serif);
+        font-size: var(--text-title);
+        line-height: var(--heading-line-height);
       }
 
       p {
-        margin: 0 0 1rem;
+        margin: 0 0 var(--space-s);
       }
 
       p:last-of-type {
@@ -90,28 +137,38 @@
       }
 
       .note {
-        color: var(--muted);
-        font-size: 0.875rem;
+        color: var(--color-text-muted);
+        font-size: var(--text-small);
       }
 
       a.button {
         display: inline-flex;
         align-items: center;
-        min-height: 44px;
-        margin-top: 0.5rem;
-        padding: 0.75rem 1.5rem;
-        border-radius: 999px;
-        background: var(--accent);
-        color: var(--on-accent);
+        min-height: var(--touch-target);
+        margin-top: var(--space-2xs);
+        padding: var(--space-2xs) var(--space-m);
+        border-radius: var(--radius-pill);
+        background: var(--color-accent);
+        color: var(--color-on-accent);
         font-weight: 600;
         text-decoration: none;
       }
 
       a.button:focus-visible {
-        outline: 3px solid var(--accent);
-        outline-offset: 3px;
+        outline: var(--focus-width) solid var(--color-focus);
+        outline-offset: var(--focus-offset);
       }
     </style>
+    <script>
+      try {
+        var saved = localStorage.getItem('ucoy-theme')
+        if (saved === 'light' || saved === 'dark') {
+          document.documentElement.setAttribute('data-theme', saved)
+        }
+      } catch (e) {
+        /* device setting decides */
+      }
+    </script>
   </head>
   <body>
     <main class="panel">

@@ -2,8 +2,8 @@
 import { getCollection } from 'astro:content'
 import { SITE_CONFIG } from '@/config/site'
 import Layout from '@layouts/Layout.astro'
-import '@styles/tokens.css'
-import '@styles/base.css'
+import Panel from '@components/Panel.astro'
+import Callout from '@components/Callout.astro'
 
 /**
  * Format a Date for human-readable display (English, no external deps).
@@ -46,9 +46,9 @@ const calendarUrl =
 <Layout title="Home" description={SITE_CONFIG.description}>
   <!-- Hero / welcome -->
   <section class="hero">
-    <div class="container">
+    <div class="prose">
       <h1 class="hero-title">{SITE_CONFIG.title}</h1>
-      <p class="hero-hebrew" lang="he" dir="auto">
+      <p class="hero-hebrew" lang="he" dir="rtl">
         עדת ישראה
       </p>
       <p class="hero-subtitle">
@@ -73,39 +73,40 @@ const calendarUrl =
 
   <!-- Service schedule overview -->
   <section class="service-times">
-    <div class="container">
-      <h2>Service times</h2>
-      <table>
-        <tbody>
-          <tr>
-            <td>Friday morning</td>
-            <td>9:00 AM</td>
-          </tr>
-          <tr>
-            <td>Friday evening (Kabbalat Shabbat)</td>
-            <td>At sunset</td>
-          </tr>
-          <tr>
-            <td>Shabbat morning (Shacharit)</td>
-            <td>9:30 AM</td>
-          </tr>
-          <tr>
-            <td>Havdalah (Closing of Shabbat)</td>
-            <td>After dark</td>
-          </tr>
-        </tbody>
-      </table>
+    <div class="prose">
+      <Panel title="Service times" tone="plain">
+        <table>
+          <tbody>
+            <tr>
+              <td>Friday morning</td>
+              <td>9:00 AM</td>
+            </tr>
+            <tr>
+              <td>Friday evening (Kabbalat Shabbat)</td>
+              <td>At sunset</td>
+            </tr>
+            <tr>
+              <td>Shabbat morning (Shacharit)</td>
+              <td>9:30 AM</td>
+            </tr>
+            <tr>
+              <td>Havdalah (Closing of Shabbat)</td>
+              <td>After dark</td>
+            </tr>
+          </tbody>
+        </table>
 
-      <p class="text-muted">
-        Times shift with the seasons. See the
-        <a href="/visiting">visiting page</a> for directions and full details.
-      </p>
+        <p class="text-muted">
+          Times shift with the seasons. See the
+          <a href="/visiting">visiting page</a> for directions and full details.
+        </p>
+      </Panel>
     </div>
   </section>
 
   <!-- Latest announcements (AC-6: newest first) -->
   <section class="announcements">
-    <div class="container">
+    <div class="prose">
       <h2>Latest announcements</h2>
 
       {recentAnnouncements.length > 0 ? (
@@ -124,12 +125,12 @@ const calendarUrl =
 
   <!-- Upcoming events from Google Calendar (AC-2) -->
   <section class="calendar">
-    <div class="container">
+    <div class="prose">
       <h2>Upcoming events</h2>
-      <p class="text-muted">
+      <Callout title="Where events come from">
         Events come directly from the temple's Google Calendar — staff update calendar.google.com
         and the changes appear here with the next visit.
-      </p>
+      </Callout>
 
       <iframe
         src={calendarUrl}
@@ -155,20 +156,20 @@ const calendarUrl =
 
   .hero-title {
     font-family: var(--font-serif);
-    font-size: clamp(1.75rem, 1.5rem + 1.5vw, 2.25rem);
+    font-size: var(--text-display);
     margin-bottom: var(--space-xs);
   }
 
   .hero-hebrew {
     font-family: var(--font-serif);
-    font-size: 1.5rem;
-    color: var(--accent);
+    font-size: var(--text-title);
+    color: var(--color-accent);
     margin: 0 0 var(--space-s);
   }
 
   .hero-subtitle {
-    font-size: var(--body-size);
-    color: var(--body);
+    font-size: var(--text-body);
+    color: var(--color-text);
     margin-bottom: var(--space-l);
   }
 
@@ -192,7 +193,7 @@ const calendarUrl =
   }
 
   .announcement {
-    border-bottom: var(--border-width) solid var(--border);
+    border-bottom: var(--border-width) solid var(--color-border);
     padding: var(--space-s) 0;
   }
 
@@ -201,7 +202,7 @@ const calendarUrl =
   }
 
   .announcement-date {
-    font-size: 0.875rem;
+    font-size: var(--text-small);
   }
 
   .calendar {
@@ -209,8 +210,8 @@ const calendarUrl =
   }
 
   .calendar-embed {
-    border-radius: var(--radius);
-    border: var(--border-width) solid var(--border);
+    border-radius: var(--radius-md);
+    border: var(--border-width) solid var(--color-border);
     margin-top: var(--space-s);
   }
 </style>

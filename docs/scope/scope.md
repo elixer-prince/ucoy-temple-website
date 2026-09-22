@@ -9,28 +9,29 @@ _These are recommendations to keep your build orderly, not requirements. Skip an
 
 ## At a glance
 
-| #   | Feature                                       | Phase      | Status  |
-| --- | --------------------------------------------- | ---------- | ------- |
-| 1   | Stack & architecture                          | Foundation | done    |
-| 2   | Coding standards & tooling                    | Foundation | done    |
-| 3   | Content model                                 | Foundation | done    |
-| 4   | Design system & UI foundation                 | Foundation | planned |
-| 5   | Site shell, home & first service page offline | Slice 1    | planned |
-| 6   | Friday morning service page                   | Slice 2    | planned |
-| 7   | Sabbath evening & Torah portion page          | Slice 2    | planned |
-| 8   | Closing of Shabbat page                       | Slice 2    | planned |
-| 9   | Content sweep of the current site             | Slice 3    | planned |
-| 10  | High Holy Days section                        | Slice 3    | planned |
-| 11  | Temple information & contact                  | Slice 3    | planned |
-| 12  | Holy Days calendar                            | Slice 4    | planned |
-| 13  | Site search                                   | Slice 4    | planned |
-| 14  | Product analytics                             | Slice 4    | planned |
-| 15  | SEO, metadata & performance                   | Slice 4    | planned |
-| 16  | Site wide offline & install                   | Slice 4    | planned |
-| 17  | Private Temple Treasury                       | Deferred   | planned |
-| 18  | Attendance tracking                           | Deferred   | planned |
-| 19  | Admin dashboard & member accounts             | Deferred   | planned |
-| 20  | Private documents & member area               | Deferred   | planned |
+| #   | Feature                                       | Phase      | Status      |
+| --- | --------------------------------------------- | ---------- | ----------- |
+| 1   | Stack & architecture                          | Foundation | done        |
+| 2   | Coding standards & tooling                    | Foundation | done        |
+| 3   | Content model                                 | Foundation | done        |
+| 4   | Design system & UI foundation                 | Foundation | in-progress |
+| 5   | Site shell, home & first service page offline | Slice 1    | planned     |
+| 6   | Friday morning service page                   | Slice 2    | planned     |
+| 7   | Sabbath evening & Torah portion page          | Slice 2    | planned     |
+| 8   | Closing of Shabbat page                       | Slice 2    | planned     |
+| 9   | Content sweep of the current site             | Slice 3    | planned     |
+| 10  | High Holy Days section                        | Slice 3    | planned     |
+| 11  | Temple information & contact                  | Slice 3    | planned     |
+| 21  | Exact palette from the current site           | Slice 3    | planned     |
+| 12  | Holy Days calendar                            | Slice 4    | planned     |
+| 13  | Site search                                   | Slice 4    | planned     |
+| 14  | Product analytics                             | Slice 4    | planned     |
+| 15  | SEO, metadata & performance                   | Slice 4    | planned     |
+| 16  | Site wide offline & install                   | Slice 4    | planned     |
+| 17  | Private Temple Treasury                       | Deferred   | planned     |
+| 18  | Attendance tracking                           | Deferred   | planned     |
+| 19  | Admin dashboard & member accounts             | Deferred   | planned     |
+| 20  | Private documents & member area               | Deferred   | planned     |
 
 ## Foundations
 
@@ -74,12 +75,20 @@ The data model of the site, stated as content: services, pages, Holy Days and th
 - [x] Test it: `/test content model`
       Spec [0003](../specs/0003-content-model.md) · code in `src/content.config.ts`, `src/components/Video.astro`, `src/content/{services,resources}/`, `src/pages/{services,shabbatonim,resources}/`
 
-### 4. Design system & UI foundation · planned · needs a decision
+### 4. Design system & UI foundation · in-progress
 
 The base look and building blocks every page stands on: typography that renders Hebrew script correctly, color tokens, light and dark mode, the responsive shell and navigation, and accessible base components at WCAG 2.1 AA.
 **Done when:** tokens, base components, shell, and navigation exist; light and dark modes both pass WCAG 2.1 AA; Hebrew script renders correctly in both.
 
-- [ ] Design it (spec): `/architect design system & UI foundation`
+- [x] Design it (spec): `/architect design system & UI foundation`
+- [x] Build it: `/develop design system & UI foundation`
+  - [x] Tokens, theme engine and switch over both modes (AC-1, AC-2, AC-3, AC-4)
+  - [x] Building blocks and content styles (AC-2, AC-6, AC-7, AC-8, AC-11)
+  - [x] Shell, navigation and style guide (AC-5, AC-7, AC-9, AC-11)
+  - [x] Guards, accessibility and performance passes; one built stylesheet at 16.1 kB of the 30 kB budget, no new dependencies (AC-1, AC-3, AC-5, AC-7, AC-10, AC-11)
+- [ ] Verify it: `/check verify design system & UI foundation`
+- [ ] Test it: `/test design system & UI foundation`
+      Spec [0004](../specs/0004-design-system-ui-foundation/index.md) · code in `src/styles/`, `src/components/`, `src/layouts/`, `src/config/nav.ts`, `src/pages/`
 
 ## Slice 1: the first working thread
 
@@ -117,8 +126,8 @@ Same pattern; the last of the regular weekly services.
 
 ### 9. Content sweep of the current site · planned
 
-Walk the current Google Site page by page and mirror anything not yet carried over, so nothing the temple published is lost. Anything sizable found here becomes its own row.
-**Done when:** a page by page pass over the current site finds nothing the new site lacks, or a written list of what was intentionally left out.
+Walk the current Google Site page by page and mirror anything not yet carried over, so nothing the temple published is lost, and carry the old page addresses across so links keep working. Anything sizable found here becomes its own row.
+**Done when:** a page by page pass over the current site finds nothing the new site lacks, or a written list of what was intentionally left out, and old addresses redirect to the new pages.
 
 - [ ] Build it: `/develop content sweep of the current site`
 
@@ -135,6 +144,13 @@ Who the temple is, where and when it meets, and how to reach it, plus a simple m
 **Done when:** a first time visitor learns what the congregation is, where it meets, and when services happen, and a message sent from the contact page reaches the temple.
 
 - [ ] Decide the form approach (spec): `/architect temple information & contact`
+
+### 21. Exact palette from the current site · planned
+
+The ladder values were sampled from screenshots of the current Google Site, close but not exact. Pick the real colours from that site's theme settings, swap them into the tokens, and have the temple choose the final accent, so the palette can be called final with exactness and intent.
+**Done when:** every ladder value matches the current site's theme, the contrast tests pass in both modes, and the temple has chosen the final accent colour.
+
+- [ ] Build it: `/develop exact palette from the current site`
 
 ## Slice 4: platform features
 

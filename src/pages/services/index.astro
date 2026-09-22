@@ -1,8 +1,6 @@
 ---
 import { getCollection } from 'astro:content'
 import Layout from '@layouts/Layout.astro'
-import '@styles/tokens.css'
-import '@styles/base.css'
 
 /**
  * Landing page for the regular (weekly) services (spec 0003, AC-5).
@@ -18,7 +16,7 @@ const services = (await getCollection('services', ({ data }) => data.kind === 'w
   title="Services"
   description="The regular weekly services of the United Congregation of Yisra'Yah, with the order of each one."
 >
-  <div class="container">
+  <div class="prose">
     <h1>Weekly services</h1>
     <p class="lead">
       The order of each service we keep week by week, so you can follow along from a phone at home
@@ -49,9 +47,9 @@ const services = (await getCollection('services', ({ data }) => data.kind === 'w
 
 <style>
   .lead {
-    font-size: 1.125rem;
-    line-height: 1.6;
-    color: var(--muted);
+    font-size: var(--text-lead);
+    line-height: var(--body-line-height);
+    color: var(--color-text-muted);
     margin-bottom: var(--space-l);
   }
 
@@ -61,7 +59,7 @@ const services = (await getCollection('services', ({ data }) => data.kind === 'w
   }
 
   .listing-item {
-    border-bottom: var(--border-width) solid var(--border);
+    border-bottom: var(--border-width) solid var(--color-border);
     padding: var(--space-s) 0;
   }
 
@@ -74,7 +72,7 @@ const services = (await getCollection('services', ({ data }) => data.kind === 'w
   }
 
   .listing-when {
-    font-size: 0.9375rem;
+    font-size: var(--text-caption);
     margin-bottom: var(--space-3xs);
   }
 </style>

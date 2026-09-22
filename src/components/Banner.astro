@@ -1,0 +1,79 @@
+---
+/**
+ * Banner component for service pages.
+ * Full-width hero image with gradient overlay and text.
+ */
+interface Props {
+  src: string
+  alt: string
+  title: string
+  description?: string
+}
+
+const { src, alt, title, description } = Astro.props
+---
+
+<div class="banner">
+  <img src={src} alt={alt} class="banner-image" />
+  <div class="banner-overlay">
+    <div class="banner-content">
+      <h1 class="banner-title">{title}</h1>
+      {description && <p class="banner-description">{description}</p>}
+    </div>
+  </div>
+</div>
+
+<style>
+  .banner {
+    position: relative;
+    width: 100%;
+    height: 400px;
+    margin: 0 0 var(--space-m) 0;
+    border-radius: var(--radius-lg);
+    overflow: hidden;
+  }
+
+  .banner-image {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+  }
+
+  .banner-overlay {
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    height: 100%;
+    background: linear-gradient(
+      to top,
+      rgba(0, 0, 0, 0.7) 0%,
+      rgba(0, 0, 0, 0.3) 50%,
+      transparent 100%
+    );
+    display: flex;
+    align-items: flex-end;
+    padding: var(--space-m);
+  }
+
+  .banner-content {
+    color: var(--color-on-accent);
+    max-width: var(--max-content-width);
+  }
+
+  .banner-title {
+    font-family: var(--font-serif);
+    font-size: var(--text-display);
+    font-weight: 700;
+    line-height: var(--heading-line-height);
+    margin: 0 0 var(--space-2xs) 0;
+    color: var(--color-on-accent);
+  }
+
+  .banner-description {
+    font-size: var(--text-body);
+    line-height: var(--body-line-height);
+    margin: 0;
+    color: var(--color-on-accent);
+  }
+</style>

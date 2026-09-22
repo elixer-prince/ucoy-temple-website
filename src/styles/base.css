@@ -1,13 +1,10 @@
 /*
  * Base styles for the United Congregation of Yisra'Yah website.
  *
- * Imported globally in src/layouts/Layout.astro.
- * Uses design tokens from tokens.css.
- *
- * Accessibility targets (spec 0001, AC-5):
- *   - Body text ≥ 16 px (currently 17 px)
- *   - AA contrast for text in both light and dark modes
- *   - No horizontal scroll below 320 px
+ * Imported once in src/layouts/Layout.astro. Every value used here is a
+ * token from tokens.css (spec 0004, AC-1): role names for colour, the text
+ * family for type, the space family for spacing, and the shape family for
+ * radius, border width, focus width, and touch target.
  */
 
 /* ---- Reset & box model ---- */
@@ -27,10 +24,10 @@ html {
 body {
   margin: 0;
   font-family: var(--font-sans);
-  font-size: var(--body-size);
+  font-size: var(--text-body);
   line-height: var(--body-line-height);
-  color: var(--body);
-  background: var(--canvas);
+  color: var(--color-text);
+  background: var(--color-canvas);
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
 }
@@ -42,68 +39,68 @@ body {
   font-family: var(--font-serif);
   font-weight: 700;
   line-height: var(--heading-line-height);
-  color: var(--ink);
+  color: var(--color-text);
 }
 
 h1 {
-  font-size: clamp(1.75rem, 1.5rem + 1.5vw, 2.25rem);
+  font-size: var(--text-display);
 }
 
 h2 {
-  font-size: clamp(1.5rem, 1.3rem + 1vw, 1.75rem);
+  font-size: var(--text-title);
 }
 
 h3 {
-  font-size: clamp(1.25rem, 1.1rem + 0.8vw, 1.5rem);
+  font-size: var(--text-subtitle);
 }
 
 p {
   margin: 0 0 var(--space-s) 0;
-  color: var(--body);
-}
-
-/* Hebrew text uses the serif family (Frank Ruhl Libre).
-   Direction is set here; text-align inherits from the parent. */
-[lang='he'] {
-  font-family: var(--font-serif);
-  direction: rtl;
+  color: var(--color-text);
 }
 
 /* ---- Links ---- */
 
 a {
-  color: var(--accent);
+  color: var(--color-accent);
   text-decoration: underline;
-  text-underline-offset: 0.15em;
-  text-decoration-thickness: 1px;
+  text-underline-offset: var(--tracking-wide);
+  text-decoration-thickness: var(--border-width);
   font-weight: 500;
 }
 
-a:hover,
-a:focus {
-  text-decoration-thickness: 2px;
+a:hover {
+  color: var(--color-accent-hover);
+  text-decoration-thickness: calc(var(--border-width) * 2);
 }
 
 a:focus-visible {
-  outline: 3px solid var(--accent);
-  outline-offset: 3px;
-  border-radius: 3px;
+  outline: var(--focus-width) solid var(--color-focus);
+  outline-offset: var(--focus-offset);
+  border-radius: var(--radius-sm);
 }
 
 /* Inverted links on accent background */
 a.on-accent {
-  color: var(--on-accent);
+  color: var(--color-on-accent);
 }
 
 /* ---- Lists ---- */
 
 :where(ul, ol) {
   margin: 0 0 var(--space-s) 0;
-  padding-left: 1.5rem;
+  padding-left: var(--space-l);
 }
 
 :where(li) {
-  margin-bottom: 0.25rem;
+  margin-bottom: var(--space-3xs);
+}
+
+/* ---- Images ---- */
+
+img {
+  max-width: 100%;
+  height: auto;
 }
 
 /* ---- Tables ---- */
@@ -112,20 +109,26 @@ table {
   width: 100%;
   border-collapse: collapse;
   margin: 0 0 var(--space-s) 0;
-  font-size: 0.9375rem;
+  font-size: var(--text-caption);
 }
 
 th,
 td {
-  padding: 0.5rem var(--space-xs);
-  border: var(--border-width) solid var(--border);
+  padding: var(--space-2xs) var(--space-xs);
+  border: var(--border-width) solid var(--color-border);
   text-align: left;
 }
 
 th {
-  background: var(--surface);
-  color: var(--ink);
+  background: var(--color-surface);
+  color: var(--color-text);
   font-weight: 600;
+}
+
+caption {
+  font-size: var(--text-caption);
+  color: var(--color-text-muted);
+  padding-bottom: var(--space-2xs);
 }
 
 /* ---- Blockquote ---- */
@@ -133,52 +136,104 @@ th {
 blockquote {
   margin: 0 0 var(--space-s) 0;
   padding: var(--space-xs) var(--space-s);
-  border-inline-start: 4px solid var(--accent);
-  background: var(--canvas);
-  color: var(--body);
+  border-inline-start: var(--border-width-heavy) solid var(--color-accent);
+  background: var(--color-surface);
+  color: var(--color-text);
   font-style: italic;
-  line-height: 1.7;
+  line-height: var(--body-line-height);
 }
 
-/* ---- Buttons ---- */
+blockquote p {
+  color: var(--color-text);
+}
+
+/* ---- Forms: one label, one field, one error line, one button ---- */
+
+.field {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2xs);
+  margin-bottom: var(--space-s);
+}
+
+.field-label {
+  font-weight: 600;
+  color: var(--color-text);
+  font-size: var(--text-body);
+}
+
+.field-input,
+.field-textarea {
+  font-family: var(--font-sans);
+  font-size: var(--text-body);
+  line-height: var(--body-line-height);
+  color: var(--color-text);
+  background: var(--color-surface);
+  border: var(--border-width) solid var(--color-border);
+  border-radius: var(--radius-sm);
+  padding: var(--space-2xs) var(--space-xs);
+  min-height: var(--touch-target);
+  width: 100%;
+}
+
+.field-textarea {
+  min-height: calc(var(--touch-target) * 3);
+  resize: vertical;
+}
+
+.field-input:focus-visible,
+.field-textarea:focus-visible {
+  outline: var(--focus-width) solid var(--color-focus);
+  outline-offset: var(--focus-offset);
+}
+
+.field-error {
+  color: var(--color-accent);
+  font-size: var(--text-small);
+  font-weight: 600;
+}
+
+/* ---- Buttons (kept a class so public/offline.html can repeat it) ---- */
 
 .button {
   display: inline-flex;
   align-items: center;
-  min-height: 44px;
-  padding: 0.75rem 1.5rem;
+  justify-content: center;
+  min-height: var(--touch-target);
+  padding: var(--space-2xs) var(--space-m);
   border: none;
-  border-radius: 999px;
-  background: var(--accent);
-  color: var(--on-accent);
+  border-radius: var(--radius-pill);
+  background: var(--color-accent);
+  color: var(--color-on-accent);
   font-family: var(--font-sans);
-  font-size: 1rem;
+  font-size: var(--text-body);
   font-weight: 600;
   text-decoration: none;
   cursor: pointer;
   transition: opacity 0.15s ease;
 }
 
-.button:hover,
-.button:focus {
-  opacity: 0.9;
+.button:hover {
+  background: var(--color-accent-hover);
+  color: var(--color-on-accent);
+  text-decoration: none;
 }
 
 .button:focus-visible {
-  outline: 3px solid var(--accent);
-  outline-offset: 3px;
+  outline: var(--focus-width) solid var(--color-focus);
+  outline-offset: var(--focus-offset);
 }
 
 /* ---- Layout containers ---- */
 
 .container {
-  width: min(100% - 2rem, var(--max-content-width));
+  width: min(100% - var(--space-l), var(--max-content-width));
   margin-inline: auto;
   padding: var(--space-l) var(--space-s);
 }
 
 .wide-container {
-  width: min(100% - 2rem, var(--max-wide-width));
+  width: min(100% - var(--space-l), var(--max-wide-width));
   margin-inline: auto;
   padding: var(--space-l) var(--space-s);
 }
@@ -187,8 +242,8 @@ blockquote {
 
 .visually-hidden {
   position: absolute !important;
-  width: 1px !important;
-  height: 1px !important;
+  width: var(--focus-width) !important;
+  height: var(--focus-width) !important;
   padding: 0 !important;
   margin: -1px !important;
   overflow: hidden !important;
@@ -201,5 +256,34 @@ blockquote {
   text-align: center;
 }
 .text-muted {
-  color: var(--muted);
+  color: var(--color-text-muted);
+}
+
+/* ---- Reduced motion (spec 0004, AC-11) ---- */
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+}
+
+/* ---- High contrast mode (spec 0004, AC-11) ---- */
+
+@media (forced-colors: active) {
+  .button {
+    border: var(--border-width) solid ButtonText;
+  }
+
+  a:focus-visible,
+  button:focus-visible,
+  summary:focus-visible,
+  input:focus-visible,
+  textarea:focus-visible {
+    outline: var(--focus-width) solid Highlight;
+  }
 }

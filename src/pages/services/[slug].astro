@@ -3,8 +3,6 @@ import type { CollectionEntry } from 'astro:content'
 import { getCollection, render } from 'astro:content'
 import Layout from '@layouts/Layout.astro'
 import VideoPlayer from '@components/Video.astro'
-import '@styles/tokens.css'
-import '@styles/base.css'
 
 interface Props {
   service: CollectionEntry<'services'>
@@ -33,7 +31,7 @@ const { Content } = await render(service)
 ---
 
 <Layout title={service.data.title} description={service.data.description}>
-  <div class="container">
+  <div class="prose">
     <article class="service">
       <header class="service-header">
         <h1>{service.data.title}</h1>
@@ -58,13 +56,13 @@ const { Content } = await render(service)
   }
 
   .service-when {
-    font-size: 0.9375rem;
+    font-size: var(--text-caption);
     margin-bottom: var(--space-3xs);
   }
 
   .lead {
-    font-size: 1.125rem;
-    line-height: 1.6;
-    color: var(--muted);
+    font-size: var(--text-lead);
+    line-height: var(--body-line-height);
+    color: var(--color-text-muted);
   }
 </style>

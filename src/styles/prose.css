@@ -1,0 +1,133 @@
+/* Long form content (spec 0004, AC-7).
+ *
+ * Applied with class prose around rendered markdown and MDX bodies.
+ * Only role names, text tokens, space tokens, and shape tokens appear here.
+ * Hebrew: a phrase inside English text carries dir auto on a span; a full
+ * passage is a block with lang he and dir rtl. Both are styled here so no
+ * page carries direction rules of its own.
+ */
+
+.prose {
+  color: var(--color-text);
+  line-height: var(--body-line-height);
+  overflow-wrap: break-word;
+}
+
+.prose > :first-child {
+  margin-top: 0;
+}
+
+.prose > :last-child {
+  margin-bottom: 0;
+}
+
+.prose :where(h1, h2, h3, h4) {
+  font-family: var(--font-serif);
+  line-height: var(--heading-line-height);
+  color: var(--color-text);
+  margin-top: var(--space-l);
+  margin-bottom: var(--space-xs);
+}
+
+.prose h1 {
+  font-size: var(--text-display);
+}
+
+.prose h2 {
+  font-size: var(--text-title);
+}
+
+.prose h3,
+.prose h4 {
+  font-size: var(--text-subtitle);
+}
+
+.prose p {
+  margin: 0 0 var(--space-s) 0;
+  color: var(--color-text);
+}
+
+.prose :where(ul, ol) {
+  margin: 0 0 var(--space-s) 0;
+  padding-inline-start: var(--space-l);
+}
+
+.prose li {
+  margin-bottom: var(--space-3xs);
+}
+
+.prose li::marker {
+  color: var(--color-accent);
+}
+
+.prose a {
+  color: var(--color-accent);
+}
+
+.prose a:hover {
+  color: var(--color-accent-hover);
+}
+
+.prose blockquote {
+  margin: 0 0 var(--space-s) 0;
+  padding: var(--space-xs) var(--space-s);
+  border-inline-start: var(--border-width-heavy) solid var(--color-accent);
+  background: var(--color-surface);
+  color: var(--color-text);
+  quotes: '\201C' '\201D' '\2018' '\2019';
+}
+
+.prose table {
+  display: block;
+  overflow-x: auto;
+  width: 100%;
+  border-collapse: collapse;
+  margin: 0 0 var(--space-s) 0;
+}
+
+.prose th,
+.prose td {
+  padding: var(--space-2xs) var(--space-xs);
+  border: var(--border-width) solid var(--color-border);
+  text-align: start;
+}
+
+.prose th {
+  background: var(--color-surface);
+  color: var(--color-text);
+}
+
+.prose figure {
+  margin: 0 0 var(--space-m) 0;
+}
+
+.prose figcaption {
+  margin-top: var(--space-3xs);
+  font-size: var(--text-caption);
+  color: var(--color-text-muted);
+}
+
+.prose img,
+.prose video {
+  max-width: 100%;
+  height: auto;
+  border-radius: var(--radius-md);
+}
+
+/* Hebrew phrase inside English text. */
+.prose span[dir='auto'] {
+  font-family: var(--font-serif);
+  unicode-bidi: plaintext;
+}
+
+/* Hebrew passage: full right to left block. */
+.prose [lang='he'][dir='rtl'] {
+  font-family: var(--font-serif);
+  direction: rtl;
+  text-align: start;
+  quotes: '\05F4' '\05F4' '\05F4' '\05F4';
+}
+
+.prose [lang='he'][dir='rtl']:where(ul, ol) {
+  padding-inline-start: var(--space-l);
+}

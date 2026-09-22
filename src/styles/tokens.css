@@ -1,29 +1,127 @@
 /*
  * Design tokens for the United Congregation of Yisra'Yah website.
  *
- * These values MUST stay in sync with public/offline.html, which duplicates
- * them because it is a static file served outside the build and cannot
- * import a hashed stylesheet.  Update both together (scope feature 16 will
- * revisit the offline experience).
+ * Two layers (spec 0004, AC-2):
+ *   Layer 1, ladders: raw values with no meaning. Grey plus the three
+ *   temple hues (Royal Gold, Hebrew Red, Kosher Blue) with steps 50 to 950, plus
+ *   plain black and white. Anchors sampled from the old site screenshots
+ *   (Royal Gold near #c9970d, Hebrew Red near #d6261c, Kosher Blue near #2b7bbb); the middle
+ *   steps are the closest plain read of those anchors and the ends are
+ *   blended toward white and black. Send exact hex values any time and
+ *   the steps get replaced without touching roles or components.
+ *   Layer 2, roles: the ten job names pages actually use. Roles point at
+ *   ladder steps with var(), never at literals. No component or page
+ *   stylesheet names a ladder step directly.
+ *
+ * Both modes live in this file. Light is the default. Dark arrives
+ * through the OS setting and through an explicit data-theme attribute
+ * set by the theme switch, so the two stay in step (AC-4).
+ *
+ * These values MUST stay in sync with public/offline.html, which repeats
+ * the ten role values because it is served outside the build and cannot
+ * import a hashed stylesheet. A test fails when they drift (AC-9).
  */
 
 :root {
-  /* Light mode palette */
-  --canvas: #fbfaf7;
-  --surface: #ffffff;
-  --border: #dedbd0;
-  --ink: #191a20;
-  --body: #383a44;
-  --muted: #5c5e69;
-  --accent: #2b3a6b;
-  --on-accent: #ffffff;
+  /* ---- Layer 1: ladders (raw values, no meaning) ---- */
 
-  /* Font families — variables set by the Astro font integration
-     (astro.config.mjs).  Fallbacks match offline.html. */
-  --font-sans: system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif;
-  --font-serif: Georgia, 'Times New Roman', serif;
+  /* Warm neutral grey, lightest to darkest. */
+  --color-grey-50: #ffffff;
+  --color-grey-100: #fbfaf7;
+  --color-grey-200: #f3f2ed;
+  --color-grey-300: #d8d6d0;
+  --color-grey-400: #a7a7ad;
+  --color-grey-500: #8e8d98;
+  --color-grey-600: #6f6c62;
+  --color-grey-700: #5c5e69;
+  --color-grey-800: #383a44;
+  --color-grey-900: #191a20;
+  --color-grey-950: #14151b;
 
-  /* Spacing scale (8-point grid) */
+  /* Royal Gold, sampled near #c9970d. */
+  --color-royal-gold-50: #fdf9ec;
+  --color-royal-gold-100: #faf0d0;
+  --color-royal-gold-200: #f4e0a0;
+  --color-royal-gold-300: #eccc6e;
+  --color-royal-gold-400: #ddb53e;
+  --color-royal-gold-500: #c9970d;
+  --color-royal-gold-600: #a67a0b;
+  --color-royal-gold-700: #856009;
+  --color-royal-gold-800: #5e4408;
+  --color-royal-gold-900: #3a2a06;
+  --color-royal-gold-950: #221806;
+
+  /* Hebrew Red, sampled near #d6261c. */
+  --color-hebrew-red-50: #fdeeed;
+  --color-hebrew-red-100: #fbd9d6;
+  --color-hebrew-red-200: #f5ada8;
+  --color-hebrew-red-300: #ec7b74;
+  --color-hebrew-red-400: #e24e45;
+  --color-hebrew-red-500: #d6261c;
+  --color-hebrew-red-600: #ac1f17;
+  --color-hebrew-red-700: #891913;
+  --color-hebrew-red-800: #61120e;
+  --color-hebrew-red-900: #3c0b08;
+  --color-hebrew-red-950: #230605;
+
+  /* Kosher Blue, sampled near #2b7bbb. */
+  --color-kosher-blue-50: #edf4fb;
+  --color-kosher-blue-100: #d6e6f5;
+  --color-kosher-blue-200: #a9cbe9;
+  --color-kosher-blue-300: #7aabdb;
+  --color-kosher-blue-400: #4f8fc9;
+  --color-kosher-blue-500: #2b7bbb;
+  --color-kosher-blue-600: #236397;
+  --color-kosher-blue-700: #1c4f79;
+  --color-kosher-blue-800: #143856;
+  --color-kosher-blue-900: #0d2335;
+  --color-kosher-blue-950: #07141f;
+
+  --color-black: #000000;
+  --color-white: #ffffff;
+
+  /* ---- Layer 2: roles, light mode (the default) ---- */
+  /* Accent stays on Kosher Blue until you pick the final accent: kosher-blue-700 passes
+     AA on the canvas while Royal Gold reads as the tint behind notes. */
+  --color-canvas: var(--color-grey-100);
+  --color-surface: var(--color-grey-50);
+  --color-border: var(--color-grey-600);
+  --color-text: var(--color-grey-900);
+  --color-text-muted: var(--color-grey-700);
+  --color-accent: var(--color-kosher-blue-700);
+  --color-accent-hover: var(--color-kosher-blue-800);
+  --color-on-accent: var(--color-grey-50);
+  --color-focus: var(--color-kosher-blue-700);
+  --color-tint: var(--color-royal-gold-100);
+
+  /* ---- Sidebar panel: fixed black in both modes (old site look) ----
+     Sidebar tokens point at ladders and extremes like every other role.
+     Components inside the sidebar name only these, never a ladder step. */
+  --color-sidebar-bg: var(--color-black);
+  --color-sidebar-text: var(--color-white);
+  --color-sidebar-muted: var(--color-grey-300);
+  --color-sidebar-hover: var(--color-grey-800);
+  --color-sidebar-marker: var(--color-royal-gold-400);
+  --color-sidebar-scroll: var(--color-grey-700);
+
+  /* ---- Text family ---- */
+  --font-sans: 'Roboto', system-ui, -apple-system, 'Segoe UI', sans-serif;
+  --font-serif: 'Oswald', 'Arial Narrow', sans-serif;
+  --text-body: 1.0625rem;
+  --text-small: 0.875rem;
+  --text-caption: 0.9375rem;
+  --text-lead: 1.125rem;
+  /* The temple name in the sidebar masthead. Fixed rather than clamped:
+     the panel width is fixed, so viewport scaling buys nothing here. */
+  --text-brand: 1.5rem;
+  --text-display: clamp(1.75rem, 1.5rem + 1.5vw, 2.25rem);
+  --text-title: clamp(1.5rem, 1.3rem + 1vw, 1.75rem);
+  --text-subtitle: clamp(1.25rem, 1.1rem + 0.8vw, 1.5rem);
+  --body-line-height: 1.65;
+  --heading-line-height: 1.25;
+  --tracking-wide: 0.05em;
+
+  /* ---- Spacing (kept 8 steps) ---- */
   --space-3xs: clamp(0.25rem, 0.6vw, 0.5rem);
   --space-2xs: clamp(0.5rem, 1.2vw, 0.75rem);
   --space-xs: clamp(0.75rem, 1.6vw, 1rem);
@@ -33,33 +131,72 @@
   --space-xl: clamp(2rem, 4.8vw, 2.75rem);
   --space-2xl: clamp(2.75rem, 6.4vw, 3.5rem);
 
-  /* Typography */
-  --body-size: 1.0625rem; /* 17px — above the 16px minimum (AC-5) */
-  --body-line-height: 1.65;
-  --heading-line-height: 1.25;
-
-  /* Layout */
-  --max-content-width: 42rem;
-  --max-wide-width: 64rem;
-  --radius: 14px;
+  /* ---- Shape ---- */
+  --radius-sm: 0.5rem;
+  --radius-md: 0.875rem;
+  --radius-lg: 1.5rem;
+  --radius-pill: 999px;
   --border-width: 1px;
+  --border-width-heavy: 4px;
+  --underline-width: 1px;
+  --underline-width-hover: 2px;
+  --underline-offset: 0.15em;
+  --focus-width: 3px;
+  --focus-offset: 3px;
+  --touch-target: 2.75rem;
+  --sidebar-width: 16.5rem;
+  --max-content-width: 70rem;
+  --max-wide-width: 64rem;
+
+  color-scheme: light dark;
 }
 
-/* Dark mode palette (prefers-color-scheme: dark) */
+/* Dark roles through the OS setting (no stored choice).
+   The :not guard keeps an explicit light choice winning over the OS. */
 @media (prefers-color-scheme: dark) {
-  :root {
-    --canvas: #14151b;
-    --surface: #1c1e26;
-    --border: #33353f;
-    --ink: #f3f2ed;
-    --body: #d4d3cd;
-    --muted: #a7a7ad;
-    --accent: #a8b6ef;
-    --on-accent: #14151b;
+  :root:not([data-theme='light']) {
+    --color-canvas: var(--color-grey-950);
+    --color-surface: var(--color-grey-900);
+    --color-border: var(--color-grey-500);
+    --color-text: var(--color-grey-200);
+    --color-text-muted: var(--color-grey-400);
+    --color-accent: var(--color-kosher-blue-300);
+    --color-accent-hover: var(--color-kosher-blue-200);
+    --color-on-accent: var(--color-grey-950);
+    --color-focus: var(--color-kosher-blue-300);
+    --color-tint: var(--color-royal-gold-900);
   }
 }
 
-/* Respect the OS colour scheme on the root element */
+/* Explicit choice wins over the OS setting. */
+:root[data-theme='light'] {
+  --color-canvas: var(--color-grey-100);
+  --color-surface: var(--color-grey-50);
+  --color-border: var(--color-grey-600);
+  --color-text: var(--color-grey-900);
+  --color-text-muted: var(--color-grey-700);
+  --color-accent: var(--color-kosher-blue-700);
+  --color-accent-hover: var(--color-kosher-blue-800);
+  --color-on-accent: var(--color-grey-50);
+  --color-focus: var(--color-kosher-blue-700);
+  --color-tint: var(--color-royal-gold-100);
+  color-scheme: light;
+}
+
+:root[data-theme='dark'] {
+  --color-canvas: var(--color-grey-950);
+  --color-surface: var(--color-grey-900);
+  --color-border: var(--color-grey-500);
+  --color-text: var(--color-grey-200);
+  --color-text-muted: var(--color-grey-400);
+  --color-accent: var(--color-kosher-blue-300);
+  --color-accent-hover: var(--color-kosher-blue-200);
+  --color-on-accent: var(--color-grey-950);
+  --color-focus: var(--color-kosher-blue-300);
+  --color-tint: var(--color-royal-gold-900);
+  color-scheme: dark;
+}
+
 html {
   color-scheme: light dark;
 }

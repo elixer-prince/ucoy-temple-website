@@ -1,0 +1,284 @@
+---
+/**
+ * Style guide (spec 0004, AC-8).
+ * Shows every ladder, every role, both modes, every block,
+ * and a Hebrew sample. Not linked from the menu.
+ * Left out of search engines with noindex.
+ */
+import Layout from '@layouts/Layout.astro'
+import Panel from '@components/Panel.astro'
+import Callout from '@components/Callout.astro'
+import Tag from '@components/Tag.astro'
+import Figure from '@components/Figure.astro'
+import VideoPlayer from '@components/Video.astro'
+import PdfLink from '@components/PdfLink.astro'
+import Banner from '@components/Banner.astro'
+
+const ladders: Array<{ hue: string; displayName: string; steps: string[] }> = [
+  {
+    hue: 'grey',
+    displayName: 'Grey',
+    steps: ['50', '100', '200', '300', '400', '500', '600', '700', '800', '900', '950']
+  },
+  {
+    hue: 'royal-gold',
+    displayName: 'Royal Gold',
+    steps: ['50', '100', '200', '300', '400', '500', '600', '700', '800', '900', '950']
+  },
+  {
+    hue: 'hebrew-red',
+    displayName: 'Hebrew Red',
+    steps: ['50', '100', '200', '300', '400', '500', '600', '700', '800', '900', '950']
+  },
+  {
+    hue: 'kosher-blue',
+    displayName: 'Kosher Blue',
+    steps: ['50', '100', '200', '300', '400', '500', '600', '700', '800', '900', '950']
+  }
+]
+
+const roles = [
+  'canvas',
+  'surface',
+  'border',
+  'text',
+  'text-muted',
+  'accent',
+  'accent-hover',
+  'on-accent',
+  'focus',
+  'tint'
+]
+---
+
+<Layout
+  title="Style guide"
+  description="The shared visual language of the temple site."
+  robots="noindex, nofollow"
+>
+  <div class="prose">
+    <h1>Style guide</h1>
+    <p class="lead">Every ladder, every role, every block, and a Hebrew sample in both modes.</p>
+
+    <h2>Ladders</h2>
+    {ladders.map((ladder) => (
+      <section>
+        <h3>{ladder.displayName}</h3>
+        <ul class="swatches">
+          {ladder.steps.map((step) => (
+            <li class="swatch" style={`background: var(--color-${ladder.hue}-${step})`}>
+              <span>{step}</span>
+            </li>
+          ))}
+        </ul>
+      </section>
+    ))}
+
+    <h2>Roles</h2>
+    <ul class="swatches">
+      {roles.map((role) => (
+        <li class="swatch role" style={`background: var(--color-${role})`}>
+          <span>{role}</span>
+        </li>
+      ))}
+    </ul>
+
+    <h2>Typography</h2>
+    <section class="typography">
+      <h3>Display</h3>
+      <p class="text-display">Display text for hero sections and major headings.</p>
+
+      <h3>Title</h3>
+      <p class="text-title">Title text for page headings and section headers.</p>
+
+      <h3>Subtitle</h3>
+      <p class="text-subtitle">Subtitle text for subheadings and secondary headers.</p>
+
+      <h3>Lead</h3>
+      <p class="text-lead">Lead text for introductory paragraphs and summaries.</p>
+
+      <h3>Body</h3>
+      <p class="text-body">Body text for main content and paragraphs.</p>
+
+      <h3>Caption</h3>
+      <p class="text-caption">Caption text for labels, metadata, and small notes.</p>
+
+      <h3>Small</h3>
+      <p class="text-small">Small text for footnotes and minor details.</p>
+
+      <h3>Brand</h3>
+      <p class="text-brand">Brand text for the temple name in the sidebar.</p>
+    </section>
+
+    <h2>Blocks</h2>
+    <Banner
+      src="/favicon.png"
+      alt="Service banner example"
+      title="Service Page Banner"
+      description="Service pages display a banner with the service title and description."
+    />
+    <Panel title="Panel plain">
+      <p>A bordered surface block.</p>
+    </Panel>
+    <Panel title="Panel tint" tone="tint">
+      <p>A quiet tinted block.</p>
+    </Panel>
+    <Callout title="Callout">
+      <p>A quiet tinted note with a named title.</p>
+    </Callout>
+    <p>
+      <Tag label="Prayer booklets" /> <Tag label="Saturday" />
+    </p>
+    <Figure
+      src="/favicon.png"
+      alt="Temple mark"
+      caption="Figure with a caption."
+      width={64}
+      height={57}
+    />
+    <VideoPlayer src="/videos/shabbat-opening.mp4" caption="Player with shared caption styling." />
+    <PdfLink
+      title="Shabbat prayer booklet"
+      file="/resources/prayer-booklet"
+      category="Prayer booklets"
+      description="The download button with title, category, and description."
+    />
+
+    <h2>Form</h2>
+    <div class="field">
+      <label class="field-label" for="guide-name">
+        Name
+      </label>
+      <input class="field-input" id="guide-name" name="name" type="text" value="Sample field" />
+    </div>
+    <div class="field">
+      <label class="field-label" for="guide-note">
+        Note
+      </label>
+      <textarea class="field-textarea" id="guide-note" name="note">Sample text area.</textarea>
+      <p class="field-error">Sample error line: never colour alone, always words.</p>
+    </div>
+    <p>
+      <a class="button" href="/style-guide">
+        Sample button
+      </a>
+    </p>
+
+    <h2>Hebrew</h2>
+    <p>
+      A phrase inside English text: <span dir="auto">שלום</span> continues the sentence.
+    </p>
+    <div lang="he" dir="rtl">
+      <p>פרשת השבוע נקראת בשבת בבוקר, והקהילה כולה מוזמנת להשתתף.</p>
+      <blockquote>
+        <p>שמע ישראל, יהוה אלוהינו, יהוה אחד.</p>
+      </blockquote>
+    </div>
+  </div>
+</Layout>
+
+<style>
+  .lead {
+    font-size: var(--text-lead);
+    color: var(--color-text-muted);
+  }
+
+  .swatches {
+    list-style: none;
+    padding-left: 0;
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--space-2xs);
+  }
+
+  .swatch {
+    border: var(--border-width) solid var(--color-border);
+    border-radius: var(--radius-sm);
+    min-height: var(--touch-target);
+    min-width: var(--touch-target);
+    flex: 1 1 var(--touch-target);
+    display: flex;
+    align-items: end;
+    padding: var(--space-3xs);
+    color: var(--color-text);
+  }
+
+  .swatch span {
+    background: var(--color-surface);
+    border-radius: var(--radius-sm);
+    padding: 0 var(--space-3xs);
+    font-size: var(--text-small);
+  }
+
+  .typography {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-m);
+  }
+
+  .typography h3 {
+    font-size: var(--text-body);
+    font-weight: 600;
+    margin-bottom: var(--space-2xs);
+  }
+
+  .typography p {
+    margin-bottom: var(--space-2xs);
+  }
+
+  .text-display {
+    font-size: var(--text-display);
+    font-family: var(--font-serif);
+    font-weight: 700;
+    line-height: var(--heading-line-height);
+  }
+
+  .text-title {
+    font-size: var(--text-title);
+    font-family: var(--font-serif);
+    font-weight: 700;
+    line-height: var(--heading-line-height);
+  }
+
+  .text-subtitle {
+    font-size: var(--text-subtitle);
+    font-family: var(--font-serif);
+    font-weight: 700;
+    line-height: var(--heading-line-height);
+  }
+
+  .text-lead {
+    font-size: var(--text-lead);
+    font-family: var(--font-sans);
+    font-weight: 500;
+    line-height: var(--body-line-height);
+  }
+
+  .text-body {
+    font-size: var(--text-body);
+    font-family: var(--font-sans);
+    font-weight: 400;
+    line-height: var(--body-line-height);
+  }
+
+  .text-caption {
+    font-size: var(--text-caption);
+    font-family: var(--font-sans);
+    font-weight: 400;
+    line-height: var(--body-line-height);
+  }
+
+  .text-small {
+    font-size: var(--text-small);
+    font-family: var(--font-sans);
+    font-weight: 400;
+    line-height: var(--body-line-height);
+  }
+
+  .text-brand {
+    font-size: var(--text-brand);
+    font-family: var(--font-sans);
+    font-weight: 600;
+    line-height: var(--heading-line-height);
+  }
+</style>

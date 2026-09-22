@@ -34,7 +34,7 @@ beforeAll(() => {
   writeFileSync(join(fixtureDir, '_astro', 'site.abc123.css'), 'body{}')
   writeFileSync(join(fixtureDir, '_astro', 'hoisted.def456.js'), 'void 0')
   writeFileSync(join(fixtureDir, '_astro', 'frank-ruhl.ghi789.woff2'), 'font')
-  writeFileSync(join(fixtureDir, 'favicon.svg'), '<svg></svg>')
+  writeFileSync(join(fixtureDir, 'favicon.png'), 'png')
 
   // Files that must never be pre-cached.
   writeFileSync(join(fixtureDir, 'videos', 'shabbat-opening.mp4'), 'video')

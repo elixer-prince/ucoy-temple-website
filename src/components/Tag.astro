@@ -1,0 +1,27 @@
+---
+/**
+ * Tag label (spec 0004, AC-7).
+ * Small label for a category or a day.
+ */
+interface Props {
+  label: string
+}
+
+const { label } = Astro.props
+---
+
+<span class="tag">{label}</span>
+
+<style>
+  .tag {
+    display: inline-block;
+    padding: var(--space-3xs) var(--space-2xs);
+    border: var(--border-width) solid var(--color-border);
+    border-radius: var(--radius-pill);
+    background: var(--color-tint);
+    color: var(--color-text);
+    font-size: var(--text-small);
+    font-weight: 600;
+    line-height: var(--body-line-height);
+  }
+</style>

@@ -1,0 +1,40 @@
+---
+/**
+ * Figure block (spec 0004, AC-7).
+ * Image with an optional caption, sharing the caption styling.
+ */
+interface Props {
+  src: string
+  alt: string
+  caption?: string
+  width?: number
+  height?: number
+}
+
+const { src, alt, caption, width, height } = Astro.props
+---
+
+<figure class="figure">
+  <img class="figure-image" src={src} alt={alt} width={width} height={height} loading="lazy" />
+  {caption && <figcaption class="figure-caption">{caption}</figcaption>}
+</figure>
+
+<style>
+  .figure {
+    margin: 0 0 var(--space-m) 0;
+  }
+
+  .figure-image {
+    display: block;
+    width: 100%;
+    height: auto;
+    border: var(--border-width) solid var(--color-border);
+    border-radius: var(--radius-md);
+  }
+
+  .figure-caption {
+    margin-top: var(--space-3xs);
+    font-size: var(--text-caption);
+    color: var(--color-text-muted);
+  }
+</style>

@@ -1,0 +1,57 @@
+---
+/**
+ * PDF link block (spec 0004, AC-7).
+ * Download button with the file title, category, and description.
+ */
+interface Props {
+  title: string
+  file: string
+  category?: string
+  description?: string
+}
+
+const { title, file, category, description } = Astro.props
+---
+
+<div class="pdf-link">
+  <p class="pdf-title">{title}</p>
+  {category && <p class="pdf-category">{category}</p>}
+  {description && <p class="pdf-description">{description}</p>}
+  <p class="pdf-action">
+    <a class="button" href={file}>
+      Download the PDF
+    </a>
+  </p>
+</div>
+
+<style>
+  .pdf-link {
+    border: var(--border-width) solid var(--color-border);
+    border-radius: var(--radius-md);
+    background: var(--color-surface);
+    padding: var(--space-s);
+    margin: 0 0 var(--space-s) 0;
+  }
+
+  .pdf-title {
+    font-weight: 700;
+    font-size: var(--text-lead);
+    color: var(--color-text);
+    margin: 0 0 var(--space-3xs) 0;
+  }
+
+  .pdf-category {
+    font-size: var(--text-caption);
+    color: var(--color-text-muted);
+    margin: 0 0 var(--space-3xs) 0;
+  }
+
+  .pdf-description {
+    color: var(--color-text);
+    margin: 0 0 var(--space-xs) 0;
+  }
+
+  .pdf-action {
+    margin: 0;
+  }
+</style>

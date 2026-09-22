@@ -57,19 +57,40 @@ const sent = Astro.props.sent ?? false
       <form action={SITE_CONFIG.formEndpoint} method="POST" class="contact-form">
         <input type="hidden" name="_subject" value="Message from the temple website" />
 
-        <div class="form-group">
-          <label for="name">Name</label>
-          <input type="text" id="name" name="name" required placeholder="Your name" />
+        <div class="field">
+          <label class="field-label" for="name">
+            Name
+          </label>
+          <input
+            class="field-input"
+            type="text"
+            id="name"
+            name="name"
+            required
+            placeholder="Your name"
+          />
         </div>
 
-        <div class="form-group">
-          <label for="email">Email</label>
-          <input type="email" id="email" name="_replyto" required placeholder="you@example.com" />
+        <div class="field">
+          <label class="field-label" for="email">
+            Email
+          </label>
+          <input
+            class="field-input"
+            type="email"
+            id="email"
+            name="_replyto"
+            required
+            placeholder="you@example.com"
+          />
         </div>
 
-        <div class="form-group">
-          <label for="message">Message</label>
+        <div class="field">
+          <label class="field-label" for="message">
+            Message
+          </label>
           <textarea
+            class="field-textarea"
             id="message"
             name="message"
             rows="6"
@@ -105,57 +126,22 @@ const sent = Astro.props.sent ?? false
     margin-top: 0;
   }
 
+  /* Form fields reuse base.css .field / .field-input / .field-textarea. */
   .contact-form {
     display: grid;
     gap: var(--space-s);
   }
 
-  .form-group {
-    display: flex;
-    flex-direction: column;
-    gap: 0.25rem;
-  }
-
-  .form-group label {
-    font-weight: 600;
-    color: var(--ink);
-    font-size: 0.9375rem;
-  }
-
-  .form-group input,
-  .form-group textarea {
-    padding: 0.625rem 0.75rem;
-    border: var(--border-width) solid var(--border);
-    border-radius: 8px;
-    font-family: var(--font-sans);
-    font-size: var(--body-size);
-    background: var(--surface);
-    color: var(--body);
-    min-width: 0;
-  }
-
-  .form-group input:focus-visible,
-  .form-group textarea:focus-visible {
-    outline: 3px solid var(--accent);
-    outline-offset: 2px;
-    border-color: var(--accent);
-  }
-
-  .form-group input::placeholder,
-  .form-group textarea::placeholder {
-    color: var(--muted);
-  }
-
   .notice {
     padding: var(--space-s) var(--space-m);
-    border-radius: var(--radius);
+    border-radius: var(--radius-md);
     margin-bottom: var(--space-s);
   }
 
   .notice-success {
-    background: var(--canvas);
-    border: var(--border-width) solid var(--border);
-    color: var(--body);
+    background: var(--color-tint);
+    border: var(--border-width) solid var(--color-border);
+    color: var(--color-text);
   }
 
   address {
