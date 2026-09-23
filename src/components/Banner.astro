@@ -1,79 +1,153 @@
 ---
 /**
- * Banner component for service pages.
- * Full-width hero image with gradient overlay and text.
+ * Full width banner (spec 0004, page hero).
+ * Photo with the page title centred over it, like the Friday Evening
+ * Home Ritual banner in the reference: candles edge to edge with the
+ * title on top.
+ *
+ * Place it in Layout's banner slot so it sits above the padded content
+ * column and spans the content area edge to edge with no gap:
+ *
+ *   <Layout title="…">
+ *     <Banner
+ *       slot="banner"
+ *       title="The Friday Evening Home Ritual"
+ *       image="/images/candles.jpg"
+ *     />
+ *     …
+ *   </Layout>
+ *
+ * The title prop is the page title, so the page must not render a second
+ * h1 of its own. Set level to h2 only when the page already has an h1.
+ *
+ * The image is a path under public/, the same pattern the Video player
+ * uses for files under public/videos/ (spec 0003). It renders as an
+ * eager img for a fast first paint, with a dark layer over it so the
+ * white title stays readable. Every colour comes from a role token.
  */
 interface Props {
-  src: string
-  alt: string
+  /** Page title drawn over the photo. Also the accessible name. */
   title: string
+  /** Photo path under public/, such as /images/candles.jpg. */
+  image: string
+  /** Text alternative. Empty by default: the title already names the banner. */
+  alt?: string
+  /** Small kicker above the title, such as Weekly Shabbat Services. */
+  eyebrow?: string
+  /** One line under the title. */
   description?: string
+  /** Heading level. h1 when the banner holds the page title. */
+  level?: 'h1' | 'h2'
 }
 
-const { src, alt, title, description } = Astro.props
+const { title, image, alt = '', eyebrow, description, level = 'h1' } = Astro.props
+const Heading = level
 ---
 
-<div class="banner">
-  <img src={src} alt={alt} class="banner-image" />
-  <div class="banner-overlay">
-    <div class="banner-content">
-      <h1 class="banner-title">{title}</h1>
-      {description && <p class="banner-description">{description}</p>}
-    </div>
+<section class="banner" aria-labelledby="banner-title">
+  <img
+    class="banner-image"
+    src={image}
+    alt={alt}
+    fetchpriority="high"
+    loading="eager"
+    decoding="async"
+  />
+  <div class="banner-shade" aria-hidden="true"></div>
+  <div class="banner-content">
+    {eyebrow && <p class="banner-eyebrow">{eyebrow}</p>}
+    <Heading id="banner-title" class="banner-title">
+      {title}
+    </Heading>
+    {description && <p class="banner-description">{description}</p>}
   </div>
-</div>
+</section>
 
 <style>
   .banner {
     position: relative;
-    width: 100%;
-    height: 400px;
-    margin: 0 0 var(--space-m) 0;
-    border-radius: var(--radius);
-    overflow: hidden;
+    display: grid;
+    place-items: center;
+    overflow: clip;
+    min-height: clamp(16rem, 38vw, 26rem);
+    /* No outer margins: Layout renders the banner above the padded content
+         column, so the photo reaches every edge of the content area. The
+         content below carries its own top gap. */
+    margin: 0;
+    background: var(--color-sidebar-bg);
   }
 
   .banner-image {
+    position: absolute;
+    inset: 0;
     width: 100%;
     height: 100%;
     object-fit: cover;
   }
 
-  .banner-overlay {
+  /* One flat dark layer, not a gradient stop, so no literal colour is needed. */
+  .banner-shade {
     position: absolute;
-    bottom: 0;
-    left: 0;
-    right: 0;
-    height: 100%;
-    background: linear-gradient(
-      to top,
-      rgba(0, 0, 0, 0.7) 0%,
-      rgba(0, 0, 0, 0.3) 50%,
-      transparent 100%
-    );
-    display: flex;
-    align-items: flex-end;
-    padding: var(--space-m);
+    inset: 0;
+    background: var(--color-sidebar-bg);
+    opacity: 0.45;
   }
 
   .banner-content {
-    color: var(--color-on-accent);
+    position: relative;
+    text-align: center;
+    padding: var(--space-l) var(--space-s);
     max-width: var(--max-content-width);
   }
 
+  .banner-eyebrow {
+    margin: 0 0 var(--space-2xs) 0;
+    font-size: var(--text-small);
+    font-weight: 700;
+    letter-spacing: var(--tracking-wide);
+    text-transform: uppercase;
+    color: var(--color-sidebar-text);
+  }
+
   .banner-title {
+    margin: 0;
     font-family: var(--font-serif);
     font-size: var(--text-display);
     font-weight: 700;
     line-height: var(--heading-line-height);
-    margin: 0 0 var(--space-2xs) 0;
-    color: var(--color-on-accent);
+    color: var(--color-sidebar-text);
+    text-wrap: balance;
+    text-shadow: 0 1px 8px var(--color-sidebar-bg);
   }
 
   .banner-description {
-    font-size: var(--text-body);
-    line-height: var(--body-line-height);
-    margin: 0;
-    color: var(--color-on-accent);
+    margin: var(--space-2xs) 0 0 0;
+    font-size: var(--text-lead);
+    color: var(--color-sidebar-text);
+    text-shadow: 0 1px 8px var(--color-sidebar-bg);
+  }
+
+  @media (forced-colors: active) {
+    .banner-shade {
+      opacity: 0.65;
+    }
+  }
+
+  @media print {
+    .banner {
+      min-height: auto;
+    }
+
+    .banner-image,
+    .banner-shade {
+      display: none;
+    }
+
+    .banner-eyebrow,
+    .banner-title,
+    .banner-description {
+      color: var(--color-text);
+      text-shadow: none;
+    }
   }
 </style>

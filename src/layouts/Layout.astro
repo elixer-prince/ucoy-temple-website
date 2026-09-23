@@ -19,6 +19,7 @@ interface Props {
 }
 
 const { title, description = SITE_CONFIG.description, robots } = Astro.props
+const hasBanner = Astro.slots.has('banner')
 ---
 
 <!doctype html>
@@ -63,7 +64,7 @@ const { title, description = SITE_CONFIG.description, robots } = Astro.props
 
     <input class="sidebar-toggle" type="checkbox" id="sidebar-toggle" aria-label="Show menu" />
 
-    <div class="shell">
+    <div class:list={['shell', { 'shell--with-banner': hasBanner }]}>
       <label class="sidebar-backdrop" for="sidebar-toggle" aria-hidden="true"></label>
       <aside class="sidebar" id="sidebar">
         <Sidebar />
@@ -77,9 +78,12 @@ const { title, description = SITE_CONFIG.description, robots } = Astro.props
         </div>
       </aside>
 
-      <main id="main-content" class="content">
-        <slot />
-      </main>
+      <div class:list={['page', hasBanner && 'page--with-banner']}>
+        <slot name="banner" />
+        <main id="main-content" class="content">
+          <slot />
+        </main>
+      </div>
     </div>
 
     <Footer />
@@ -214,12 +218,12 @@ const { title, description = SITE_CONFIG.description, robots } = Astro.props
      away from a screen reader while it is off screen. */
   .sidebar {
     position: fixed;
-    inset: 4rem auto 0 0;
+    inset: 0 auto 0 0;
     width: var(--sidebar-width);
-    height: calc(100dvh - 4rem);
+    height: 100dvh;
     overflow-y: auto;
     overscroll-behavior: contain;
-    z-index: 40;
+    z-index: 60;
     border-right: var(--border-width) solid var(--color-sidebar-bg);
     background: var(--color-sidebar-bg);
     color: var(--color-sidebar-text);
@@ -259,16 +263,76 @@ const { title, description = SITE_CONFIG.description, robots } = Astro.props
   .sidebar::-webkit-scrollbar-thumb:hover {
     background: var(--color-sidebar-muted);
   }
+  /* Pages with a banner: the shell padding and gap frame the content,
+     not the banner, so the photo reaches the shell edge with no gap.
+     .content keeps its own padding, so only the banner spans edge to
+     edge. The child combinator matches the slotted banner, and :global
+     is needed because Astro scopes the banner class. */
+  .shell--with-banner {
+    padding: 0;
+    gap: 0;
+  }
+
+  .shell--with-banner .content {
+    padding: 0 var(--space-s);
+  }
+
+  /* No frame around a slotted banner: the photo reaches the shell edge
+     and the content below keeps its own top gap. */
+  .page--with-banner {
+    padding-left: 0;
+    padding-right: 0;
+  }
+
+  /* With a banner the shell carries no side padding: the banner must
+       reach the edges of the content area with no frame around it.
+       The text below keeps its own spacing from .content. */
+  padding-left: 0;
+  padding-right: 0;
+  .page--with-banner > :global(.banner) {
+    margin-left: 0;
+    margin-right: 0;
+  }
+
+  /* Below the tablet width there is no sidebar offset, so the page
+     spans the viewport and the banner is already flush. */
+  .page {
+    min-width: 0;
+    /* No top padding: the header is sticky so it holds its own space,
+         and a banner slot page sits flush under it with no gap.
+         Banner-less pages still need a top gap, so .content keeps its
+         own top margin below. */
+    padding-top: 0;
+  }
+
+  /* With a banner the column padding moves to .content, so the banner
+     photo touches the shell on all sides with no gap. The rule below
+     the banner still keeps its padding value. */
+  .page--with-banner {
+    padding: 0;
+  }
+
+  .page--with-banner .content {
+    padding: var(--space-l) var(--space-s);
+  }
+
+  /* The banner floats above .content with no gap of its own, so the
+     content top margin below is the only space between them. Slotted
+     banners land as a direct child of .page, hence the child combinator.
+     Astro scopes the banner class (banner.astro-XXXX), so :global()
+     is needed here for the match to fire. */
+  .page > :global(.banner) {
+    margin: 0;
+  }
 
   .content {
     min-width: 0;
     width: min(100% - var(--space-l), var(--max-content-width));
-    margin: 6rem auto var(--space-l);
+    margin: var(--space-l) auto var(--space-l);
     padding: 0 var(--space-s);
   }
 
   .theme-switch {
-    margin-top: var(--space-s);
     padding-top: var(--space-s);
     border-top: var(--border-width) solid var(--color-sidebar-hover);
     display: flex;
@@ -306,8 +370,8 @@ const { title, description = SITE_CONFIG.description, robots } = Astro.props
     }
 
     /* The panel is part of the page at this width: it never slides, and it
-         ignores the menu checkbox. The dim layer belongs to the narrow screen
-         alone, so a toggle left on from a phone cannot wash over the page. */
+           ignores the menu checkbox. The dim layer belongs to the narrow screen
+           alone, so a toggle left on from a phone cannot wash over the page. */
     .sidebar {
       transform: none;
       visibility: visible;
@@ -318,6 +382,21 @@ const { title, description = SITE_CONFIG.description, robots } = Astro.props
 
     .sidebar-backdrop {
       display: none;
+    }
+
+    .page {
+      min-width: 0;
+      /* The header is hidden here, so the page reaches the top edge
+             and the banner can sit flush with no gap. */
+      padding-top: 0;
+    }
+
+    .page--with-banner {
+      padding: 0;
+    }
+
+    .page--with-banner .content {
+      padding: var(--space-l) var(--space-2xs);
     }
 
     .content {
@@ -334,6 +413,15 @@ const { title, description = SITE_CONFIG.description, robots } = Astro.props
   }
 
   @media print {
+    /* A slotted banner already spans the page, so keep the no-frame
+         padding above and only re-apply the sidebar offset here. The
+         footer sits outside .shell, so it needs the offset too. */
+    .page--with-banner {
+      padding-top: 0;
+      padding-left: 0;
+      padding-right: 0;
+    }
+
     .sidebar,
     .sidebar-backdrop,
     .sidebar-toggle,
@@ -350,6 +438,10 @@ const { title, description = SITE_CONFIG.description, robots } = Astro.props
     .shell {
       display: block;
       padding-inline-start: 0;
+    }
+
+    .page {
+      padding-top: 0;
     }
 
     .content {
