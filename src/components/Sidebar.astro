@@ -151,7 +151,7 @@ const pages = (await getCollection('pages')).sort(byOrder)
     align-items: center;
     margin: var(--space-l) 0 var(--space-s) 0;
     padding: var(--space-xs) var(--space-s);
-    border-radius: var(--radius-sm);
+    border-radius: var(--radius);
     font-size: var(--text-brand);
     font-weight: 600;
     line-height: var(--heading-line-height);
@@ -197,7 +197,7 @@ const pages = (await getCollection('pages')).sort(byOrder)
   .menu a {
     display: block;
     padding: var(--space-2xs) var(--space-s);
-    border-radius: var(--radius-sm);
+    border-radius: var(--radius);
     text-decoration: none;
     color: var(--color-sidebar-text);
     min-height: var(--touch-target);
@@ -223,7 +223,7 @@ const pages = (await getCollection('pages')).sort(byOrder)
 
   .group {
     border: none;
-    border-radius: var(--radius-sm);
+    border-radius: var(--radius);
     background: transparent;
   }
 
@@ -233,7 +233,7 @@ const pages = (await getCollection('pages')).sort(byOrder)
     font-size: var(--text-body);
     font-weight: 700;
     color: var(--color-sidebar-text);
-    border-radius: var(--radius-sm);
+    border-radius: var(--radius);
     min-height: var(--touch-target);
     list-style: none;
     display: flex;
@@ -289,7 +289,7 @@ const pages = (await getCollection('pages')).sort(byOrder)
     padding: 0 0 0 var(--space-s);
     display: grid;
     grid-template-rows: 1fr;
-    transition: grid-template-rows 0.15s ease;
+    transition: grid-template-rows var(--motion-duration) ease;
     font-size: var(--text-body);
   }
 
@@ -321,7 +321,7 @@ const pages = (await getCollection('pages')).sort(byOrder)
       block-size: 0;
       overflow: clip;
       transition-property: block-size, content-visibility;
-      transition-duration: 0.15s;
+      transition-duration: var(--motion-duration);
       transition-timing-function: ease;
       transition-behavior: allow-discrete;
     }
@@ -359,7 +359,7 @@ const pages = (await getCollection('pages')).sort(byOrder)
     font-size: inherit;
     display: block;
     padding: var(--space-2xs) var(--space-s);
-    border-radius: var(--radius-sm);
+    border-radius: var(--radius);
     text-decoration: none;
     color: var(--color-sidebar-text);
     min-height: var(--touch-target);

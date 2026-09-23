@@ -183,16 +183,23 @@ const { title, description = SITE_CONFIG.description, robots } = Astro.props
     outline-offset: var(--focus-offset);
   }
 
+  /* The dim layer fades on the same timing as the panel, so the two move
+     together instead of the wash appearing in one step. */
   .sidebar-backdrop {
-    display: none;
     position: fixed;
     inset: 0;
     background: rgba(0, 0, 0, 0.5);
     z-index: 30;
+    opacity: 0;
+    visibility: hidden;
+    transition:
+      opacity var(--motion-duration) ease,
+      visibility var(--motion-duration) ease;
   }
 
   .sidebar-toggle:checked ~ .shell .sidebar-backdrop {
-    display: block;
+    opacity: 1;
+    visibility: visible;
   }
 
   .shell {
@@ -200,9 +207,12 @@ const { title, description = SITE_CONFIG.description, robots } = Astro.props
   }
 
   /* The panel is chrome, not content: tapping or dragging on it should
-     not pick up its labels by accident. Content stays selectable. */
+     not pick up its labels by accident. Content stays selectable.
+     It rests off the left edge and slides in when the menu checkbox is
+     checked. Staying rendered, rather than display none, is what lets the
+     move animate, and visibility hidden keeps it out of the tab order and
+     away from a screen reader while it is off screen. */
   .sidebar {
-    display: none;
     position: fixed;
     inset: 4rem auto 0 0;
     width: var(--sidebar-width);
@@ -218,10 +228,16 @@ const { title, description = SITE_CONFIG.description, robots } = Astro.props
     user-select: none;
     scrollbar-width: thin;
     scrollbar-color: var(--color-sidebar-scroll) var(--color-sidebar-bg);
+    transform: translateX(-100%);
+    visibility: hidden;
+    transition:
+      transform var(--motion-duration) ease,
+      visibility var(--motion-duration) ease;
   }
 
   .sidebar-toggle:checked ~ .shell .sidebar {
-    display: block;
+    transform: translateX(0);
+    visibility: visible;
   }
 
   /* Slim themed scrollbar for the sidebar (Firefox + WebKit).
@@ -237,7 +253,7 @@ const { title, description = SITE_CONFIG.description, robots } = Astro.props
 
   .sidebar::-webkit-scrollbar-thumb {
     background: var(--color-sidebar-scroll);
-    border-radius: var(--radius-sm);
+    border-radius: var(--radius);
   }
 
   .sidebar::-webkit-scrollbar-thumb:hover {
@@ -263,7 +279,7 @@ const { title, description = SITE_CONFIG.description, robots } = Astro.props
   .theme-button {
     min-height: var(--touch-target);
     border: var(--border-width) solid var(--color-sidebar-hover);
-    border-radius: var(--radius-sm);
+    border-radius: var(--radius);
     background: var(--color-sidebar-hover);
     color: var(--color-sidebar-text);
     font: inherit;
@@ -289,11 +305,19 @@ const { title, description = SITE_CONFIG.description, robots } = Astro.props
       padding-inline-start: var(--sidebar-width);
     }
 
+    /* The panel is part of the page at this width: it never slides, and it
+         ignores the menu checkbox. The dim layer belongs to the narrow screen
+         alone, so a toggle left on from a phone cannot wash over the page. */
     .sidebar {
-      display: block;
+      transform: none;
+      visibility: visible;
       inset: 0 auto 0 0;
       height: 100dvh;
       padding: var(--space-m);
+    }
+
+    .sidebar-backdrop {
+      display: none;
     }
 
     .content {
@@ -311,6 +335,7 @@ const { title, description = SITE_CONFIG.description, robots } = Astro.props
 
   @media print {
     .sidebar,
+    .sidebar-backdrop,
     .sidebar-toggle,
     :global(.menu-button),
     :global(.site-footer),

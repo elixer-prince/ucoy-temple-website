@@ -2,6 +2,10 @@
 /**
  * Site header (spec 0004, AC-5).
  * Brand link plus the menu button on a narrow screen.
+ *
+ * The brand carries two labels, the full temple name and its initials, and
+ * CSS shows one of them by width. Both are in the markup so nothing runs
+ * and the header works with JavaScript off.
  */
 import { SITE_CONFIG } from '@/config/site'
 
@@ -14,9 +18,13 @@ const { label = 'Menu' } = Astro.props
 
 <header class="site-header">
   <div class="header-inner">
-    <a href="/" class="logo" aria-label={SITE_CONFIG.title}>
+    <!-- The accessible name holds the full name and the initials, so a
+         voice control user saying the text on screen still matches it
+         (WCAG 2.5.3, Label in Name) at either width. -->
+    <a href="/" class="logo" aria-label={`${SITE_CONFIG.title} (${SITE_CONFIG.shortTitle})`}>
       <img class="logo-mark" src="/favicon.png" alt="" width="32" height="32" aria-hidden="true" />
       <span class="logo-text">{SITE_CONFIG.title}</span>
+      <span class="logo-short">{SITE_CONFIG.shortTitle}</span>
     </a>
     <label class="menu-button" for="sidebar-toggle">
       {label}
@@ -69,13 +77,32 @@ const { label = 'Menu' } = Astro.props
     text-overflow: ellipsis;
   }
 
+  /* The initials stand in for the full name on the narrowest phones, where
+     the name and the mark together leave the menu button no room. Both
+     labels are in the markup and CSS picks one, so nothing runs here.
+     23.4375em is 375 pixels, the width the temple asked for. */
+  .logo-short {
+    display: none;
+    letter-spacing: var(--tracking-wide);
+  }
+
+  @media (max-width: 23.4375em) {
+    .logo-text {
+      display: none;
+    }
+
+    .logo-short {
+      display: inline;
+    }
+  }
+
   .menu-button {
     display: inline-flex;
     align-items: center;
     min-height: var(--touch-target);
     padding: var(--space-2xs) var(--space-s);
     border: var(--border-width) solid var(--color-sidebar-hover);
-    border-radius: var(--radius-sm);
+    border-radius: var(--radius);
     background: var(--color-sidebar-hover);
     color: var(--color-sidebar-text);
     font-weight: 600;

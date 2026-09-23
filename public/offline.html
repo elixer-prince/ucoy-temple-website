@@ -4,8 +4,9 @@
   connection. It is a plain file rather than a built page on purpose: it has to
   be reachable at a fixed address that the worker can cache by name.
 
-  The colours repeat the values in src/styles/tokens.css, because a file served
-  outside the build cannot read the built stylesheet, whose name is hashed.
+  The colours, and the one square corner value, repeat src/styles/tokens.css,
+  because a file served outside the build cannot read the built stylesheet,
+  whose name is hashed.
   Keep the two in step until scope feature 16 revisits the offline experience.
 -->
 <html lang="en">
@@ -37,8 +38,7 @@
         --space-m: clamp(1.25rem, 2.8vw, 1.5rem);
         --space-s: clamp(1rem, 2vw, 1.25rem);
         --space-l: clamp(1.5rem, 3.6vw, 2rem);
-        --radius-md: 0.875rem;
-        --radius-pill: 999px;
+        --radius: 0;
         --border-width: 1px;
         --focus-width: 3px;
         --focus-offset: 3px;
@@ -116,7 +116,7 @@
         max-width: var(--max-content-width);
         padding: var(--space-l);
         border: var(--border-width) solid var(--color-border);
-        border-radius: var(--radius-md);
+        border-radius: var(--radius);
         background: var(--color-surface);
       }
 
@@ -147,7 +147,7 @@
         min-height: var(--touch-target);
         margin-top: var(--space-2xs);
         padding: var(--space-2xs) var(--space-m);
-        border-radius: var(--radius-pill);
+        border-radius: var(--radius);
         background: var(--color-accent);
         color: var(--color-on-accent);
         font-weight: 600;

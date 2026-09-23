@@ -19,6 +19,13 @@ import {
 export const SITE_CONFIG = {
   // Identity
   title: "United Congregation of Yisra'Yah",
+  /**
+   * The temple's initials. The header shows this wordmark on the narrowest
+   * phones, where the full name would leave the menu button no room.
+   * Change this one value to change how the short name reads everywhere
+   * it appears.
+   */
+  shortTitle: 'UCOY',
   description:
     "Public website for the United Congregation of Yisra'Yah. " +
     'Service times, directions, and Holy Day materials — works offline.',

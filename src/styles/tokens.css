@@ -131,11 +131,11 @@
   --space-xl: clamp(2rem, 4.8vw, 2.75rem);
   --space-2xl: clamp(2.75rem, 6.4vw, 3.5rem);
 
-  /* ---- Shape ---- */
-  --radius-sm: 0.5rem;
-  --radius-md: 0.875rem;
-  --radius-lg: 1.5rem;
-  --radius-pill: 999px;
+  /* ---- Shape ----
+     The temple reads as strict, so nothing here is rounded. One square
+     corner value serves buttons, fields, panels, images and the theme
+     switch. Softening the look later is this one line and nothing else. */
+  --radius: 0;
   --border-width: 1px;
   --border-width-heavy: 4px;
   --underline-width: 1px;
@@ -147,6 +147,13 @@
   --sidebar-width: 16.5rem;
   --max-content-width: 70rem;
   --max-wide-width: 64rem;
+
+  /* ---- Motion ----
+     One duration for the whole site: the menu panel slide and its dim
+     layer, the button and link fades, and the sidebar group glide all take
+     this value. Slow or quicken every transition on the site from one
+     line, and keep the panel and its dim layer on the same beat. */
+  --motion-duration: 0.2s;
 
   color-scheme: light dark;
 }
