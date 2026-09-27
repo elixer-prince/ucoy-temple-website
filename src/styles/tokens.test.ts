@@ -55,7 +55,7 @@ const LADDERS: Record<string, Record<string, string>> = {
     '900': '#191a20',
     '950': '#14151b'
   },
-  gold: {
+  'royal-gold': {
     '50': '#fdf9ec',
     '100': '#faf0d0',
     '200': '#f4e0a0',
@@ -68,7 +68,7 @@ const LADDERS: Record<string, Record<string, string>> = {
     '900': '#3a2a06',
     '950': '#221806'
   },
-  red: {
+  'hebrew-red': {
     '50': '#fdeeed',
     '100': '#fbd9d6',
     '200': '#f5ada8',
@@ -81,7 +81,7 @@ const LADDERS: Record<string, Record<string, string>> = {
     '900': '#3c0b08',
     '950': '#230605'
   },
-  blue: {
+  'kosher-blue': {
     '50': '#edf4fb',
     '100': '#d6e6f5',
     '200': '#a9cbe9',
@@ -102,11 +102,11 @@ const LIGHT_ROLES: Record<Role, string> = {
   border: 'grey-600',
   text: 'grey-900',
   'text-muted': 'grey-700',
-  accent: 'blue-700',
-  'accent-hover': 'blue-800',
+  accent: 'kosher-blue-700',
+  'accent-hover': 'kosher-blue-800',
   'on-accent': 'grey-50',
-  focus: 'blue-700',
-  tint: 'gold-100'
+  focus: 'kosher-blue-700',
+  tint: 'royal-gold-100'
 }
 
 const DARK_ROLES: Record<Role, string> = {
@@ -115,11 +115,11 @@ const DARK_ROLES: Record<Role, string> = {
   border: 'grey-500',
   text: 'grey-200',
   'text-muted': 'grey-400',
-  accent: 'blue-300',
-  'accent-hover': 'blue-200',
+  accent: 'kosher-blue-300',
+  'accent-hover': 'kosher-blue-200',
   'on-accent': 'grey-950',
-  focus: 'blue-300',
-  tint: 'gold-900'
+  focus: 'kosher-blue-300',
+  tint: 'royal-gold-900'
 }
 
 const SIDEBAR_POINTS: Record<SidebarRole, string> = {
@@ -127,7 +127,7 @@ const SIDEBAR_POINTS: Record<SidebarRole, string> = {
   'sidebar-text': 'white',
   'sidebar-muted': 'grey-300',
   'sidebar-hover': 'grey-800',
-  'sidebar-marker': 'gold-400',
+  'sidebar-marker': 'royal-gold-400',
   'sidebar-scroll': 'grey-700'
 }
 
@@ -171,7 +171,7 @@ function roleValue(hueStep: string): string {
   // Sidebar extremes (black, white) live beside the ladders in tokens.css.
   if (hueStep === 'black') return '#000000'
   if (hueStep === 'white') return '#ffffff'
-  const dash = hueStep.indexOf('-')
+  const dash = hueStep.lastIndexOf('-')
   const hue = hueStep.slice(0, dash)
   const step = hueStep.slice(dash + 1)
   const value = LADDERS[hue]?.[step]
@@ -198,8 +198,8 @@ function collectStyleFiles(dir: string, found: string[] = []): string[] {
 }
 
 describe('AC-2 ladders', () => {
-  it('grey gold red blue each hold eleven steps', () => {
-    for (const hue of ['grey', 'gold', 'red', 'blue']) {
+  it('grey royal-gold hebrew-red kosher-blue each hold eleven steps', () => {
+    for (const hue of ['grey', 'royal-gold', 'hebrew-red', 'kosher-blue']) {
       for (const step of Object.keys(LADDERS[hue])) {
         expect(tokens).toContain('--color-' + hue + '-' + step + ': ' + LADDERS[hue][step])
       }
@@ -253,7 +253,7 @@ describe('AC-2 roles', () => {
 
   it('no page stylesheet names a ladder step', () => {
     const files = collectStyleFiles(join(root, 'src'))
-    const ladderUse = /--color-(grey|gold|red|blue)-\d{2,3}/
+    const ladderUse = /--color-(grey|royal-gold|hebrew-red|kosher-blue)-\d{2,3}/
     for (const file of files) {
       const content = readFileSync(file, 'utf-8')
       const blocks = file.endsWith('.css')
@@ -269,7 +269,7 @@ describe('AC-2 roles', () => {
   it('every color role used in a stylesheet is one of the contract roles', () => {
     const files = collectStyleFiles(join(root, 'src'))
     const roleUse = /var\(--color-([a-z-]+)\)/g
-    const isLadder = /^(grey|gold|red|blue)(-|$)/
+    const isLadder = /^(grey|royal-gold|hebrew-red|kosher-blue)(-|$)/
     const allowed = new Set<string>([...ROLES, ...SIDEBAR_ROLES, 'black', 'white'])
     const unknown: string[] = []
     for (const file of files) {

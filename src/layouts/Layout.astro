@@ -192,7 +192,7 @@ const hasBanner = Astro.slots.has('banner')
   .sidebar-backdrop {
     position: fixed;
     inset: 0;
-    background: rgba(0, 0, 0, 0.5);
+    background: var(--scrim);
     z-index: 30;
     opacity: 0;
     visibility: hidden;
@@ -298,10 +298,7 @@ const hasBanner = Astro.slots.has('banner')
      spans the viewport and the banner is already flush. */
   .page {
     min-width: 0;
-    /* No top padding: the header is sticky so it holds its own space,
-         and a banner slot page sits flush under it with no gap.
-         Banner-less pages still need a top gap, so .content keeps its
-         own top margin below. */
+    /* No top padding: a banner page sits flush under the sticky header. */
     padding-top: 0;
   }
 
@@ -369,9 +366,7 @@ const hasBanner = Astro.slots.has('banner')
       padding-inline-start: var(--sidebar-width);
     }
 
-    /* The panel is part of the page at this width: it never slides, and it
-           ignores the menu checkbox. The dim layer belongs to the narrow screen
-           alone, so a toggle left on from a phone cannot wash over the page. */
+    /* The panel is part of the page at this width: it never slides, and the dim layer is hidden. */
     .sidebar {
       transform: none;
       visibility: visible;
@@ -386,8 +381,7 @@ const hasBanner = Astro.slots.has('banner')
 
     .page {
       min-width: 0;
-      /* The header is hidden here, so the page reaches the top edge
-             and the banner can sit flush with no gap. */
+      /* The header is hidden here, so the page reaches the top edge and the banner sits flush. */
       padding-top: 0;
     }
 
@@ -413,9 +407,7 @@ const hasBanner = Astro.slots.has('banner')
   }
 
   @media print {
-    /* A slotted banner already spans the page, so keep the no-frame
-         padding above and only re-apply the sidebar offset here. The
-         footer sits outside .shell, so it needs the offset too. */
+    /* A slotted banner already spans the page, so keep the no-frame padding and drop the offset. */
     .page--with-banner {
       padding-top: 0;
       padding-left: 0;

@@ -21,17 +21,21 @@
  * h1 of its own. Set level to h2 only when the page already has an h1.
  *
  * The image is a path under public/, the same pattern the Video player
- * uses for files under public/videos/ (spec 0003). It renders as an
- * eager img for a fast first paint, with a dark layer over it so the
- * white title stays readable. Every colour comes from a role token.
+ * uses for files under public/videos/ (spec 0003). It paints as the
+ * band's own CSS background with `background-attachment: fixed`, so the
+ * photo holds still in the viewport while the band and the page scroll
+ * past it, like the banner on the temple's current site. It is a
+ * decorative layer, so it carries no alt text and no img element, and the
+ * title is the banner's accessible name. A dark layer over it keeps the
+ * white title readable, tokens carry the band's height and the title's
+ * lift, and a reader who asks for less motion gets a background that
+ * scrolls with the page.
  */
 interface Props {
   /** Page title drawn over the photo. Also the accessible name. */
   title: string
   /** Photo path under public/, such as /images/candles.jpg. */
   image: string
-  /** Text alternative. Empty by default: the title already names the banner. */
-  alt?: string
   /** Small kicker above the title, such as Weekly Shabbat Services. */
   eyebrow?: string
   /** One line under the title. */
@@ -40,19 +44,11 @@ interface Props {
   level?: 'h1' | 'h2'
 }
 
-const { title, image, alt = '', eyebrow, description, level = 'h1' } = Astro.props
+const { title, image, eyebrow, description, level = 'h1' } = Astro.props
 const Heading = level
 ---
 
-<section class="banner" aria-labelledby="banner-title">
-  <img
-    class="banner-image"
-    src={image}
-    alt={alt}
-    fetchpriority="high"
-    loading="eager"
-    decoding="async"
-  />
+<section class="banner" aria-labelledby="banner-title" style={`--banner-image: url('${image}')`}>
   <div class="banner-shade" aria-hidden="true"></div>
   <div class="banner-content">
     {eyebrow && <p class="banner-eyebrow">{eyebrow}</p>}
@@ -69,20 +65,17 @@ const Heading = level
     display: grid;
     place-items: center;
     overflow: clip;
-    min-height: clamp(16rem, 38vw, 26rem);
-    /* No outer margins: Layout renders the banner above the padded content
-         column, so the photo reaches every edge of the content area. The
-         content below carries its own top gap. */
+    min-height: var(--banner-min-height);
+    /* No outer margins: the banner renders above the padded content column. */
     margin: 0;
-    background: var(--color-sidebar-bg);
-  }
-
-  .banner-image {
-    position: absolute;
-    inset: 0;
-    width: 100%;
-    height: 100%;
-    object-fit: cover;
+    /* --banner-image arrives inline from the image prop. */
+    background-color: var(--color-sidebar-bg);
+    background-image: var(--banner-image, none);
+    background-size: cover;
+    background-position: center;
+    background-repeat: no-repeat;
+    /* Pinned to the viewport, so the band windows onto a still photo. */
+    background-attachment: fixed;
   }
 
   /* One flat dark layer, not a gradient stop, so no literal colour is needed. */
@@ -117,14 +110,22 @@ const Heading = level
     line-height: var(--heading-line-height);
     color: var(--color-sidebar-text);
     text-wrap: balance;
-    text-shadow: 0 1px 8px var(--color-sidebar-bg);
+    text-shadow: var(--banner-text-shadow);
   }
 
   .banner-description {
     margin: var(--space-2xs) 0 0 0;
     font-size: var(--text-lead);
     color: var(--color-sidebar-text);
-    text-shadow: 0 1px 8px var(--color-sidebar-bg);
+    text-shadow: var(--banner-text-shadow);
+  }
+
+  /* A fixed background holds still while the page scrolls past it, which is
+       motion some readers ask to skip. Let it scroll with the page there. */
+  @media (prefers-reduced-motion: reduce) {
+    .banner {
+      background-attachment: scroll;
+    }
   }
 
   @media (forced-colors: active) {
@@ -136,9 +137,9 @@ const Heading = level
   @media print {
     .banner {
       min-height: auto;
+      background-image: none;
     }
 
-    .banner-image,
     .banner-shade {
       display: none;
     }

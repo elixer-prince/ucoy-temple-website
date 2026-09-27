@@ -9,31 +9,31 @@ _These are recommendations to keep your build orderly, not requirements. Skip an
 
 ## At a glance
 
-| #   | Feature                                       | Phase      | Status      |
-| --- | --------------------------------------------- | ---------- | ----------- |
-| 1   | Stack & architecture                          | Foundation | done        |
-| 2   | Coding standards & tooling                    | Foundation | done        |
-| 3   | Content model                                 | Foundation | done        |
-| 4   | Design system & UI foundation                 | Foundation | in-progress |
-| 5   | Site shell, home & first service page offline | Slice 1    | planned     |
-| 6   | Friday morning service page                   | Slice 2    | planned     |
-| 7   | Sabbath evening & Torah portion page          | Slice 2    | planned     |
-| 8   | Closing of Shabbat page                       | Slice 2    | planned     |
-| 9   | Content sweep of the current site             | Slice 3    | planned     |
-| 23  | Hebrew body face                              | Slice 3    | planned     |
-| 10  | High Holy Days section                        | Slice 3    | planned     |
-| 11  | Temple information & contact                  | Slice 3    | planned     |
-| 21  | Exact palette from the current site           | Slice 3    | planned     |
-| 12  | Holy Days calendar                            | Slice 4    | planned     |
-| 13  | Site search                                   | Slice 4    | planned     |
-| 14  | Product analytics                             | Slice 4    | planned     |
-| 15  | SEO, metadata & performance                   | Slice 4    | planned     |
-| 16  | Site wide offline & install                   | Slice 4    | planned     |
-| 22  | Offline PDFs                                  | Slice 4    | planned     |
-| 17  | Private Temple Treasury                       | Deferred   | planned     |
-| 18  | Attendance tracking                           | Deferred   | planned     |
-| 19  | Admin dashboard & member accounts             | Deferred   | planned     |
-| 20  | Private documents & member area               | Deferred   | planned     |
+| #   | Feature                                       | Phase      | Status  |
+| --- | --------------------------------------------- | ---------- | ------- |
+| 1   | Stack & architecture                          | Foundation | done    |
+| 2   | Coding standards & tooling                    | Foundation | done    |
+| 3   | Content model                                 | Foundation | done    |
+| 4   | Design system & UI foundation                 | Foundation | done    |
+| 5   | Site shell, home & first service page offline | Slice 1    | planned |
+| 6   | Friday morning service page                   | Slice 2    | planned |
+| 7   | Sabbath evening & Torah portion page          | Slice 2    | planned |
+| 8   | Closing of Shabbat page                       | Slice 2    | planned |
+| 9   | Content sweep of the current site             | Slice 3    | planned |
+| 23  | Hebrew body face                              | Slice 3    | planned |
+| 10  | High Holy Days section                        | Slice 3    | planned |
+| 11  | Temple information & contact                  | Slice 3    | planned |
+| 21  | Exact palette from the current site           | Slice 3    | planned |
+| 12  | Holy Days calendar                            | Slice 4    | planned |
+| 13  | Site search                                   | Slice 4    | planned |
+| 14  | Product analytics                             | Slice 4    | planned |
+| 15  | SEO, metadata & performance                   | Slice 4    | planned |
+| 16  | Site wide offline & install                   | Slice 4    | planned |
+| 22  | Offline PDFs                                  | Slice 4    | planned |
+| 17  | Private Temple Treasury                       | Deferred   | planned |
+| 18  | Attendance tracking                           | Deferred   | planned |
+| 19  | Admin dashboard & member accounts             | Deferred   | planned |
+| 20  | Private documents & member area               | Deferred   | planned |
 
 ## Foundations
 
@@ -77,7 +77,7 @@ The data model of the site, stated as content: services, pages, Holy Days and th
 - [x] Test it: `/test content model`
       Spec [0003](../specs/0003-content-model.md) · code in `src/content.config.ts`, `src/components/Video.astro`, `src/content/{services,resources}/`, `src/pages/{services,shabbatonim,resources}/`
 
-### 4. Design system & UI foundation · in-progress
+### 4. Design system & UI foundation · done
 
 The base look and building blocks every page stands on: typography that renders Hebrew script correctly, color tokens, light and dark mode, the responsive shell and navigation, and accessible base components at WCAG 2.1 AA.
 **Done when:** tokens, base components, shell, and navigation exist; light and dark modes both pass WCAG 2.1 AA; Hebrew script renders correctly in both.
@@ -91,8 +91,10 @@ The base look and building blocks every page stands on: typography that renders 
   - [x] Strict square corners: the four radius steps collapse to one `--radius` shape token set to `0`, so every control, block and image is squared, offline page included (AC-1, AC-7)
   - [x] Header brand shows the initials UCOY on phones 375 pixels and down, so the menu button keeps its room, with the full temple name kept in the link's accessible name (AC-5, AC-11)
   - [x] Sidebar slides in and out over 0.2s with the dim layer fading on the same beat, still with no JavaScript, snapping for readers who ask for less motion; one `--motion-duration` token now drives every transition on the site (AC-1, AC-5, AC-11)
-- [ ] Verify it: `/check verify design system & UI foundation`
-- [ ] Test it: `/test design system & UI foundation`
+  - [x] Banner photo paints as a fixed attachment CSS background on the band itself instead of an absolutely positioned `img`, so the picture holds still while the page scrolls past it like the temple's current site; the band scrolls the photo normally for reduced motion, drops it in print, and its height and title shadow moved to tokens so the literal scan passes (AC-1, AC-7, AC-11)
+  - [x] The menu dim layer reads a `--scrim` token instead of a raw `rgba(0, 0, 0, 0.5)`, closing the AC-1 break `/check verify` found, and the literal scan now matches `rgba(` and `hsla(` with two cases pinning the pattern so the hole cannot reopen (AC-1)
+- [x] Verify it: `/check verify design system & UI foundation` (nine of ten steps confirmed in a real Chrome on 2026-09-26; the tenth, reduced motion and Windows High Contrast, was accepted by the engineer on the strength of the shipped rules rather than run, because the tooling cannot force those two media features)
+- [x] Test it: `/test design system & UI foundation`
       Spec [0004](../specs/0004-design-system-ui-foundation/index.md) · code in `src/styles/`, `src/components/`, `src/layouts/`, `src/config/nav.ts`, `src/pages/`
 
 ## Slice 1: the first working thread

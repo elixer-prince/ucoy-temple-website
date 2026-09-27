@@ -17,6 +17,7 @@
     "verify": "npm run check && npm run build",
     "test": "vitest run",
     "test:watch": "vitest",
+    "setup:mcp": "node scripts/setup-mcp.mjs",
     "lint": "eslint .",
     "format": "prettier --write .",
     "format:check": "prettier --check .",

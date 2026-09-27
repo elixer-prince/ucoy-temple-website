@@ -60,11 +60,13 @@
   color: var(--color-accent);
 }
 
-.prose a {
+/* A button is a control, not a plain link: it keeps the accent surface and
+   the on-accent text that base.css gives it. */
+.prose a:not(.button) {
   color: var(--color-accent);
 }
 
-.prose a:hover {
+.prose a:not(.button):hover {
   color: var(--color-accent-hover);
 }
 

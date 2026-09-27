@@ -50,12 +50,42 @@ describe('AC-1 no raw literals', () => {
             .replace(/0\.15s/g, 'SPEED')
             .replace(/0\.05em/g, 'KERN')
             .replace(/0\.15em/g, 'KERN')
+          // The colour function is matched with the optional alpha suffix, so
+          // rgba( and hsla( are caught too. A bare rgb( match misses them,
+          // which let a real literal through this scan once already.
+          if (/\brgba?\(|\bhsla?\(/.test(clean)) failures.push(`${file}: ${line}`)
           if (/#[0-9a-fA-F]{3,8}\b/.test(clean)) failures.push(`${file}: ${line}`)
-          if (/\brgb\(|\bhsl\(/.test(clean)) failures.push(`${file}: ${line}`)
           if (/(?<!-)\b\d+(\.\d+)?(px|rem)\b/.test(clean)) failures.push(`${file}: ${line}`)
         }
       }
     }
     expect(failures.join('\n')).toBe('')
+  })
+
+  // The scan above reads real files, so a hole in it stays invisible until a
+  // real literal walks through. These cases pin the patterns to the shapes they
+  // are meant to catch, including the alpha forms the first version missed.
+  const colourFunctions = /\brgba?\(|\bhsla?\(/
+  it('the colour function pattern catches every alpha form', () => {
+    for (const css of [
+      'color: rgba(0, 0, 0, 0.5);',
+      'color: rgba(0 0 0 / 50%);',
+      'background: rgb(255 255 255);',
+      'color: hsla(0, 0%, 0%, 0.5);',
+      'color: hsl(0 0% 0%);'
+    ]) {
+      expect(colourFunctions.test(css)).toBe(true)
+    }
+  })
+
+  it('the colour function pattern leaves token values alone', () => {
+    for (const css of [
+      'background: var(--scrim);',
+      'background: var(--color-canvas);',
+      'color: currentColor;',
+      'background: var(--color-sidebar-bg);'
+    ]) {
+      expect(colourFunctions.test(css)).toBe(false)
+    }
   })
 })

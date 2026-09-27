@@ -51,6 +51,15 @@ export default [
       }
     }
   },
+  // Scripts under scripts/ run in Node, so process and friends are legitimate.
+  {
+    files: ['scripts/**/*.mjs'],
+    languageOptions: {
+      globals: {
+        ...globals.node
+      }
+    }
+  },
   // Declarations and type-only files are internal to the toolchain.
   {
     ignores: [

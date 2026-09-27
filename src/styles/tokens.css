@@ -147,6 +147,18 @@
   --sidebar-width: 16.5rem;
   --max-content-width: 70rem;
   --max-wide-width: 64rem;
+  /* The page banner: the shortest the band stands, and the lift that keeps
+     the white title readable over the photo. The lift is black in both
+     modes, so one value serves each theme. */
+  --banner-min-height: clamp(16rem, 38vw, 26rem);
+  --banner-text-shadow: 0 1px 8px var(--color-sidebar-bg);
+
+  /* The dim layer behind the open menu on a narrow screen. It is one value
+     for both modes because the sidebar it sits behind is black in both.
+     This is deliberately not a role: a role points at a ladder step, and a
+     ladder carries no alpha, so a translucent wash has nowhere to live up
+     there. It lives here, in the one file allowed to hold a raw value. */
+  --scrim: rgb(0 0 0 / 0.5);
 
   /* ---- Motion ----
      One duration for the whole site: the menu panel slide and its dim
