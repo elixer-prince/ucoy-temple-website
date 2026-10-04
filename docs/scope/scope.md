@@ -9,32 +9,33 @@ _These are recommendations to keep your build orderly, not requirements. Skip an
 
 ## At a glance
 
-| #   | Feature                                       | Phase      | Status  |
-| --- | --------------------------------------------- | ---------- | ------- |
-| 1   | Stack & architecture                          | Foundation | done    |
-| 2   | Coding standards & tooling                    | Foundation | done    |
-| 3   | Content model                                 | Foundation | done    |
-| 4   | Design system & UI foundation                 | Foundation | done    |
-| 5   | Site shell, home & first service page offline | Slice 1    | done    |
-| 6   | Friday service page                           | Slice 2    | done    |
-| 7   | Sabbath evening & Torah portion page          | Slice 2    | done    |
-| 8   | Closing of Shabbat page                       | Slice 2    | planned |
-| 24  | Commentary for every Torah portion            | Slice 2    | done    |
-| 9   | Content sweep of the current site             | Slice 3    | planned |
-| 23  | Hebrew body face                              | Slice 3    | planned |
-| 10  | High Holy Days section                        | Slice 3    | planned |
-| 11  | Temple information & contact                  | Slice 3    | planned |
-| 21  | Exact palette from the current site           | Slice 3    | planned |
-| 12  | Holy Days calendar                            | Slice 4    | planned |
-| 13  | Site search                                   | Slice 4    | planned |
-| 14  | Product analytics                             | Slice 4    | planned |
-| 15  | SEO, metadata & performance                   | Slice 4    | planned |
-| 16  | Site wide offline & install                   | Slice 4    | planned |
-| 22  | Offline PDFs                                  | Slice 4    | planned |
-| 17  | Private Temple Treasury                       | Deferred   | planned |
-| 18  | Attendance tracking                           | Deferred   | planned |
-| 19  | Admin dashboard & member accounts             | Deferred   | planned |
-| 20  | Private documents & member area               | Deferred   | planned |
+| #   | Feature                                       | Phase      | Status      |
+| --- | --------------------------------------------- | ---------- | ----------- |
+| 1   | Stack & architecture                          | Foundation | done        |
+| 2   | Coding standards & tooling                    | Foundation | done        |
+| 3   | Content model                                 | Foundation | done        |
+| 4   | Design system & UI foundation                 | Foundation | done        |
+| 5   | Site shell, home & first service page offline | Slice 1    | done        |
+| 6   | Friday service page                           | Slice 2    | done        |
+| 7   | Weekly Torah portion page                     | Slice 2    | done        |
+| 8   | Closing of Shabbat page                       | Slice 2    | planned     |
+| 24  | Commentary for every Torah portion            | Slice 2    | done        |
+| 9   | Content sweep of the current site             | Slice 3    | planned     |
+| 10  | High Holy Days section                        | Slice 3    | planned     |
+| 11  | Temple information & contact                  | Slice 3    | in-progress |
+| 21  | Exact palette from the current site           | Slice 3    | planned     |
+| 12  | Holy Days calendar                            | Slice 4    | planned     |
+| 13  | Site search                                   | Slice 4    | planned     |
+| 14  | Product analytics                             | Slice 4    | planned     |
+| 15  | SEO, metadata & performance                   | Slice 4    | planned     |
+| 16  | Site wide offline & install                   | Slice 4    | planned     |
+| 22  | Offline PDFs                                  | Slice 4    | planned     |
+| 25  | UI rework and style guide revamp              | Rework     | planned     |
+| 23  | Hebrew body face                              | Rework     | planned     |
+| 17  | Private Temple Treasury                       | Deferred   | planned     |
+| 18  | Attendance tracking                           | Deferred   | planned     |
+| 19  | Admin dashboard & member accounts             | Deferred   | planned     |
+| 20  | Private documents & member area               | Deferred   | planned     |
 
 ## Foundations
 
@@ -146,16 +147,16 @@ Mirror the old page completely, fill its gaps, and put it on the proven pattern.
     Tests in `src/content.files.test.ts`, `src/friday-ritual.wiring.test.ts`
 - [x] Follow up: the dead `SITE_CONFIG.services` block is gone. It held three schedule strings that no page rendered, a second copy of the schedule the temple could not edit without a rebuild. `friday-ritual.wiring.test.ts` now fails if the block returns or if any page reads it
 
-### 7. Sabbath evening & Torah portion page · done
+### 7. Weekly Torah portion page · done
 
-Same pattern; this page carries the heaviest Hebrew text of the regular services. Built as the weekly Torah portion page: the page shows this week's reading computed at build time and links to the portion's commentary (feature 24). The Sabbath evening half of the title is feature 6, built as the Friday Evening Home Ritual, so the title still names more than this feature built.
-**Done when:** every part of the old page is present and complete with its Hebrew text correct, the page works offline on a phone, and the sidebar entry for it stops reading as planned.
+The weekly reading page: which portion is read this week, its scripture references, and a link to that portion's commentary (feature 24). Retitled from "Sabbath evening & Torah portion page" once it shipped, because the Sabbath evening half of that title is feature 6, built as the Friday Evening Home Ritual.
+**Done when:** the page shows this week's reading with its references, links to that portion's commentary, works offline on a phone, and the sidebar entry for it stops reading as planned.
 
-- [x] Build it: `/develop sabbath evening & Torah portion page` (assumed decision, spec 0005, now superseded by spec 0006)
+- [x] Build it: `/develop weekly torah portion page` (assumed decision, spec 0005, now superseded by spec 0006)
   - Reading computed from the Hebrew calendar at build time (`src/lib/torah-portion.ts`); the temple timezone decides the week, the Diaspora schedule decides the reading
   - Temple teaching per portion in `src/content/portion-notes/`, paired by portion slug; a portion with no note still shows the full reading
   - `src/pages/torah-portion.astro` builds at `/torah-portion` and is in the offline precache; the sidebar entry is a link, not planned text
-  - Note: the scope title names the Sabbath evening page too, but that is feature 6 and it is already built as the Friday Evening Home Ritual
+    Spec [0006](../specs/0006-commentary-for-every-portion.md) · code in `src/lib/`, `src/pages/torah-portion.astro`
 
 ### 24. Commentary for every Torah portion · done
 
@@ -193,13 +194,6 @@ Same pattern; the last of the regular weekly services.
 
 ## Slice 3: full completeness
 
-### 23. Hebrew body face · planned · needs a decision
-
-The design system ships with no Hebrew typeface, so Hebrew falls back to whichever face the phone supplies, while the temple's material is largely Hebrew. Judge that fallback against the Sabbath evening and Torah portion passages, then either keep it or choose, license and subset a Hebrew body face, so the passages read as well as the English around them.
-**Done when:** the Hebrew in the service and Holy Day pages reads as well as the surrounding text, and the face, its licence, and its weight in the stylesheet budget are recorded.
-
-- [ ] Decide the Hebrew face (spec): `/architect hebrew body face`
-
 ### 9. Content sweep of the current site · planned
 
 Walk the current Google Site page by page and mirror anything not yet carried over, so nothing the temple published is lost, and carry the old page addresses across so links keep working. Anything sizable found here becomes its own row.
@@ -214,12 +208,15 @@ Complete the pages the old site created but never finished: one real page per Hi
 
 - [ ] Build it: `/develop high holy days section`
 
-### 11. Temple information & contact · planned · needs a decision
+### 11. Temple information & contact · in-progress
 
-Who the temple is, where and when it meets, and how to reach it, plus a simple message form and the privacy wording that names the host's request logs, the two outside services, and the theme choice kept on the device. The form needs a way to deliver messages, which is a real choice to settle in a spec.
+Who the temple is, where and when it meets, and how to reach it, plus a simple message form and the privacy wording that names the host's request logs, the two outside services, and the theme choice kept on the device. Most of this is built: the about, history, and visiting pages, the contact page, and the Formspree form, all from spec 0001 (AC-2, AC-3). What the Done when line still asks for is the privacy wording naming the host's request logs and the theme choice on the device.
 **Done when:** a first time visitor learns what the congregation is, where it meets, and when services happen, and a message sent from the contact page reaches the temple.
 
-- [ ] Decide the form approach (spec): `/architect temple information & contact`
+- [x] Decide the form approach (spec): `/architect temple information & contact`, settled inside spec 0001 as Formspree, no separate spec needed
+- [ ] Build it: `/develop temple information & contact`
+  - `src/pages/contact.astro`, `src/content/pages/{about,history,visiting}.md`, and the `SITE_CONFIG` values behind them are done
+  - Remaining: the privacy wording must also name the host's request logs and the theme choice under `ucoy-theme`, and the real email, address, and endpoint come from env vars the temple supplies
 
 ### 21. Exact palette from the current site · planned
 
@@ -271,6 +268,23 @@ The temple's booklets are deliberately kept out of the precache, so a booklet a 
 **Done when:** a booklet a member has never opened opens with no connection, and the precache stays inside a size budget recorded in the spec.
 
 - [ ] Decide the PDF precache (spec): `/architect offline pdfs`
+
+## Rework: the look, after the features
+
+### 25. UI rework and style guide revamp · planned
+
+A pass over the whole look once the features have landed, using the extra material and information you will have by then: the style guide rebuilt to show the revised system, the palette and typography settled, and the Hebrew face decision (feature 23) taken as part of the same work rather than separately.
+**Done when:** the style guide shows the revised system, the palette and type are settled, the Hebrew face is decided and recorded, and every page still passes both colour modes and the literal scan.
+
+- [ ] Decide the rework's scope (spec): `/architect ui rework and style guide revamp`
+- [ ] Build it: `/develop ui rework and style guide revamp`
+
+### 23. Hebrew body face · planned · needs a decision
+
+The design system ships with no Hebrew typeface, so Hebrew falls back to whichever face the phone supplies, while the temple's material is largely Hebrew. Judge that fallback against the Sabbath evening and Torah portion passages, then either keep it or choose, license and subset a Hebrew body face, so the passages read as well as the English around them. Decided inside feature 25, not on its own.
+**Done when:** the Hebrew in the service and Holy Day pages reads as well as the surrounding text, and the face, its licence, and its weight in the stylesheet budget are recorded.
+
+- [ ] Decide the Hebrew face (spec): `/architect ui rework and style guide revamp`
 
 ## Deferred
 
