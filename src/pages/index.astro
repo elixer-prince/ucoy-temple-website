@@ -26,6 +26,13 @@ const recentAnnouncements = announcements
   .sort((a, b) => b.data.date.valueOf() - a.data.date.valueOf())
   .slice(0, 3)
 
+// Weekly services, for the service times list. Read from the same collection
+// the service pages are built from, so the home page and the pages themselves
+// can never disagree about a day or a time (scope feature 5).
+const weeklyServices = (await getCollection('services', ({ data }) => data.kind === 'weekly')).sort(
+  (a, b) => a.data.order - b.data.order || a.data.title.localeCompare(b.data.title)
+)
+
 // Build the Google Calendar embed URL (AC-2: agenda view, temple timezone).
 const calendarUrl =
   'https://calendar.google.com/calendar/embed?' +
@@ -71,30 +78,28 @@ const calendarUrl =
     </div>
   </section>
 
-  <!-- Service schedule overview -->
+  <!-- Service schedule overview, built from the services collection -->
   <section class="service-times">
     <div class="prose">
       <Panel title="Service times" tone="plain">
-        <table>
-          <tbody>
-            <tr>
-              <td>Friday morning</td>
-              <td>9:00 AM</td>
-            </tr>
-            <tr>
-              <td>Friday evening (Kabbalat Shabbat)</td>
-              <td>At sunset</td>
-            </tr>
-            <tr>
-              <td>Shabbat morning (Shacharit)</td>
-              <td>9:30 AM</td>
-            </tr>
-            <tr>
-              <td>Havdalah (Closing of Shabbat)</td>
-              <td>After dark</td>
-            </tr>
-          </tbody>
-        </table>
+        {weeklyServices.length > 0 ? (
+          <ul class="service-list">
+            {weeklyServices.map((service) => (
+              <li class="service-row">
+                <a class="service-link" href={`/services/${service.id}`}>
+                  {service.data.title}
+                </a>
+                {(service.data.day || service.data.time) && (
+                  <span class="service-when text-muted">
+                    {[service.data.day, service.data.time].filter(Boolean).join(' · ')}
+                  </span>
+                )}
+              </li>
+            ))}
+          </ul>
+        ) : (
+          <p class="text-muted">Service times are being updated. Please check back soon.</p>
+        )}
 
         <p class="text-muted">
           Times shift with the seasons. See the
@@ -184,8 +189,31 @@ const calendarUrl =
     padding: var(--space-xl) 0;
   }
 
-  .service-times table {
-    margin-bottom: var(--space-xs);
+  /* The list is the service times, so it reads as a table of links without
+     being one: the title leads, the day and time sit after it in muted text. */
+  .service-list {
+    list-style: none;
+    padding-inline-start: 0;
+    margin: 0 0 var(--space-xs) 0;
+  }
+
+  .service-row {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: baseline;
+    justify-content: space-between;
+    gap: var(--space-3xs) var(--space-s);
+    padding: var(--space-2xs) 0;
+    border-bottom: var(--border-width) solid var(--color-border);
+  }
+
+  .service-row:last-child {
+    border-bottom: none;
+  }
+
+  .service-when {
+    font-size: var(--text-small);
+    white-space: nowrap;
   }
 
   .announcements {

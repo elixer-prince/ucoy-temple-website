@@ -21,12 +21,13 @@ This is the public website for the United Congregation of Yisra'Yah, a temple re
 - `src/config/nav.ts` is the single source of the sidebar menu; the two service groups build themselves from the service files by `kind`, so a new `.mdx` appears in the menu with no code change
 - `/style-guide` (`src/pages/style-guide.astro`) shows the whole system for eye review; it carries `noindex`, is unlinked from the menu, and must stay out of the sitemap and the search index
 - `integrations/precache-manifest.mjs` writes `dist/sw-manifest.json` after each build so the hand written service worker can pre-cache shell HTML, stylesheets, scripts, fonts, and images. Video (`.mp4`) and PDFs are deliberately left out of the pre-cache
-- `docs/scope/scope.md` is the feature trail map with 20 features across foundation, four slices, and a deferred list
+- `docs/scope/scope.md` is the feature trail map with 23 features across foundation, four slices, and a deferred list
 - `docs/specs/0001-adopt-static-site-stack.md` records the stack decision and acceptance criteria
 - `docs/specs/0002-coding-standards-and-tooling.md` records the coding standards and tooling decisions
 - `docs/specs/0003-content-model.md` records the content model: one `services` collection with videos inline in an MDX body, and a `resources` collection for PDFs
 - `docs/specs/0004-design-system-ui-foundation/` records the design system decision (index, rationale, and a `verify.md` acceptance checklist): the two token layers, both modes, the sidebar shell, the blocks, and the style guide
 - `src/components/Icon.astro` is the site's only icon source: sharp outline SVGs at a fixed stroke width, drawn in `currentColor`, with no icon package and no icon font
+- `src/worker-sandbox.ts` loads the real `public/sw.js` into a `node:vm` context with stand ins for the Cache API, so `sw-navigation.test.ts` and `sw-media.test.ts` drive real requests through the shipped worker rather than reimplementing it, and a regression in the worker file fails those tests. `content.files.test.ts` guards the content files' front matter and body shape, `content.schema.test.ts` the collection schemas, and `home.service-times.test.ts` the home page reading its times from content
 - `src/layouts/Layout.astro` holds the shell: the fixed, self-scrolling black sidebar, the content column, and the theme switch that cycles System, Light, Dark
 - `public/` holds `favicon.png`, `_headers`, `offline.html`, and `sw.js` (the hand written service worker), plus `videos/` and `pdfs/` for the local media
 - Skills are installed and pinned in `skills-lock.json`: architect, astro-framework, audit, check, debug, develop, document, scope, sync, test, web-perf, wrangler
@@ -37,6 +38,7 @@ This is the public website for the United Congregation of Yisra'Yah, a temple re
 - Content lives as text files in the repository, every change is a commit, no database or content API
 - Upcoming events come from the temple's Google Calendar, not from the repository
 - A service (weekly or Shabbaton) is one `.mdx` file under `src/content/services/`; `kind` decides the area and route, and the written order of the body is the order the service runs in
+- Any page that lists services reads the `services` collection, so a day or a time lives in exactly one content file; no page hardcodes a service time or names a service as plain text instead of linking its page
 - A video goes inline in a service body as `<Video src="/videos/…" />` with no import line; `caption` and `poster` are optional
 - Service bodies start at `##`, because the front-matter title is the page's only `h1`
 - A PDF lives under `public/pdfs/` and is linked through its resource page (`/resources/<slug>`), never by its `public/` path
@@ -54,7 +56,7 @@ This is the public website for the United Congregation of Yisra'Yah, a temple re
 
 - `npm run dev` — start the Astro dev server
 - `npm run build` — build the static site
-- `npm run preview` — preview the built site locally
+- `npm run preview` — preview the built site locally. It cannot verify the offline promise: the worker registers behind `import.meta.env.PROD`, which preview sets false, and preview answers `/sw-manifest.json` with the 404 page, so the worker installs holding only `/offline.html`. Serve `dist/` over a plain static server (for example `npx http-server dist -p 5077`) to exercise the service worker and airplane mode
 - `npm run check` — run Astro check (TypeScript)
 - `npm run verify` — check and build together (the Beta gate before test)
 - `npm run lint` — run ESLint across the project

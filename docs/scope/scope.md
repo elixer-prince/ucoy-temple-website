@@ -15,7 +15,7 @@ _These are recommendations to keep your build orderly, not requirements. Skip an
 | 2   | Coding standards & tooling                    | Foundation | done    |
 | 3   | Content model                                 | Foundation | done    |
 | 4   | Design system & UI foundation                 | Foundation | done    |
-| 5   | Site shell, home & first service page offline | Slice 1    | planned |
+| 5   | Site shell, home & first service page offline | Slice 1    | done    |
 | 6   | Friday morning service page                   | Slice 2    | planned |
 | 7   | Sabbath evening & Torah portion page          | Slice 2    | planned |
 | 8   | Closing of Shabbat page                       | Slice 2    | planned |
@@ -99,12 +99,19 @@ The base look and building blocks every page stands on: typography that renders 
 
 ## Slice 1: the first working thread
 
-### 5. Site shell, home & first service page offline · planned
+### 5. Site shell, home & first service page offline · done
 
-The thinnest real path through the whole loop, content files to built page to phone, with no connection, working. The home page is real but simple (welcome, service times, navigation), and one regular service page (I suggest Sabbath morning service as the most used; pick whichever you prefer) is complete with real content and its video playing from local hosting. This proves the pattern every later page repeats.
-**Done when:** on a phone in airplane mode, a member opens the site, reaches the service page, reads every text including Hebrew, and plays its video from local hosting.
+The thinnest real path through the whole loop, content files to built page to phone, with no connection, working. The home page is real but simple (welcome, service times, navigation), and one regular service page is complete with real content and its videos playing from local hosting. The chosen page is the Sabbath morning service: its file `src/content/services/shabbat-morning-service.mdx` already carries two `Video` calls in a full body, so it is the shortest honest proof of the pattern every later page repeats.
+**Done when:** on a phone in airplane mode, a member opens the site, reaches the Sabbath morning service page, reads every text including Hebrew, and plays its videos from local hosting.
 
-- [ ] Build it: `/develop site shell, home & first service page offline`
+- [x] Build it: `/develop site shell, home & first service page offline`
+  - [x] Home service times read from the `services` collection instead of a hardcoded table, so a day or a time lives in one file
+  - [x] Sabbath morning body carries real Hebrew: a full passage as a `lang="he" dir="rtl"` block and a phrase inside English as `dir="auto"` on a span
+  - [x] Member walks the whole path on a phone in airplane mode: home, the service page, every text including Hebrew, both videos playing (confirmed 2026-10-03 in Chrome at 390 pixels wide, network cut, served from `dist` over a static server; the worker precached 33 shell files and both videos played from the media cache)
+- [x] Verify it: `/check verify site shell, home & first service page offline` (seven behaviors met; the literal scan and the full suite pass, which the earlier session could not run)
+- [x] Test it: `/test site shell, home & first service page offline` (20 new tests across `src/home.service-times.test.ts` and `src/content.files.test.ts`; 99 tests pass in all, build green)
+      Code in `src/pages/index.astro`, `src/content/services/shabbat-morning-service.mdx`
+      Tests in `src/home.service-times.test.ts`, `src/content.files.test.ts`
 
 ## Slice 2: the regular service pages
 

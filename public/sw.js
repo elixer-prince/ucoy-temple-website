@@ -141,12 +141,18 @@ async function precacheShell() {
  *
  * This keeps pages fast on repeat visits while letting first-time
  * visitors get the content online.
+ *
+ * A page is built as a directory index: the file for /services is
+ * /services/index.html. The Cache API matches on the exact URL, so a request for
+ * /services does not match the cached /services/index.html and a member offline
+ * would land on the fallback page even though the page is in the cache. So a
+ * miss retries the directory index form before giving up.
  */
 async function respondToNavigation(request) {
   const cache = await caches.open(SHELL_CACHE)
 
   // 1. Cache-first: serve the precached page immediately.
-  const cached = await cache.match(request)
+  const cached = await matchPage(cache, request)
   if (cached) return cached
 
   // 2. Cache miss — try the network.
@@ -168,34 +174,112 @@ async function respondToNavigation(request) {
 }
 
 /**
+ * Finds a cached page for a navigation request, trying the directory index form
+ * as well. `/` resolves to `/index.html`, and `/services/shabbat-morning-service`
+ * to `/services/shabbat-morning-service/index.html`.
+ */
+async function matchPage(cache, request) {
+  const direct = await cache.match(request)
+  if (direct) return direct
+
+  const url = new URL(request.url)
+  const indexPath = `${url.pathname.replace(/\/$/, '')}/index.html`
+  return cache.match(indexPath)
+}
+
+/**
  * Handle media requests (video/audio).
  *
- * Strategy: network-first, cache on success.
- *   1. Fetch from the network.
- *   2. If successful, cache a copy so the video plays from local
- *      hosting on subsequent visits (spec 0001, AC-7).
+ * Strategy: network-first, keep a copy only when the download arrives whole.
+ *   1. Fetch from the network and hand that answer back untouched.
+ *   2. When it holds the whole file, cache a copy so the video plays from
+ *      local hosting on subsequent visits (spec 0001, AC-7).
  *   3. If the network fails, fall back to the cache.
  *
  * Video is NOT precached at install time — it is left to the network
  * first path, as the spec requires.
+ *
+ * A media element does not ask for a plain URL: it sends a `Range` header, so
+ * the server answers 206 Partial Content. The Cache API refuses to store a 206,
+ * so the old `if (response.ok)` guard let the store attempt through — 206 counts
+ * as ok — and the rejection then landed in the same try as the fetch. That made
+ * a working download look like a dead network, and every video request was
+ * answered with an empty 503: the player reported
+ * `MEDIA_ELEMENT_ERROR: code 4` for a file that was never at fault.
+ *
+ * Two rules keep that from coming back. A copy is only attempted for a whole
+ * file, and a copy that fails is never allowed to replace the answer.
  */
 async function respondToMedia(request) {
   try {
     const response = await fetch(request)
-    if (response.ok) {
-      const cache = await caches.open(MEDIA_CACHE)
-      await cache.put(request, response.clone())
+
+    if (isWholeFile(response)) {
+      try {
+        await storeMedia(request, response)
+      } catch (error) {
+        // A copy we could not keep is no reason to withhold the download.
+        console.warn('Service worker could not cache media', request.url, error)
+      }
     }
+
     return response
   } catch {
     // Network failed — try the cache.
     const cache = await caches.open(MEDIA_CACHE)
-    const cached = await cache.match(request)
+    const cached = await cache.match(mediaKey(request))
     if (cached) return cached
 
     // No cached copy and no network.
     return new Response('', { status: 503, statusText: 'Service Unavailable' })
   }
+}
+
+/**
+ * Returns true when a response holds the entire file.
+ *
+ * A plain 200 is whole by definition. A 206 is whole when its `Content-Range`
+ * spans the entity, which is how a server answers Chromium's `Range: bytes=0-`:
+ * a complete download wearing a partial status. A narrower range is left alone,
+ * because a member scrolling a long video asks for many of them.
+ */
+function isWholeFile(response) {
+  if (response.status === 200) return true
+  if (response.status !== 206) return false
+
+  const match = /^bytes (\d+)-(\d+)\/(\d+)$/.exec(response.headers.get('Content-Range') ?? '')
+  if (!match) return false
+
+  const start = Number(match[1])
+  const end = Number(match[2])
+  const total = Number(match[3])
+
+  return start === 0 && end === total - 1
+}
+
+/**
+ * The cache key for a media file: the plain URL, with whatever `Range` header
+ * the request carried dropped, so one stored download answers every ask.
+ */
+function mediaKey(request) {
+  return new URL(request.url).href
+}
+
+/**
+ * Stores a whole download under the plain URL for the next visit.
+ *
+ * A 206 cannot go into the cache as it stands, so the body is rewrapped as a
+ * plain 200 and the range specific header is dropped with it.
+ */
+async function storeMedia(request, response) {
+  const headers = new Headers(response.headers)
+  headers.delete('Content-Range')
+
+  const cache = await caches.open(MEDIA_CACHE)
+  await cache.put(
+    mediaKey(request),
+    new Response(response.clone().body, { status: 200, statusText: 'OK', headers })
+  )
 }
 
 /**

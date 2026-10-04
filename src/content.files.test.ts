@@ -131,6 +131,48 @@ describe('AC-3: Body headings start at ## level (front matter title is the only 
   })
 })
 
+describe('feature 5: the Sabbath morning body carries real Hebrew', () => {
+  // A member must be able to read every text on the page including Hebrew
+  // (scope feature 5). The direction rules are the project's: a full passage
+  // is a block with lang="he" and dir="rtl", a phrase inside English carries
+  // dir="auto" on a span, and prose.css alone styles both.
+  const body = getBody(
+    readFileSync(join(contentDir, 'services/shabbat-morning-service.mdx'), 'utf-8')
+  )
+
+  it('marks a full Hebrew passage as a right to left block', () => {
+    expect(body).toContain('<div lang="he" dir="rtl">')
+  })
+
+  it('uses a block element for the passage, never an inline one', () => {
+    // The regression: a span wrapping the passage let MDX put a <p> inside it,
+    // which is invalid HTML and loses the block styling from prose.css.
+    expect(body).not.toMatch(/<span[^>]*lang="he"/)
+    expect(body).not.toMatch(/<span[^>]*dir="rtl"/)
+  })
+
+  it('writes Hebrew script inside that block, not a transliteration', () => {
+    const block = body.match(/<div lang="he" dir="rtl">([\s\S]*?)<\/div>/)?.[1] ?? ''
+    expect(block).toMatch(/[֐-׿]/)
+    expect(block).not.toMatch(/Shema Yisrael/)
+  })
+
+  it('marks a Hebrew phrase inside English with dir="auto" on a span', () => {
+    expect(body).toMatch(/<span dir="auto">/)
+  })
+
+  it('gives the inline span Hebrew script too', () => {
+    const span = body.match(/<span dir="auto">([\s\S]*?)<\/span>/)?.[1] ?? ''
+    expect(span).toMatch(/[֐-׿]/)
+  })
+
+  it('carries no direction rule of its own, so prose.css owns direction', () => {
+    // A page level rule would fork the one place Hebrew direction is defined.
+    expect(body).not.toMatch(/direction:\s*rtl/)
+    expect(body).not.toMatch(/text-align:\s*right/)
+  })
+})
+
 describe('AC-6: Resource links go through resource pages', () => {
   it('prayer-booklet.md validates against resources schema', () => {
     const file = readFileSync(join(contentDir, 'resources/prayer-booklet.md'), 'utf-8')
