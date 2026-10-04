@@ -1,7 +1,7 @@
 /**
  * Content collection schemas (spec 0001, AC-1 / AC-6; spec 0003).
  *
- * Four collections:
+ * Five collections:
  *  - pages:        static content pages (about, history, visiting) rendered
  *                  through the [...slug].astro dynamic route.
  *  - announcements: time-stamped bulletins listed newest-first on the
@@ -10,6 +10,9 @@
  *                  together, separated by the `kind` field. Body authored as
  *                  MDX so a <Video> can sit inline where the service needs it.
  *  - resources:    the temple's PDFs, each with its own page and a listing.
+ *  - portionNotes: the temple's commentary for a Torah portion, keyed by the
+ *                  portion slug. The reading itself is computed at build time,
+ *                  so only the authored prose lives here (scope feature 24).
  *
  * Uses Astro 7 Content Layer API (glob loaders) and astro/zod for
  * type-safe schemas.
@@ -101,4 +104,48 @@ const resources = defineCollection({
   })
 })
 
-export const collections = { pages, announcements, services, resources }
+/**
+ * The temple's commentary on a Torah portion (scope feature 24, spec 0006).
+ *
+ * The reading itself is computed from the Hebrew calendar at build time, so it
+ * never needs a file. What does need the temple's hand is the teaching that goes
+ * with it, which is one piece of authored prose per portion. The file id is the
+ * portion slug the calendar produces (`bereshit`, `matot`), so the page pairs a
+ * commentary to a portion with no mapping table to keep in step.
+ *
+ * A portion with no file is normal, not broken: the page shows the reading and
+ * says no commentary has been written yet. That is why `title` is the only
+ * required field, and why nothing here is a date.
+ *
+ * The schema cannot express the paper's shape on its own, because a commentary
+ * is a fixed sequence of sections rather than a bag of fields. The headings live
+ * in the body and are checked by a test instead, so an authoring slip fails the
+ * build rather than shipping a page that reads oddly.
+ */
+const portionNotes = defineCollection({
+  loader: glob({
+    base: './src/content/portion-notes',
+    pattern: '**/*.{md,mdx}'
+  }),
+  schema: z
+    .object({
+      title: z.string().min(1, 'Title is required'),
+      description: z.string().max(160).optional(),
+      order: z.number().int().nonnegative().default(0),
+      /**
+       * Gospel reference, such as `John 1:1-14`. Absent means the Gospel
+       * section is not rendered at all, which is the normal case: the
+       * congregation does not currently read the Gospel.
+       */
+      gospel: z.string().min(1).optional(),
+      /** Heading for the Gospel passage, such as `Gospel` or `John 1`. */
+      gospelTitle: z.string().min(1).optional()
+    })
+    .refine((data) => !data.gospel || Boolean(data.gospelTitle), {
+      message:
+        'gospelTitle is required when gospel is set, so the section never renders with an empty heading',
+      path: ['gospelTitle']
+    })
+})
+
+export const collections = { pages, announcements, services, resources, portionNotes }

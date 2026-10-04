@@ -28,6 +28,22 @@ const resourcesSchema = z.object({
   order: z.number().int().nonnegative().default(0)
 })
 
+// The portionNotes schema from src/content.config.ts, including the refinement
+// that pairs a Gospel reference with its heading.
+const portionNotesSchema = z
+  .object({
+    title: z.string().min(1, 'Title is required'),
+    description: z.string().max(160).optional(),
+    order: z.number().int().nonnegative().default(0),
+    gospel: z.string().min(1).optional(),
+    gospelTitle: z.string().min(1).optional()
+  })
+  .refine((data) => !data.gospel || Boolean(data.gospelTitle), {
+    message:
+      'gospelTitle is required when gospel is set, so the section never renders with an empty heading',
+    path: ['gospelTitle']
+  })
+
 describe('AC-1: services schema', () => {
   it('accepts a weekly service with every optional field filled', () => {
     const result = servicesSchema.safeParse({
@@ -142,6 +158,54 @@ describe('AC-1: resources schema', () => {
     if (result.success) {
       expect(result.data.file.startsWith('/')).toBe(true)
     }
+  })
+})
+
+describe('feature 24: the Gospel reference and its heading travel together', () => {
+  it('accepts a commentary with neither, which is the normal case', () => {
+    // The Congregation does not currently read the Gospel, so the common file
+    // carries nothing about it and the Gospel section simply is not rendered.
+    const result = portionNotesSchema.safeParse({ title: 'Bereshit' })
+    expect(result.success).toBe(true)
+    if (result.success) {
+      expect(result.data.gospel).toBeUndefined()
+      expect(result.data.gospelTitle).toBeUndefined()
+    }
+  })
+
+  it('accepts a commentary with both', () => {
+    const result = portionNotesSchema.safeParse({
+      title: 'Noach',
+      gospel: 'John 1:1-14',
+      gospelTitle: 'John 1'
+    })
+    expect(result.success).toBe(true)
+    if (result.success) expect(result.data.gospel).toBe('John 1:1-14')
+  })
+
+  it('rejects a Gospel reference with no heading beside it', () => {
+    // The rule this pair protects: a Gospel section with nothing to title it
+    // renders a heading a member reads as a mistake, even though the passage
+    // itself is right. Catching it at the schema means the build fails rather
+    // than publishing the odd looking page.
+    const result = portionNotesSchema.safeParse({ title: 'Noach', gospel: 'John 1:1-14' })
+    expect(result.success).toBe(false)
+    if (!result.success) {
+      expect(result.error.issues[0]?.path).toEqual(['gospelTitle'])
+      expect(result.error.issues[0]?.message).toContain('empty heading')
+    }
+  })
+
+  it('allows a heading on its own, which renders nothing on its own', () => {
+    // Harmless, and worth pinning: an author who prepares the heading before the
+    // reference should not be blocked. The page keys the section off `gospel`, so
+    // a stray `gospelTitle` renders nothing.
+    const result = portionNotesSchema.safeParse({ title: 'Noach', gospelTitle: 'John 1' })
+    expect(result.success).toBe(true)
+  })
+
+  it('requires a title, like every other collection', () => {
+    expect(portionNotesSchema.safeParse({}).success).toBe(false)
   })
 })
 

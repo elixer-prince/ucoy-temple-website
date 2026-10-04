@@ -25,6 +25,8 @@
   },
   "dependencies": {
     "@astrojs/mdx": "^8.0.1",
+    "@hebcal/core": "^6.11.1",
+    "@hebcal/leyning": "^10.0.2",
     "astro": "^7.3.3"
   },
   "devDependencies": {

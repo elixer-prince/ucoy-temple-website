@@ -1,0 +1,326 @@
+---
+/**
+ * This Week's Torah Portion (scope feature 7, extended by scope feature 24).
+ *
+ * The one page on the site whose content changes every week, so it is not a
+ * content file the way a service body is. The reading comes from the Hebrew
+ * calendar through `src/lib/torah-portion.ts` at build time. The commentary for
+ * that portion is not printed here: it has its own permanent page at
+ * `/portion/<slug>`, and this page links to it.
+ *
+ * The Hebrew name and the Hebrew date are the site's heaviest Hebrew, so both
+ * are marked as right to left blocks and styled by prose.css. No direction rule
+ * is written on this page, which is the rule spec 0004 set: direction is owned
+ * by the stylesheet, never by a page.
+ */
+import Layout from '@layouts/Layout.astro'
+import Callout from '@components/Callout.astro'
+import Panel from '@components/Panel.astro'
+import Tag from '@components/Tag.astro'
+import { SITE_CONFIG } from '@/config/site'
+import { getUpcomingPortions, getWeeklyPortion } from '@/lib/torah-portion'
+import { slugForWeeklyReading } from '@/lib/portion-cycle'
+
+/**
+ * How many weeks to show coming up. Four is a fortnight plus a week, which is
+ * long enough to plan a Torah class around and short enough to stay honest when
+ * a festival moves the schedule.
+ */
+const UPCOMING_WEEKS = 4
+
+const timeZone = SITE_CONFIG.calendarTimezone
+const portion = getWeeklyPortion(timeZone)
+const upcoming = getUpcomingPortions(timeZone, UPCOMING_WEEKS)
+
+/**
+ * Where this week's commentary lives.
+ *
+ * On a doubled week the calendar hands back a combined slug such as
+ * `matot-masei`, and there is no page at that address, because the commentary
+ * pages are one per portion. The helper maps the doubled slug back to the first
+ * portion of the pair, so the link always lands on a page that exists.
+ */
+const commentarySlug = slugForWeeklyReading(portion.slug)
+
+/** `Saturday, 3 October 2026`, for the byline under the page title. */
+const shabbatLong = portion.shabbatDate.toLocaleDateString('en-GB', {
+  weekday: 'long',
+  day: 'numeric',
+  month: 'long',
+  year: 'numeric',
+  timeZone: 'UTC'
+})
+
+/** `3 Oct 2026`, for the coming weeks list where space is tight. */
+function shortDate(date: Date): string {
+  return date.toLocaleDateString('en-GB', {
+    day: 'numeric',
+    month: 'short',
+    year: 'numeric',
+    timeZone: 'UTC'
+  })
+}
+---
+
+<Layout
+  title="This Week's Torah Portion"
+  description={`The Torah portion read on ${shabbatLong}, ${portion.summary}, with the aliyot and the Haftarah.`}
+>
+  <div class="prose">
+    <article class="portion">
+      <header class="portion-header">
+        <h1>This Week's Torah Portion</h1>
+        <p class="portion-when text-muted">
+          Read on {shabbatLong} · <span dir="auto">{portion.hebrewDateHe}</span>
+        </p>
+      </header>
+
+      <!-- The portion name, in both scripts. The Hebrew is a block so it takes
+           the right to left treatment from prose.css (spec 0004, AC-7). -->
+      <div class="portion-name">
+        <p class="portion-name-he" lang="he" dir="rtl">
+          {portion.nameHe}
+        </p>
+        <p class="portion-name-en">{portion.nameEn}</p>
+        {portion.summary && <p class="portion-summary text-muted">{portion.summary}</p>}
+      </div>
+
+      {portion.isSpecial && (
+        <Callout title="A special reading this Shabbat">
+          <p>
+            This Shabbat is a festival, so the regular weekly portion is not read. The Congregation
+            reads {portion.nameEn} instead.
+          </p>
+        </Callout>
+      )}
+
+      {/*
+        The commentary lives on the portion's own page, not here. This page is
+        the week; that one is the portion, and it is where the Congregation's
+        full commentary is written and where it will be revised. A member who
+        wants to study wants the whole thing, and a page that changes every week
+        is the wrong place to keep it.
+
+        The link is present even when no commentary has been written, because the
+        portion page then carries the reading and says plainly that the commentary
+        is not there yet. Silence here would read as nothing to study on.
+      */}
+      {commentarySlug && (
+        <section class="portion-teaching">
+          <h2>Commentary for {portion.nameEn}</h2>
+          <p class="lead">
+            The Congregation's commentary on this portion is on its own page, where it stays the
+            same whichever week it comes round.
+          </p>
+          <p>
+            <a class="button" href={`/portion/${commentarySlug}`}>
+              Read the commentary on {portion.nameEn}
+            </a>
+          </p>
+        </section>
+      )}
+      <!-- The reading itself: the seven aliyot then the maftir, in the order they
+           are called, so a member can find today's passage without guessing. -->
+      <section class="aliyot">
+        <h2>The aliyot</h2>
+        <p class="text-muted">
+          Seven portions are called from the scroll, followed by the maftir, and then the Haftarah
+          from the Prophets.
+        </p>
+
+        <table class="aliyah-table">
+          <thead>
+            <tr>
+              <th scope="col">Aliyah</th>
+              <th scope="col">Book</th>
+              <th scope="col">Verses</th>
+              <th scope="col">Lines</th>
+            </tr>
+          </thead>
+          <tbody>
+            {portion.aliyot.map((aliyah) => (
+              <tr>
+                <th scope="row">{aliyah.label}</th>
+                <td>{aliyah.book}</td>
+                <td class="aliyah-reference">
+                  {aliyah.begin}–{aliyah.end}
+                </td>
+                <td class="aliyah-verses">{aliyah.verses ?? ''}</td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+
+        {/* A passage that differs from the usual customing says so, rather than
+            leaving a reader to wonder why the scroll was opened differently. */}
+        {portion.aliyot.some((aliyah) => aliyah.reason) && (
+          <p class="aliyah-note text-muted">
+            {portion.aliyot
+              .filter((aliyah) => aliyah.reason)
+              .map((aliyah) => `${aliyah.label}: ${aliyah.reason}`)
+              .join('. ')}
+          </p>
+        )}
+      </section>
+
+      {portion.haftarah && (
+        <Panel title="The Haftarah" as="section">
+          {/* The citation carries the book and verses already, so it is not
+              repeated underneath. Only the reason is added, and only when the
+              week calls for a different Haftarah. */}
+          <p class="haftarah-summary">{portion.haftarah.summary}</p>
+          {portion.haftarah.reason && (
+            <p class="text-muted">This week: {portion.haftarah.reason}.</p>
+          )}
+        </Panel>
+      )}
+
+      <!-- Looking ahead, so a member can plan a class or a family reading. -->
+      {upcoming.length > 0 && (
+        <section class="coming">
+          <h2>Coming weeks</h2>
+          <ul class="coming-list">
+            {upcoming.map((week) => (
+              <li class="coming-item">
+                <span class="coming-date text-muted">{shortDate(week.shabbatDate)}</span>
+                <span class="coming-name">
+                  {week.nameEn}
+                  {week.isSpecial && <Tag label="Special reading" />}
+                </span>
+                <span class="coming-summary text-muted">{week.summary}</span>
+              </li>
+            ))}
+          </ul>
+          <p class="text-muted">
+            The portion is worked out from the Hebrew calendar each time the site is built, so it
+            always names the reading for the week it is read in.
+          </p>
+        </section>
+      )}
+
+      <p>
+        The weekly portion is read from the scroll at our Shabbat morning service, chanted in Hebrew
+        and then read again in English. Visitors are always welcome, and the
+        <a href="/services/shabbat-morning-service">order of that service</a> is on this site.
+      </p>
+    </article>
+  </div>
+</Layout>
+
+<style>
+  .portion-header {
+    margin-bottom: var(--space-m);
+  }
+
+  .portion-when {
+    font-size: var(--text-caption);
+    margin-bottom: var(--space-3xs);
+  }
+
+  /* The portion name is the one thing on the page that has to be readable at a
+     glance, so it gets the largest text the content column allows rather than a
+     heading size. */
+  .portion-name {
+    border-block: var(--border-width) solid var(--color-border);
+    padding: var(--space-s) 0;
+    margin: 0 0 var(--space-l) 0;
+  }
+
+  .portion-name-he {
+    font-family: var(--font-serif);
+    font-size: var(--text-title);
+    line-height: var(--heading-line-height);
+    margin: 0 0 var(--space-3xs) 0;
+  }
+
+  .portion-name-en {
+    font-family: var(--font-serif);
+    font-size: var(--text-subtitle);
+    margin: 0 0 var(--space-3xs) 0;
+  }
+
+  .portion-summary {
+    font-size: var(--text-caption);
+    margin: 0;
+  }
+
+  .lead {
+    font-size: var(--text-lead);
+    line-height: var(--body-line-height);
+    color: var(--color-text-muted);
+  }
+
+  /* The table scrolls sideways on a narrow phone rather than forcing the whole
+     page to, so a long citation never widens the reading column. */
+  .aliyah-table {
+    display: block;
+    overflow-x: auto;
+    width: 100%;
+    border-collapse: collapse;
+    margin: 0 0 var(--space-s) 0;
+  }
+
+  .aliyah-table th,
+  .aliyah-table td {
+    padding: var(--space-2xs) var(--space-xs);
+    border: var(--border-width) solid var(--color-border);
+    text-align: start;
+    white-space: nowrap;
+  }
+
+  .aliyah-table thead th {
+    background: var(--color-surface);
+    color: var(--color-text);
+  }
+
+  .aliyah-reference {
+    font-variant-numeric: tabular-nums;
+  }
+
+  .aliyah-verses {
+    text-align: end;
+    font-variant-numeric: tabular-nums;
+  }
+
+  .aliyah-note {
+    font-size: var(--text-caption);
+  }
+
+  .haftarah-summary {
+    font-family: var(--font-serif);
+    font-size: var(--text-subtitle);
+    margin: 0 0 var(--space-2xs) 0;
+  }
+
+  .coming-list {
+    list-style: none;
+    padding-left: 0;
+  }
+
+  .coming-item {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--space-2xs) var(--space-s);
+    align-items: baseline;
+    border-bottom: var(--border-width) solid var(--color-border);
+    padding: var(--space-2xs) 0;
+  }
+
+  .coming-item:last-child {
+    border-bottom: none;
+  }
+
+  .coming-date {
+    font-size: var(--text-caption);
+    font-variant-numeric: tabular-nums;
+  }
+
+  .coming-name {
+    font-weight: 700;
+  }
+
+  .coming-summary {
+    font-size: var(--text-caption);
+    margin-left: auto;
+  }
+</style>

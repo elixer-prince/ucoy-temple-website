@@ -1,0 +1,421 @@
+---
+/**
+ * One Torah portion's commentary, at a permanent address (scope feature 24,
+ * spec 0006).
+ *
+ * This is the second half of scope feature 7. The weekly page answers "what is
+ * read this week", which is a different question and cannot answer this one: a
+ * member who remembers a portion from years ago needs an address that still
+ * works. So every one of the 53 weekly portions has a page here, whether or not
+ * the Congregation has written anything about it yet.
+ *
+ * Two things the page deliberately does not take from the content file.
+ *
+ * The reading is computed, never authored. The aliyot, the maftir and the
+ * Haftarah come from `src/lib/portion-cycle.ts`, which resolves each portion
+ * from a reference year in which it is read on its own. A commentary is long
+ * lived and gets revised, so a hand typed citation inside it is exactly the
+ * thing that quietly goes stale; the build owns the part most likely to rot.
+ *
+ * The outline's Torah and Prophets lines are computed the same way. Only the
+ * Gospel reference is authored, because no calendar can derive it.
+ *
+ * A portion with no commentary file still gets a full page: the reading, then a
+ * plain notice naming the portion. Silence would read as "there is nothing to
+ * say", which is a different statement from "we have not written it yet".
+ *
+ * Direction stays where spec 0004 put it. `src/styles/prose.css` owns every
+ * direction rule, and this page writes none of its own, so the Hebrew passages
+ * an author writes as `lang="he" dir="rtl"` blocks are all that is needed.
+ */
+import { getCollection, render } from 'astro:content'
+import Layout from '@layouts/Layout.astro'
+import Callout from '@components/Callout.astro'
+import Panel from '@components/Panel.astro'
+import {
+  allPortionSlugs,
+  getCycleNeighbours,
+  getPortionBySlug,
+  type CyclePortion
+} from '@/lib/portion-cycle'
+
+/**
+ * Every portion has a page, not only the ones with a commentary.
+ *
+ * Generating the paths from the calendar rather than from the collection is the
+ * load bearing decision on this route. If a path came from a file, the address a
+ * member bookmarked would disappear the day the file was renamed, and AC-3's
+ * notice could never render, because a portion with no file would have no page
+ * to put it on. Fifty three pages, of which one or two carry a commentary today,
+ * is the shape the congregation actually has.
+ */
+export function getStaticPaths() {
+  return allPortionSlugs().map((slug) => ({
+    params: { slug },
+    props: { portion: getPortionBySlug(slug)! }
+  }))
+}
+
+interface Props {
+  portion: CyclePortion
+}
+
+const { portion } = Astro.props
+
+// The commentary file, matched on the portion slug, which is also the file id.
+const notes = await getCollection('portionNotes')
+const note = notes.find((entry) => entry.id === portion.slug)
+const { Content } = note ? await render(note) : { Content: undefined }
+
+const { previous, next } = getCycleNeighbours(portion)
+
+/**
+ * How many portions the cycle holds, counted rather than written down.
+ *
+ * The routes above are generated from `allPortionSlugs()`, so a number typed into
+ * the byline would be a second, independent statement of how many portions there
+ * are. They agree today, and would stop agreeing the moment the cycle changed:
+ * the pages would be rebuilt from the library while the page kept telling members
+ * "of 53" about a cycle of some other length, with nothing to notice. Reading the
+ * length from the same list the routes come from makes the two impossible to
+ * separate.
+ */
+const cycleSize = allPortionSlugs().length
+
+/**
+ * The page description falls back to the computed citation.
+ *
+ * The fallback is the citation rather than a fixed string because the citation is
+ * always correct and always present, whereas an authored one would need
+ * maintaining for nothing. A description is not visible on the page, so there is
+ * no reason to ask the temple to keep it up to date.
+ */
+const description =
+  note?.data.description ??
+  `The reading for ${portion.nameEn}, ${portion.summary}, with the aliyot and the Haftarah.`
+
+/** `Saturday, 4 October 2025`, the date of the reading this page shows. */
+const referenceDate = portion.shabbatDate.toLocaleDateString('en-GB', {
+  weekday: 'long',
+  day: 'numeric',
+  month: 'long',
+  year: 'numeric',
+  timeZone: 'UTC'
+})
+---
+
+<Layout title={`${portion.nameEn} · Torah Portion Commentary`} description={description}>
+  <div class="prose">
+    <article class="portion">
+      <header class="portion-header">
+        <h1>{portion.nameEn}</h1>
+        <p class="portion-when text-muted">
+          Portion {portion.index + 1} of {cycleSize} in the annual cycle
+        </p>
+      </header>
+
+      {/* The portion name in both scripts. The Hebrew is a block, so it takes
+           the right to left treatment from prose.css and this page writes no
+           direction rule of its own (spec 0004, AC-7). */}
+      <div class="portion-name">
+        <p class="portion-name-he" lang="he" dir="rtl">
+          {portion.nameHe}
+        </p>
+        <p class="portion-name-en">{portion.nameEn}</p>
+        {portion.summary && <p class="portion-summary text-muted">{portion.summary}</p>}
+      </div>
+
+      {/*
+        The byline names the reference year rather than a week. This page is not
+        this week's reading, and a member comparing it with the scroll in front of
+        them needs to know that, so the year is stated plainly rather than
+        implying the reading is current.
+      */}
+      <p class="reference-note text-muted">
+        This page shows the reading as it was set for <span dir="auto">{referenceDate}</span>,{' '}
+        <span dir="auto">{portion.hebrewDateHe}</span>, in Hebrew year {portion.referenceYear}. The
+        references below are worked out from the Hebrew calendar each time the site is built, not
+        typed by hand.
+      </p>
+
+      {portion.isSpecial && (
+        <Callout title="A special reading">
+          <p>
+            This portion fell on a festival Shabbat in its reference year, so the reading carries a
+            special customing.
+          </p>
+        </Callout>
+      )}
+
+      {/*
+        Section 3, the computed reading. Titled "The reading" rather than "This
+        week's reading", because it is not this week's: naming it so would invite
+        a member to compare it with the scroll in front of them and find a
+        difference.
+      */}
+      <section class="reading">
+        <h2>The reading</h2>
+        <p class="text-muted">
+          Seven portions are called from the scroll, followed by the maftir, and then the Haftarah
+          from the Prophets.
+        </p>
+
+        <table class="aliyah-table">
+          <thead>
+            <tr>
+              <th scope="col">Aliyah</th>
+              <th scope="col">Book</th>
+              <th scope="col">Verses</th>
+              <th scope="col">Lines</th>
+            </tr>
+          </thead>
+          <tbody>
+            {portion.aliyot.map((aliyah) => (
+              <tr>
+                <th scope="row">{aliyah.label}</th>
+                <td>{aliyah.book}</td>
+                <td class="aliyah-reference">
+                  {aliyah.begin}–{aliyah.end}
+                </td>
+                <td class="aliyah-verses">{aliyah.verses ?? ''}</td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+
+        {/* A passage that differs from the usual customing says so, rather than
+            leaving a reader to wonder why the scroll was opened differently. */}
+        {portion.aliyot.some((aliyah) => aliyah.reason) && (
+          <p class="aliyah-note text-muted">
+            {portion.aliyot
+              .filter((aliyah) => aliyah.reason)
+              .map((aliyah) => `${aliyah.label}: ${aliyah.reason}`)
+              .join('. ')}
+          </p>
+        )}
+      </section>
+
+      {portion.haftarah && (
+        <Panel title="The Haftarah" as="section">
+          {/* The citation carries the book and verses already, so it is not
+              repeated underneath. Only the reason is added, and only when the
+              reading calls for a different Haftarah. */}
+          <p class="haftarah-summary">{portion.haftarah.summary}</p>
+          {portion.haftarah.reason && (
+            <p class="text-muted">This reading: {portion.haftarah.reason}.</p>
+          )}
+        </Panel>
+      )}
+
+      {/*
+        Section 4, the outline. Torah and Prophets are computed, so the file can
+        neither supply them nor contradict them. Gospel is authored, and the whole
+        line is absent when it has not been supplied, rather than rendering an
+        empty heading where nothing follows it.
+      */}
+      <Panel title="The outline" tone="tint" as="section">
+        <dl class="outline">
+          <div class="outline-row">
+            <dt>Torah</dt>
+            <dd>{portion.summary}</dd>
+          </div>
+          <div class="outline-row">
+            <dt>Prophets</dt>
+            <dd>{portion.haftarah?.summary ?? 'Not set'}</dd>
+          </div>
+          {note?.data.gospel && (
+            <div class="outline-row">
+              <dt>{note.data.gospelTitle}</dt>
+              <dd>{note.data.gospel}</dd>
+            </div>
+          )}
+        </dl>
+      </Panel>
+
+      {/*
+        Sections 5 to 7, the temple's own commentary in the paper's order. Nothing
+        in this group renders at all without a file, which is what keeps the
+        unwritten notice from leaving gaps and half headings on the page.
+      */}
+      {note && Content ? (
+        <section class="commentary">
+          <Content />
+        </section>
+      ) : (
+        <Callout title="No commentary written yet">
+          <p>
+            The Congregation has not written a commentary for {portion.nameEn} yet. The reading is
+            above, and the portion is read at our Shabbat morning service in Hebrew and then again
+            in English.
+          </p>
+          <p>
+            <a href="/torah-portion">This week's Torah portion</a> shows what is being read now.
+          </p>
+        </Callout>
+      )}
+
+      {/* Section 8, reading onward. The wrap is handled in the module, so the last
+           portion links to the first rather than to nowhere. */}
+      <nav class="cycle" aria-label="Portions either side of this one">
+        <a class="cycle-link cycle-previous" href={`/portion/${previous.slug}`}>
+          <span class="cycle-label text-muted">Previous portion</span>
+          <span class="cycle-name">{previous.nameEn}</span>
+        </a>
+        <a class="cycle-link cycle-next" href={`/portion/${next.slug}`}>
+          <span class="cycle-label text-muted">Next portion</span>
+          <span class="cycle-name">{next.nameEn}</span>
+        </a>
+      </nav>
+    </article>
+  </div>
+</Layout>
+
+<style>
+  .portion-header {
+    margin-bottom: var(--space-m);
+  }
+
+  .portion-when {
+    font-size: var(--text-caption);
+    margin-bottom: var(--space-3xs);
+  }
+
+  /* The portion name is the one thing on the page that has to be readable at a
+     glance, so it gets the largest text the content column allows rather than a
+     heading size. */
+  .portion-name {
+    border-block: var(--border-width) solid var(--color-border);
+    padding: var(--space-s) 0;
+    margin: 0 0 var(--space-l) 0;
+  }
+
+  .portion-name-he {
+    font-family: var(--font-serif);
+    font-size: var(--text-title);
+    line-height: var(--heading-line-height);
+    margin: 0 0 var(--space-3xs) 0;
+  }
+
+  .portion-name-en {
+    font-family: var(--font-serif);
+    font-size: var(--text-subtitle);
+    margin: 0 0 var(--space-3xs) 0;
+  }
+
+  .portion-summary {
+    font-size: var(--text-caption);
+    margin: 0;
+  }
+
+  .reference-note {
+    font-size: var(--text-caption);
+  }
+
+  /* The table scrolls sideways on a narrow phone rather than forcing the whole
+     page to, so a long citation never widens the reading column. */
+  .aliyah-table {
+    display: block;
+    overflow-x: auto;
+    width: 100%;
+    border-collapse: collapse;
+    margin: 0 0 var(--space-s) 0;
+  }
+
+  .aliyah-table th,
+  .aliyah-table td {
+    padding: var(--space-2xs) var(--space-xs);
+    border: var(--border-width) solid var(--color-border);
+    text-align: start;
+    white-space: nowrap;
+  }
+
+  .aliyah-table thead th {
+    background: var(--color-surface);
+    color: var(--color-text);
+  }
+
+  .aliyah-reference {
+    font-variant-numeric: tabular-nums;
+  }
+
+  .aliyah-verses {
+    text-align: end;
+    font-variant-numeric: tabular-nums;
+  }
+
+  .aliyah-note {
+    font-size: var(--text-caption);
+  }
+
+  .haftarah-summary {
+    font-family: var(--font-serif);
+    font-size: var(--text-subtitle);
+    margin: 0 0 var(--space-2xs) 0;
+  }
+
+  /* The outline is a set of labelled values rather than prose, so each term sits
+     above its value. The rows are `div` elements, which is what lets the term and
+     its value stay together when the column is narrow. */
+  .outline {
+    margin: 0;
+  }
+
+  .outline-row {
+    padding-block: var(--space-3xs);
+  }
+
+  .outline-row + .outline-row {
+    border-top: var(--border-width) solid var(--color-border);
+  }
+
+  .outline dt {
+    font-size: var(--text-caption);
+    color: var(--color-text-muted);
+  }
+
+  .outline dd {
+    margin: 0;
+    font-family: var(--font-serif);
+  }
+
+  /* The previous and next links are a matched pair, with the labels above the
+     names so both read the same way round on a narrow screen. */
+  .cycle {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: space-between;
+    gap: var(--space-s);
+    border-top: var(--border-width) solid var(--color-border);
+    padding-top: var(--space-s);
+    margin-top: var(--space-l);
+  }
+
+  .cycle-link {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-3xs);
+    text-decoration: none;
+    padding: var(--space-2xs) 0;
+  }
+
+  .cycle-next {
+    text-align: end;
+  }
+
+  .cycle-label {
+    font-size: var(--text-small);
+  }
+
+  .cycle-name {
+    font-family: var(--font-serif);
+    font-size: var(--text-subtitle);
+    color: var(--color-accent);
+  }
+
+  /* Underline is the only cue on these links, which is deliberate: it survives
+     forced colours mode, where the accent colour may be overridden entirely. */
+  .cycle-link:hover .cycle-name,
+  .cycle-link:focus-visible .cycle-name {
+    text-decoration: underline;
+  }
+</style>
