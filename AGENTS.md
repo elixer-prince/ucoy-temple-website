@@ -13,22 +13,24 @@ This is the public website for the United Congregation of Yisra'Yah, a temple re
 ## What exists now
 
 - `astro.config.mjs` configures static output, the two font families (Roboto for sans and body, Oswald for display), the `mdx` integration for service bodies, and the `precacheManifest` integration
-- `src/content.config.ts` defines the four content collections: `pages` and `announcements` (unchanged), plus `services` (weekly services and Shabbatonim, told apart by `kind`, authored as `.mdx`) and `resources` (the temple's PDFs)
+- `src/content.config.ts` defines the five content collections: `pages` and `announcements` (unchanged), plus `services` (weekly services and Shabbatonim, told apart by `kind`, authored as `.mdx`), `resources` (the temple's PDFs), and `portionNotes` (the temple's commentary for a Torah portion, keyed by portion slug, so only authored prose lives in a file)
 - `src/components/Video.astro` is the site's own player, called inline as `<Video src="…" />` inside a service body with no import of its own; the service routes pass it into the rendered content
 - `src/pages/services/` and `src/pages/shabbatonim/` hold a landing page plus a `[slug]` route for each area; `src/pages/resources/` does the same for the PDFs
 - `src/styles/tokens.css` is the single value source: a numbered ladder per hue (`grey`, `royal-gold`, `hebrew-red`, `kosher-blue`, steps 50 to 950, plus black and white) feeding a small set of named roles that every stylesheet consumes; `src/styles/tokens.test.ts` and `src/styles/literals.test.ts` lock the AA contrast of both modes, the role coverage, and the ban on raw values
 - The reusable blocks (`Banner`, `Callout`, `Figure`, `Panel`, `PdfLink`, `Sidebar`, `SkipLink`, `Tag`) live in `src/components/` alongside `Video` and `Icon`; content styling lives in `src/styles/prose.css`
 - `src/config/nav.ts` is the single source of the sidebar menu; the two service groups build themselves from the service files by `kind`, so a new `.mdx` appears in the menu with no code change
 - Two weekly services are built so far: `shabbat-morning-service.mdx` and `friday-evening-home-ritual.mdx`. The temple keeps no Friday morning service, so the Friday page is the evening home ritual, and `src/config/site.ts` holds no schedule of its own
-- `/style-guide` (`src/pages/style-guide.astro`) shows the whole system for eye review; it carries `noindex`, is unlinked from the menu, and must stay out of the sitemap and the search index
+- `src/lib/torah-portion.ts` and `src/lib/portion-cycle.ts` compute the week's reading and each portion's citations at build time from `@hebcal/core` and `@hebcal/leyning`, so a reading is never a content file; `/torah-portion` shows this week and links to `/portion/<slug>`, which exists for all 53 weekly portions whether or not a commentary has been written
+- `/style-guide` (`src/pages/style-guide.astro`) shows the whole system for eye review; it carries `noindex`, is unlinked from the menu, and must stay out of the sitemap and the search index. It is scheduled for a revamp after the features land, together with the Hebrew body face decision (feature 23), so treat the current style guide and the Hebrew fallback as provisional
 - `integrations/precache-manifest.mjs` writes `dist/sw-manifest.json` after each build so the hand written service worker can pre-cache shell HTML, stylesheets, scripts, fonts, and images. Video (`.mp4`) and PDFs are deliberately left out of the pre-cache
-- `docs/scope/scope.md` is the feature trail map with 23 features across foundation, four slices, and a deferred list
+- `docs/scope/scope.md` is the feature trail map with 24 features across foundation, four slices, and a deferred list
 - `docs/specs/0001-adopt-static-site-stack.md` records the stack decision and acceptance criteria
 - `docs/specs/0002-coding-standards-and-tooling.md` records the coding standards and tooling decisions
 - `docs/specs/0003-content-model.md` records the content model: one `services` collection with videos inline in an MDX body, and a `resources` collection for PDFs
 - `docs/specs/0004-design-system-ui-foundation/` records the design system decision (index, rationale, and a `verify.md` acceptance checklist): the two token layers, both modes, the sidebar shell, the blocks, and the style guide
+- `docs/specs/0005-build-time-torah-portion.md` is superseded by 0006; `docs/specs/0006-commentary-for-every-portion.md` records the commentary model and the 53 portion routes
 - `src/components/Icon.astro` is the site's only icon source: sharp outline SVGs at a fixed stroke width, drawn in `currentColor`, with no icon package and no icon font
-- `src/worker-sandbox.ts` loads the real `public/sw.js` into a `node:vm` context with stand ins for the Cache API, so `sw-navigation.test.ts` and `sw-media.test.ts` drive real requests through the shipped worker rather than reimplementing it, and a regression in the worker file fails those tests. `content.files.test.ts` guards the content files' front matter and body shape, `content.schema.test.ts` the collection schemas, `home.service-times.test.ts` the home page reading its times from content, and `friday-ritual.wiring.test.ts` the service menu building from content by `kind` with no hand written schedule anywhere in `src/config/site.ts`
+- `src/worker-sandbox.ts` loads the real `public/sw.js` into a `node:vm` context with stand ins for the Cache API, so `sw-navigation.test.ts` and `sw-media.test.ts` drive real requests through the shipped worker rather than reimplementing it, and a regression in the worker file fails those tests. `content.files.test.ts` guards the content files' front matter and body shape, `content.schema.test.ts` the collection schemas, `commentary.shape.test.ts` every commentary file's slug being one the site publishes, `home.service-times.test.ts` the home page reading its times from content, `friday-ritual.wiring.test.ts` the service menu building from content by `kind` with no hand written schedule anywhere in `src/config/site.ts`, and `torah-portion.wiring.test.ts` with `src/lib/*.test.ts` the portion page and the build time reading
 - `src/layouts/Layout.astro` holds the shell: the fixed, self-scrolling black sidebar, the content column, and the theme switch that cycles System, Light, Dark
 - `public/` holds `favicon.png`, `_headers`, `offline.html`, and `sw.js` (the hand written service worker), plus `videos/` and `pdfs/` for the local media
 - Skills are installed and pinned in `skills-lock.json`: architect, astro-framework, audit, check, debug, develop, document, scope, sync, test, web-perf, wrangler
@@ -37,6 +39,8 @@ This is the public website for the United Congregation of Yisra'Yah, a temple re
 ## Key conventions
 
 - Content lives as text files in the repository, every change is a commit, no database or content API
+- Service and portion page wording written so far is placeholder prose standing in for the temple's own words; feature 9 (content sweep) replaces it from the current site, so do not treat the current wording as the temple's and do not build further pages by copying it
+- A UI rework comes after the features land. It covers the style guide and the Hebrew body face decision (feature 23), so the current style guide, palette, and Hebrew fallback are all provisional and may change under it
 - Upcoming events come from the temple's Google Calendar, not from the repository
 - A service (weekly or Shabbaton) is one `.mdx` file under `src/content/services/`; `kind` decides the area and route, and the written order of the body is the order the service runs in
 - Any page that lists services reads the `services` collection, so a day or a time lives in exactly one content file; no page hardcodes a service time or names a service as plain text instead of linking its page
@@ -116,6 +120,7 @@ Three servers are wanted:
 - Stack spec: `docs/specs/0001-adopt-static-site-stack.md`
 - Content model spec: `docs/specs/0003-content-model.md`
 - Design system spec, rationale, and verify checklist: `docs/specs/0004-design-system-ui-foundation/`
+- Commentary model and the 53 portion routes: `docs/specs/0006-commentary-for-every-portion.md`
 - Content collections and their schemas: `src/content.config.ts`
 - Sample service, Shabbaton, and resource: `src/content/services/` and `src/content/resources/`
 - Astro config (fonts, output, integrations): `astro.config.mjs`

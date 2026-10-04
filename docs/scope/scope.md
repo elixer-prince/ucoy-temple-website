@@ -17,8 +17,9 @@ _These are recommendations to keep your build orderly, not requirements. Skip an
 | 4   | Design system & UI foundation                 | Foundation | done    |
 | 5   | Site shell, home & first service page offline | Slice 1    | done    |
 | 6   | Friday service page                           | Slice 2    | done    |
-| 7   | Sabbath evening & Torah portion page          | Slice 2    | planned |
+| 7   | Sabbath evening & Torah portion page          | Slice 2    | done    |
 | 8   | Closing of Shabbat page                       | Slice 2    | planned |
+| 24  | Commentary for every Torah portion            | Slice 2    | done    |
 | 9   | Content sweep of the current site             | Slice 3    | planned |
 | 23  | Hebrew body face                              | Slice 3    | planned |
 | 10  | High Holy Days section                        | Slice 3    | planned |
@@ -145,12 +146,43 @@ Mirror the old page completely, fill its gaps, and put it on the proven pattern.
     Tests in `src/content.files.test.ts`, `src/friday-ritual.wiring.test.ts`
 - [x] Follow up: the dead `SITE_CONFIG.services` block is gone. It held three schedule strings that no page rendered, a second copy of the schedule the temple could not edit without a rebuild. `friday-ritual.wiring.test.ts` now fails if the block returns or if any page reads it
 
-### 7. Sabbath evening & Torah portion page · planned
+### 7. Sabbath evening & Torah portion page · done
 
-Same pattern; this page carries the heaviest Hebrew text of the regular services.
+Same pattern; this page carries the heaviest Hebrew text of the regular services. Built as the weekly Torah portion page: the page shows this week's reading computed at build time and links to the portion's commentary (feature 24). The Sabbath evening half of the title is feature 6, built as the Friday Evening Home Ritual, so the title still names more than this feature built.
 **Done when:** every part of the old page is present and complete with its Hebrew text correct, the page works offline on a phone, and the sidebar entry for it stops reading as planned.
 
-- [ ] Build it: `/develop sabbath evening & Torah portion page`
+- [x] Build it: `/develop sabbath evening & Torah portion page` (assumed decision, spec 0005, now superseded by spec 0006)
+  - Reading computed from the Hebrew calendar at build time (`src/lib/torah-portion.ts`); the temple timezone decides the week, the Diaspora schedule decides the reading
+  - Temple teaching per portion in `src/content/portion-notes/`, paired by portion slug; a portion with no note still shows the full reading
+  - `src/pages/torah-portion.astro` builds at `/torah-portion` and is in the offline precache; the sidebar entry is a link, not planned text
+  - Note: the scope title names the Sabbath evening page too, but that is feature 6 and it is already built as the Friday Evening Home Ritual
+
+### 24. Commentary for every Torah portion · done
+
+The temple's own commentary for each of the 53 weekly portions, moved from paper onto the site at `/portion/<slug>`, with the scripture references computed so they cannot go stale. The weekly page links to that week's commentary. Sections follow the paper's template, and the Gospel section is optional per portion.
+**Done when:** a member can reach this week's commentary in one tap from `/torah-portion`, read it in full on a phone with no connection, and every portion has a stable address that works in any year.
+
+- [x] Decide the commentary model (spec): `/architect sabbath evening & Torah portion page`
+- [x] Build it: `/develop commentary for every portion` (spec 0006)
+  - `/portion/[slug]` for all 53 weekly portions, not only the written ones, so a bookmarked address never disappears and the unwritten notice has a page to sit on
+  - Paths come from `parshiot` in the calendar module, not from the collection, so all 53 addresses exist from the first build and a new commentary file fills one in with no code change. The spec's earlier line that removing a file makes the route disappear contradicted AC-3 and was corrected during `/architect`
+  - 53 rather than 54, because `parshiot`'s last entry is Vezot Haberakhah, read on Simchat Torah and never as a weekly parashah. AC-1 now says 53
+  - `src/lib/portion-cycle.ts` resolves each portion from a reference year in which it stands alone. Seven pairs are read doubled in some years, so an arbitrary year would show `Matot` with a combined reading. The reference year starts at a fixed 5780 so the citations do not drift with the build date
+  - Outline shows computed Torah and Prophets; Gospel is authored in front matter and the whole line is absent without it
+  - `bereshit.md` rewritten onto the paper's six section template; the weekly page now links to the commentary instead of printing it
+  - Festival Sabbats return no slug, so a weekly page on Shmini Atzeret shows the special reading and no commentary link, because no portion is read that day and there is no page to link to. AC-2 was narrowed to say so
+  - [x] Verify it: `/check verify commentary for every portion`
+  - Every criterion met against the built site over a static server. AC-2 needed a second pass: the first run found the weekly page showed no commentary link on a doubled Achrei Mot and Kedoshim Shabbat, because `slugForWeeklyReading` split the slug on hyphens and `achrei` and `mot` are not portion slugs. Fixed to match the whole slug against neighbouring pairs, and pinned by three tests
+  - AC-10 proven properly: all 53 pages were driven through the real `public/sw.js` in the project's worker sandbox with a network that throws, at both the full path and the bare path. All served from the precache, so the offline promise is now real evidence rather than a manifest listing
+  - Not exercised, no browser tools available that run: screenshots, keyboard order, narrow phone layout, reduced motion, high contrast
+- [x] Test it: `/test commentary for every portion` (231 passing, 13 files)
+  - 24 new tests across 4 files, plus 3 from the earlier fix. All passing
+  - `src/content/commentary.shape.test.ts`: every commentary file's id must be a slug the site publishes. This was the owed item from `/check verify`; proven to bite by adding a file named `noah.md`, which fails with a readable message
+  - `src/content.schema.test.ts`: the `portionNotes` schema, including the rule that a Gospel reference needs a heading beside it, asserted against the real zod shape rather than as a string in the source
+  - `src/sw-navigation.test.ts`: all 53 portion pages driven through the real worker with a dead network, at both address forms, from the manifest a build wrote. The offline promise is now a test, not a manual check
+  - `src/torah-portion.wiring.test.ts`: the portion page's own conventions, direction, tokens, table headers, navigation label, and the conditional Gospel row
+  - The last test written caught a real bug: the page typed `53` into its byline while its routes came from `allPortionSlugs()`. Fixed in `/debug`, the byline now reads the length from the same list the routes come from, proven by shortening the cycle to 52 and watching the page follow
+  - Not covered: visual and interaction behaviour (screenshots, keyboard order, narrow phone layout, reduced motion, high contrast) cannot be automated here, and the Chrome tools were not connected during that run
 
 ### 8. Closing of Shabbat page · planned
 
