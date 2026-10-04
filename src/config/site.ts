@@ -47,14 +47,6 @@ export const SITE_CONFIG = {
   /** Cloudflare Web Analytics beacon token (empty = analytics disabled). */
   cfAnalyticsToken: CF_ANALYTICS_TOKEN ?? '',
 
-  // Service schedule (for the home page; full times live on each service page)
-  services: {
-    fridayMorning: 'Friday morning service — see schedule',
-    shabbatMorning: 'Shabbat morning service — see schedule',
-    shabbatEvening: 'Friday evening service — see schedule',
-    havdalah: 'Saturday evening — see schedule'
-  },
-
   // Meeting location
   location: {
     name: "United Congregation of Yisra'Yah",

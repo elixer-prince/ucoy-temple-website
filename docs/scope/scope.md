@@ -16,7 +16,7 @@ _These are recommendations to keep your build orderly, not requirements. Skip an
 | 3   | Content model                                 | Foundation | done    |
 | 4   | Design system & UI foundation                 | Foundation | done    |
 | 5   | Site shell, home & first service page offline | Slice 1    | done    |
-| 6   | Friday morning service page                   | Slice 2    | planned |
+| 6   | Friday service page                           | Slice 2    | done    |
 | 7   | Sabbath evening & Torah portion page          | Slice 2    | planned |
 | 8   | Closing of Shabbat page                       | Slice 2    | planned |
 | 9   | Content sweep of the current site             | Slice 3    | planned |
@@ -115,12 +115,35 @@ The thinnest real path through the whole loop, content files to built page to ph
 
 ## Slice 2: the regular service pages
 
-### 6. Friday morning service page · planned
+### 6. Friday service page · done
 
 Mirror the old page completely, fill its gaps, and put it on the proven pattern. The current site's Friday entry is a Friday evening home ritual and no Friday morning service, so settle which service this page mirrors before writing it.
 **Done when:** every part of the old page is present and complete, and the page works offline on a phone.
 
-- [ ] Build it: `/develop friday morning service page`
+- [x] Build it: `/develop friday morning service page`
+  - Settled the open question: the page mirrors the Friday evening home ritual, the temple's actual Friday entry, not a Friday morning service. The scope row and the `fridayMorning` slot in `src/config/site.ts` were the only places still claiming a Friday morning service
+  - Body written as one `.mdx` service file in the order the ritual is kept, with the candle blessing as a `lang="he"` `dir="rtl"` block and `שבת קודש` as a `dir="auto"` span, so it follows the same Hebrew rules as the Shabbat morning body
+  - No `<Video>` on this page yet: `public/videos/` holds no Friday evening asset, and pointing at a missing file would break the offline promise. The temple's recording drops in as one added line
+  - `visiting.md` no longer advertises a Friday morning service at 9:00 AM, which contradicted the built page, and points at `/services` instead
+  - Built at `/services/friday-evening-home-ritual/`; page listed in `sw-manifest.json` for offline (counts and gate results for this step are under `Verify it` and `Test it` below)
+    Code in `src/content/services/friday-evening-home-ritual.mdx`, `src/content/pages/visiting.md`
+- [x] Verify it: `/check verify friday service page` (eight behaviors met, evidence in the run: served from `dist` over a static server, read in Chrome at 320 and 390 pixels wide)
+  - Page renders the full ritual: one `h1`, five `h2` sections, 12 paragraphs, zero console errors (`.tmp-friday.png`)
+  - Hebrew handled both ways: the candle blessing computes `direction: rtl` as a `lang="he"` block, and `שבת קודש` stays inside its English sentence as a `dir="auto"` span
+  - Offline promise proven for real, not by a flag: the worker reached `activated` and took control, the page sat in the `shell-v2` cache, the server process was then killed on port 5077 and confirmed dead, and the reload still rendered the whole page served by the service worker (`.tmp-offline-real.png`, `.tmp-offline-real.json`)
+  - Phone widths clean: `scrollWidth` equals `innerWidth` at 320 and 390, so nothing scrolls sideways (`.tmp-320.png`)
+  - Both colour modes render: dark on `rgb(20,21,27)` with `rgb(243,242,237)` text, light on `rgb(251,250,247)` with `rgb(25,26,32)`, and the Hebrew block stays `rtl` in dark mode (`.tmp-dark.png`)
+  - Reachable everywhere it belongs: linked from the services index, the home page, the sidebar, and `visiting.md`, and it sorts first in the sidebar weekly group ahead of Shabbat morning
+  - First Tab stop is the skip link to `#main-content`
+  - No dead links: no `/dates` or `/torah-portion` on the page, and `visiting.md` no longer says "Friday morning"
+  - Gate after the run: `astro check` 0 errors, 0 warnings, build complete, 99 tests pass across 8 files. The `MODULE_LEVEL_DIRECTIVE` build warning appears on all three service files, so it is pre-existing and not from this page
+  - Left open: no Friday recording, so no `<Video>` on the page yet
+- [x] Test it: `/test friday service page` (31 new tests, 132 pass in all across 9 files; `astro check` 0 errors and 0 warnings, ESLint and build green)
+  - `src/content.files.test.ts` guards the content itself: schema and `kind`, day and time, the description limit, order below Shabbat morning, the body starting at `##`, both Hebrew directions with real Hebrew script, the five headings in the order the ritual is kept, and no `<Video>`
+  - A new case walks every service file and fails if any `<Video>` names a file that is not in `public/`. That is the offline promise in one assertion, and it is the check a missing Friday recording will trip when one is added
+  - `src/friday-ritual.wiring.test.ts` guards the wiring: the sidebar builds its groups from the collection by `kind` and sorts by order, no page or component names the Friday slug literally, and `visiting.md` promises no Friday morning service
+    Tests in `src/content.files.test.ts`, `src/friday-ritual.wiring.test.ts`
+- [x] Follow up: the dead `SITE_CONFIG.services` block is gone. It held three schedule strings that no page rendered, a second copy of the schedule the temple could not edit without a rebuild. `friday-ritual.wiring.test.ts` now fails if the block returns or if any page reads it
 
 ### 7. Sabbath evening & Torah portion page · planned
 

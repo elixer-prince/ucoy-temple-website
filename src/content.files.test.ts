@@ -8,7 +8,7 @@
  */
 import { describe, it, expect } from 'vitest'
 import { z } from 'astro/zod'
-import { readFileSync } from 'node:fs'
+import { existsSync, readFileSync, readdirSync } from 'node:fs'
 import { join } from 'node:path'
 
 const servicesSchema = z.object({
@@ -189,5 +189,144 @@ describe('AC-6: Resource links go through resource pages', () => {
     const file = readFileSync(join(contentDir, 'services/shabbat-morning-service.mdx'), 'utf-8')
     expect(file).toContain('](/resources/prayer-booklet)')
     expect(file).not.toContain('/pdfs/prayer-booklet.pdf')
+  })
+})
+describe('feature 6: the Friday evening home ritual file', () => {
+  // The old page was a Friday morning service that never existed. The real
+  // entry is a Friday evening home ritual, so the page is one weekly service
+  // file whose id decides its address under /services.
+  const file = readFileSync(join(contentDir, 'services/friday-evening-home-ritual.mdx'), 'utf-8')
+  const body = getBody(file)
+
+  it('is a valid weekly service, so it builds under /services and not shabbatonim', () => {
+    const result = servicesSchema.safeParse(parseFrontMatter(file))
+    expect(result.success).toBe(true)
+    if (result.success) {
+      expect(result.data.kind).toBe('weekly')
+      expect(result.data.title).toBe('Friday Evening Home Ritual')
+    }
+  })
+
+  it('keeps a description within the schema limit, so it can be a page summary', () => {
+    const description = parseFrontMatter(file).description
+    expect(typeof description).toBe('string')
+    expect((description as string).length).toBeLessThanOrEqual(160)
+  })
+
+  it('states the day and time as the temple keeps them', () => {
+    const fm = parseFrontMatter(file)
+    expect(fm.day).toBe('Friday evening')
+    expect(fm.time).toBe('Before sunset')
+  })
+
+  it('sorts ahead of Shabbat morning in the weekly listing', () => {
+    // order 0 against Shabbat morning's 1, so a reader meets Friday first on
+    // /services, the home page, and the sidebar, which all share this order.
+    const friday = parseFrontMatter(file)
+    const morning = parseFrontMatter(
+      readFileSync(join(contentDir, 'services/shabbat-morning-service.mdx'), 'utf-8')
+    )
+    expect(friday.order).toBe(0)
+    expect(friday.order).toBeLessThan(morning.order as number)
+  })
+
+  it('starts the body at ## , so the front matter title stays the only h1', () => {
+    expect(body.match(/^(#{1,6}\s)/m)?.[1]).toBe('## ')
+    expect(body).not.toMatch(/^#\s/)
+  })
+
+  it('names no Friday morning service anywhere in the body', () => {
+    // The regression: the old page and the scope row both claimed a Friday
+    // morning service that the temple does not keep.
+    expect(body).not.toMatch(/Friday morning/i)
+  })
+})
+
+describe('feature 6: the Friday body carries real Hebrew in both directions', () => {
+  const body = getBody(
+    readFileSync(join(contentDir, 'services/friday-evening-home-ritual.mdx'), 'utf-8')
+  )
+
+  it('marks the candle blessing as a right to left block', () => {
+    expect(body).toContain('<div lang="he" dir="rtl">')
+  })
+
+  it('uses a block element for the passage, never an inline one', () => {
+    // The regression: a span let MDX put a <p> inside it, which is invalid HTML
+    // and loses the block styling from prose.css.
+    expect(body).not.toMatch(/<span[^>]*lang="he"/)
+    expect(body).not.toMatch(/<span[^>]*dir="rtl"/)
+  })
+
+  it('writes Hebrew script inside that block', () => {
+    const block = body.match(/<div lang="he" dir="rtl">([\s\S]*?)<\/div>/)?.[1] ?? ''
+    expect(block).toMatch(/[֐-׿]/)
+  })
+
+  it('marks the Hebrew phrase inside English with dir="auto" on a span', () => {
+    expect(body).toMatch(/<span dir="auto">/)
+    const span = body.match(/<span dir="auto">([\s\S]*?)<\/span>/)?.[1] ?? ''
+    expect(span).toMatch(/[֐-׿]/)
+  })
+
+  it('carries no direction rule of its own, so prose.css owns direction', () => {
+    expect(body).not.toMatch(/direction:\s*rtl/)
+    expect(body).not.toMatch(/text-align:\s*right/)
+  })
+})
+
+describe('feature 6: the Friday body writes the ritual in the order it is kept', () => {
+  const body = getBody(
+    readFileSync(join(contentDir, 'services/friday-evening-home-ritual.mdx'), 'utf-8')
+  )
+
+  it('gives every step its own ## heading, in the order of the ritual', () => {
+    const headings = [...body.matchAll(/^##\s+(.+)$/gm)].map((m) => m[1].trim())
+    expect(headings).toEqual([
+      'Lighting the Shabbat candles',
+      'The blessing over the cup',
+      'Reading and teaching',
+      'The Sabbath meal',
+      'Keeping it in a household'
+    ])
+  })
+
+  it('puts the candles before the cup and the cup before the meal', () => {
+    // A member follows along from a phone, so a step printed out of order is a
+    // wrong ritual rather than a cosmetic slip.
+    const candles = body.indexOf('## Lighting the Shabbat candles')
+    const cup = body.indexOf('## The blessing over the cup')
+    const meal = body.indexOf('## The Sabbath meal')
+    expect(candles).toBeGreaterThan(-1)
+    expect(candles).toBeLessThan(cup)
+    expect(cup).toBeLessThan(meal)
+  })
+
+  it('gives the blessing over the candles an English rendering beside it', () => {
+    expect(body).toMatch(/The English of the same words/)
+    expect(body).toMatch(/distinguish between the sacred and the/)
+  })
+})
+
+describe('feature 6: the Friday body names no video until the recording exists', () => {
+  const body = getBody(
+    readFileSync(join(contentDir, 'services/friday-evening-home-ritual.mdx'), 'utf-8')
+  )
+
+  it('carries no Video call', () => {
+    expect(body).not.toContain('<Video')
+  })
+
+  it('points no Video at a file that is missing from public/', () => {
+    // The promise this guards: every video a service body names is served from
+    // this site, so airplane mode still plays it. A path with no file behind it
+    // fails only offline, which is exactly when a member needs it most.
+    for (const name of readdirSync(join(contentDir, 'services'))) {
+      if (!name.endsWith('.mdx')) continue
+      const source = readFileSync(join(contentDir, 'services', name), 'utf-8')
+      for (const match of source.matchAll(/<Video[^>]*\ssrc="([^"]+)"/g)) {
+        expect(existsSync(join(process.cwd(), 'public', match[1]))).toBe(true)
+      }
+    }
   })
 })
