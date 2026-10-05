@@ -110,9 +110,37 @@ describe('feature 6: visiting.md advertises the service the temple keeps', () =>
     expect(visiting).not.toContain(fridayId)
   })
 
-  it('keeps the Saturday services it always listed', () => {
+  it('keeps the Saturday morning service it always listed', () => {
     expect(visiting).toMatch(/\*\*Saturday morning\*\*/)
-    expect(visiting).toMatch(/\*\*Saturday evening\*\*/)
+  })
+
+  it('names no service that has no page behind it', () => {
+    // The regression this locks in: the table once carried Saturday afternoon
+    // and Saturday evening rows for services that were never authored, so a
+    // visitor was sent to a service the temple does not publish. Every day the
+    // visiting page advertises must correspond to a real content file. The
+    // closing of Shabbat (Havdalah) returns with its own page in feature 8.
+    // Compare the day name only ("saturday"), not the whole phrase: the content
+    // files say "Saturday" and "Friday evening", while the table qualifies them
+    // as "Saturday morning" and "Friday evening". Matching on the first word
+    // keeps the rule true without pinning either file's wording.
+    const dayName = (value: string): string => value.trim().toLowerCase().split(/\s+/)[0]
+
+    const authored = readdirSync(servicesDir)
+      .filter((name) => name.endsWith('.mdx'))
+      .flatMap((name) =>
+        [...read('src', 'content', 'services', name).matchAll(/^day:\s*(.+)$/gm)].map((m) =>
+          dayName(m[1])
+        )
+      )
+    const advertised = [...visiting.matchAll(/^\|\s*\*\*([^*]+)\*\*\s*\|/gm)].map((m) =>
+      dayName(m[1])
+    )
+
+    expect(advertised.length).toBeGreaterThan(0)
+    for (const day of advertised) {
+      expect(authored).toContain(day)
+    }
   })
 })
 

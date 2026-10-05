@@ -1,118 +1,198 @@
 ---
 import { SITE_CONFIG } from '@/config/site'
 import Layout from '@layouts/Layout.astro'
+import Panel from '@components/Panel.astro'
 import '@styles/tokens.css'
 import '@styles/base.css'
-
-interface Props {
-  sent?: boolean
-}
-
-const sent = Astro.props.sent ?? false
 ---
+
+{/*
+  Contact page (scope feature 11, spec 0001 AC-2 / AC-3).
+
+  The form posts to Formspree, so there is no server here to render a success
+  state. Formspree redirects back to `_next`, which carries `sent=1`, and the
+  small script at the foot turns that into the confirmation. Without JavaScript
+  the form still submits and the message still arrives; only the confirmation is
+  lost, which is why the notice sits in the markup rather than being injected.
+
+  `Astro.site` is configured with a trailing slash (astro.config.mjs), so the
+  redirect target joins onto it directly rather than adding a second one.
+*/}
 
 <Layout title="Contact" description="Send a message to the United Congregation of Yisra'Yah.">
   <div class="container">
     <h1>Contact us</h1>
-
-    {sent && (
-      <div class="notice notice-success" role="status">
-        Thank you — your message has been sent.
-      </div>
-    )}
+    <p class="lead">
+      Questions before you come, or something you would like to raise with the temple office, are
+      welcome. We read every message and usually respond within a day or two.
+    </p>
 
     <div class="contact-grid">
-      <!-- Contact information -->
       <div class="contact-info">
-        <h2>Get in touch</h2>
+        <Panel title="Get in touch">
+          <p>
+            <strong>Email:</strong>
+            <a href={`mailto:${SITE_CONFIG.contactEmail}`}>{SITE_CONFIG.contactEmail}</a>
+          </p>
 
-        <p>
-          <strong>Email:</strong>{' '}
-          <a href={`mailto:${SITE_CONFIG.contactEmail}`}>{SITE_CONFIG.contactEmail}</a>
-        </p>
+          {SITE_CONFIG.location.address && (
+            <p class="contact-block">
+              <strong>Temple office:</strong>
+              <br />
+              {SITE_CONFIG.location.name}
+              <br />
+              {SITE_CONFIG.location.address}
+            </p>
+          )}
 
-        {SITE_CONFIG.location.address && (
-          <address>
-            <strong>Address:</strong> {SITE_CONFIG.location.name}
-            <br />
-            {SITE_CONFIG.location.address}
-          </address>
-        )}
+          <p class="contact-block">
+            <strong>Visiting?</strong> Times, directions, and what to bring are on the
+            <a href="/visiting">visiting page</a>.
+          </p>
+        </Panel>
 
-        <h3>Send us a message</h3>
-        <p>
-          Use the form to reach the temple office. We read every message and usually respond within
-          a day or two.
-        </p>
+        <Panel title="Privacy" tone="tint">
+          <p>
+            This site sets no cookies and runs no advertising or tracking scripts. What does touch
+            your device or your message:
+          </p>
+          <dl class="privacy-list">
+            <dt>Your message</dt>
+            <dd>
+              The three fields you type are sent straight to <strong>Formspree</strong>, which
+              emails them to the temple office. Nothing is written down on this site.
+            </dd>
 
-        <h3>Privacy</h3>
-        <p class="text-muted">
-          The only data this site collects is what you type into this form. Messages are sent to the
-          temple email address via Formspree and are not stored on this site. No cookies or tracking
-          are used.
-        </p>
+            <dt>The host's request logs</dt>
+            <dd>
+              <strong>Cloudflare Pages</strong> serves the pages and keeps its own logs of each
+              request, as every web host does. That is the one record of your visit that is not ours
+              to hold or remove.
+            </dd>
+
+            <dt>The events calendar</dt>
+            <dd>
+              <strong>Google Calendar</strong> supplies the upcoming events on the
+              <a href="/">home page</a>. Google sees the request that loads it, and its own privacy
+              terms then apply.
+            </dd>
+
+            <dt>Page view counts</dt>
+            <dd>
+              <strong>Cloudflare Web Analytics</strong> counts visits and tells us which pages are
+              read. It is cookieless, sets no identifier, and records no personal data.
+            </dd>
+
+            <dt>Your theme choice</dt>
+            <dd>
+              Light, dark, or your device's own setting is remembered on your device only, under the
+              name <code>ucoy-theme</code>. It never reaches us and never leaves your device.
+            </dd>
+          </dl>
+        </Panel>
       </div>
 
-      <!-- Contact form — posts to Formspree (AC-2, AC-3) -->
-      <form action={SITE_CONFIG.formEndpoint} method="POST" class="contact-form">
-        <input type="hidden" name="_subject" value="Message from the temple website" />
+      <div class="contact-form-wrap">
+        <Panel title="Send us a message">
+          <div id="form-sent" class="notice" role="status" hidden>
+            <p>
+              <strong>Thank you, your message has been sent.</strong>
+            </p>
+            <p>We read every message and usually respond within a day or two.</p>
+          </div>
 
-        <div class="field">
-          <label class="field-label" for="name">
-            Name
-          </label>
-          <input
-            class="field-input"
-            type="text"
-            id="name"
-            name="name"
-            required
-            placeholder="Your name"
-          />
-        </div>
+          <form
+            id="contact-form"
+            action={SITE_CONFIG.formEndpoint}
+            method="POST"
+            class="contact-form"
+          >
+            <input type="hidden" name="_subject" value="Message from the temple website" />
+            <input type="hidden" name="_next" value={`${Astro.site}contact?sent=1`} />
 
-        <div class="field">
-          <label class="field-label" for="email">
-            Email
-          </label>
-          <input
-            class="field-input"
-            type="email"
-            id="email"
-            name="_replyto"
-            required
-            placeholder="you@example.com"
-          />
-        </div>
+            <div class="field">
+              <label class="field-label" for="name">
+                Name
+              </label>
+              <input
+                class="field-input"
+                type="text"
+                id="name"
+                name="name"
+                autocomplete="name"
+                required
+                placeholder="Your name"
+              />
+            </div>
 
-        <div class="field">
-          <label class="field-label" for="message">
-            Message
-          </label>
-          <textarea
-            class="field-textarea"
-            id="message"
-            name="message"
-            rows="6"
-            required
-            placeholder="What would you like to know?"
-          ></textarea>
-        </div>
+            <div class="field">
+              <label class="field-label" for="email">
+                Email
+              </label>
+              <input
+                class="field-input"
+                type="email"
+                id="email"
+                name="_replyto"
+                autocomplete="email"
+                required
+                placeholder="you@example.com"
+              />
+              <p class="field-hint">So we can reply to you.</p>
+            </div>
 
-        <button type="submit" class="button">
-          Send message
-        </button>
-      </form>
+            <div class="field">
+              <label class="field-label" for="message">
+                Message
+              </label>
+              <textarea
+                class="field-textarea"
+                id="message"
+                name="message"
+                rows="7"
+                required
+                placeholder="What would you like to know?"
+              ></textarea>
+            </div>
+
+            <button type="submit" class="button">
+              Send message
+            </button>
+            <p class="text-muted form-note">
+              Sent through Formspree. Your address is used only to reply to you.
+            </p>
+          </form>
+        </Panel>
+      </div>
     </div>
   </div>
+
+  <script is:inline>
+    ;(function () {
+      if (new URLSearchParams(window.location.search).get('sent') !== '1') return
+      const notice = document.getElementById('form-sent')
+      const form = document.getElementById('contact-form')
+      if (!notice || !form) return
+      notice.hidden = false
+      form.hidden = true
+    })()
+  </script>
 </Layout>
 
 <style>
+  .lead {
+    font-size: var(--text-lead);
+    line-height: var(--body-line-height);
+    color: var(--color-text-muted);
+    margin-bottom: var(--space-l);
+    max-width: 60ch;
+  }
+
   .contact-grid {
     display: grid;
     grid-template-columns: 1fr;
     gap: var(--space-xl);
-    margin: var(--space-l) 0;
+    margin-bottom: var(--space-l);
   }
 
   @media (min-width: 48em) {
@@ -122,8 +202,40 @@ const sent = Astro.props.sent ?? false
     }
   }
 
-  .contact-info h2 {
-    margin-top: 0;
+  .contact-info {
+    display: grid;
+    gap: var(--space-s);
+  }
+
+  .contact-block {
+    margin-bottom: var(--space-2xs);
+  }
+
+  .contact-block:last-child {
+    margin-bottom: 0;
+  }
+
+  /* The privacy list is a definition list: a term, then what it means for the
+     reader. Terms sit bold on their own line so a long explanation wraps under
+     them at any width without a hanging indent to maintain. */
+  .privacy-list {
+    margin: var(--space-s) 0 0;
+    display: grid;
+    gap: var(--space-s);
+  }
+
+  .privacy-list dt {
+    font-weight: 700;
+    color: var(--color-text);
+  }
+
+  .privacy-list dd {
+    margin: var(--space-3xs) 0 0;
+    color: var(--color-text);
+  }
+
+  .privacy-list code {
+    font-size: var(--text-caption);
   }
 
   /* Form fields reuse base.css .field / .field-input / .field-textarea. */
@@ -132,19 +244,37 @@ const sent = Astro.props.sent ?? false
     gap: var(--space-s);
   }
 
-  .notice {
-    padding: var(--space-s) var(--space-m);
-    border-radius: var(--radius);
-    margin-bottom: var(--space-s);
+  .field-hint {
+    font-size: var(--text-small);
+    color: var(--color-text-muted);
+    margin: var(--space-3xs) 0 0;
   }
 
-  .notice-success {
+  .form-note {
+    font-size: var(--text-small);
+    margin: 0;
+  }
+
+  /* The confirmation. Tinted and bordered rather than plain text, and it keeps
+     its role="status" so the change is announced, not just shown. */
+  .notice {
+    padding: var(--space-s);
+    border-radius: var(--radius);
     background: var(--color-tint);
     border: var(--border-width) solid var(--color-border);
     color: var(--color-text);
+    margin-bottom: var(--space-s);
   }
 
-  address {
-    font-style: normal;
+  .notice p {
+    margin: 0;
+  }
+
+  .notice p + p {
+    margin-top: var(--space-2xs);
+  }
+
+  .notice[hidden] {
+    display: none;
   }
 </style>

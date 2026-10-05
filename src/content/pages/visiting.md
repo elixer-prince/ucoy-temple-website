@@ -11,26 +11,25 @@ need to know for your first visit.
 
 ## When we meet
 
-| Day                    | Time          | What to expect                          |
-| ---------------------- | ------------- | --------------------------------------- |
-| **Friday evening**     | Before sunset | The home ritual — welcoming the Sabbath |
-| **Saturday morning**   | 9:30 AM       | Shabbat Shacharit with Torah reading    |
-| **Saturday afternoon** | Before sunset | Mincha — afternoon service              |
-| **Saturday evening**   | After dark    | Havdalah — closing of Shabbat           |
+| Day                  | Time          | What to expect                           |
+| -------------------- | ------------- | ---------------------------------------- |
+| **Friday evening**   | Before sunset | The home ritual, welcoming the Sabbath   |
+| **Saturday morning** | 9:30 AM       | Shabbat Shacharit with the Torah reading |
 
 Each service has a page of its own under [Weekly services](/services), carrying the
 full order so you can follow along before you come.
 
-> Times shift with the seasons. Please check the [calendar](#) or our
-> latest [announcements](#) for any changes.
+> Times shift with the seasons. Please check the upcoming events on the
+> [home page](/) or our latest announcements for any changes.
 
 ## Where we meet
 
 **United Congregation of Yisra'Yah**
-123 Fellowship Lane
-[City], State 12345
+The address is confirmed with the temple office, so please
+[send us a message](/contact) before you travel and we will give you the
+exact location and directions.
 
-The building is wheelchair accessible. Free parking is available next
+The meeting place is wheelchair accessible. Free parking is available next
 to the sanctuary. If you are visiting for the first time, look for the
 greeter table near the main entrance.
 
@@ -44,5 +43,5 @@ greeter table near the main entrance.
 
 ## Plan your visit
 
-If you have questions before you come, [send us a message](/contact) or
-call the temple office during business hours.
+If you have questions before you come, [send us a message](/contact) and
+we will answer before you travel.
