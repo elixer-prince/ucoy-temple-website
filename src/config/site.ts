@@ -48,10 +48,15 @@ export const SITE_CONFIG = {
   cfAnalyticsToken: CF_ANALYTICS_TOKEN ?? '',
 
   // Meeting location
+  // The parish and community are the temple's own words from its current site
+  // (scope feature 9). The street address is still to be supplied by the temple,
+  // so it is not guessed here.
   location: {
     name: "United Congregation of Yisra'Yah",
     address: 'Address to be provided by the temple',
-    city: '',
+    parish: 'St. Andrew',
+    community: 'Waterhouse',
+    country: 'Jamaica',
     googleMapsEmbed: ''
   }
 }

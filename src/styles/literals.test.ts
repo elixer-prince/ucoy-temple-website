@@ -62,6 +62,30 @@ describe('AC-1 no raw literals', () => {
     expect(failures.join('\n')).toBe('')
   })
 
+  it('keeps smooth scrolling, but yields it to the reduced motion setting', () => {
+    // AC-11. Smooth anchor scrolling is only acceptable because the reduced motion
+    // block turns it back off. If that override is ever dropped, smooth scrolling
+    // becomes motion the member did not ask for, and this test is what catches it.
+    const base = readFileSync(join(root, 'src', 'styles', 'base.css'), 'utf-8')
+
+    expect(base).toMatch(/scroll-behavior:\s*smooth/)
+
+    // The override has to sit inside the reduced motion query and be important, or
+    // it loses to the smooth declaration above it.
+    const reduced = base.match(
+      /@media\s*\(prefers-reduced-motion:\s*reduce\)\s*{([\s\S]*?)\n}/
+    )?.[1]
+    expect(reduced).toBeDefined()
+    expect(reduced).toMatch(/scroll-behavior:\s*auto\s*!important/)
+  })
+
+  it('gives anchor targets clearance, so a section is not flush with the top edge', () => {
+    // The table of contents links to section headings. Without scroll margin a
+    // target lands hard against the top of the viewport.
+    const base = readFileSync(join(root, 'src', 'styles', 'base.css'), 'utf-8')
+    expect(base).toMatch(/scroll-margin-top:\s*var\(--space-/)
+  })
+
   // The scan above reads real files, so a hole in it stays invisible until a
   // real literal walks through. These cases pin the patterns to the shapes they
   // are meant to catch, including the alpha forms the first version missed.

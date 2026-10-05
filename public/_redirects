@@ -1,0 +1,26 @@
+# Redirects from the addresses on the temple's previous Google Site (scope feature 9).
+#
+# Cloudflare Pages serves this file, so a member who kept the old link, or a
+# search result still holding it, lands on the page that now carries the
+# material. One line per old address: old address, new address, status.
+#
+# Only addresses whose content now exists are listed. A redirect to a page
+# that has not been built yet would replace a working old link with a 404,
+# so those are recorded in docs/sweep/content-sweep.md and added here when
+# their feature lands (feature 10 for the High Shabbatot, feature 12 for
+# Important Dates).
+
+# Home
+/home                             /                                    301
+
+# Weekly Shabbat Services
+/weekly-shabbat-services/friday-evening-home-ritual   /services/friday-evening-home-ritual    301
+/weekly-shabbat-services/saturday-morning-service    /services/shabbat-morning-service        301
+/weekly-shabbat-services/saturday-afternoon-service   /services/saturday-afternoon-service     301
+/weekly-shabbat-services/closing-of-the-shabbat       /services/closing-of-shabbat             301
+
+# High Shabbatot
+/high-shabbatot/yom-teruah          /shabbatonim/shabbaton-yom-teruah     301
+
+# This Week's Torah Portion
+/this-weeks-torah-portion          /torah-portion                         301

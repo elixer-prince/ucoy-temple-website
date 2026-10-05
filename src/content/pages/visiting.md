@@ -11,10 +11,11 @@ need to know for your first visit.
 
 ## When we meet
 
-| Day                  | Time          | What to expect                           |
-| -------------------- | ------------- | ---------------------------------------- |
-| **Friday evening**   | Before sunset | The home ritual, welcoming the Sabbath   |
-| **Saturday morning** | 9:30 AM       | Shabbat Shacharit with the Torah reading |
+| Day                    | Time                      | What to expect                                 |
+| ---------------------- | ------------------------- | ---------------------------------------------- |
+| **Friday evening**     | Before sunset             | The home ritual, welcoming the Sabbath         |
+| **Saturday morning**   | 9:30 AM                   | Shabbat Shacharit with the Torah reading       |
+| **Saturday afternoon** | After the morning service | The Torah reading and study, with the Haftarah |
 
 Each service has a page of its own under [Weekly services](/services), carrying the
 full order so you can follow along before you come.
@@ -25,7 +26,11 @@ full order so you can follow along before you come.
 ## Where we meet
 
 **United Congregation of Yisra'Yah**
-The address is confirmed with the temple office, so please
+
+We are located in the parish of St. Andrew, Jamaica. You can find our temple in
+the humble community of Waterhouse.
+
+The street address is confirmed with the temple office, so please
 [send us a message](/contact) before you travel and we will give you the
 exact location and directions.
 

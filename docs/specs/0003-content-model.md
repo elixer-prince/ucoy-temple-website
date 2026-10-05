@@ -293,9 +293,9 @@ The project builds Tracer Bullet: prove one thin path through the whole loop, th
 - [ ] The Holy Days calendar (scope feature 12) decides how Shabbatonim dates are computed or curated; this spec leaves dates out of the service schema on purpose.
 - [ ] The design system (scope feature 4) decides how the video player, headings, and prose look; this spec owns only the content shape.
 - [ ] If a video ever needs to appear on more than one page, revisit whether a `videos` collection has earned its place.
-- [ ] Renaming or moving a content file changes its address and breaks any link to it. The content sweep (scope feature 9) should add a `public/_redirects` map for the addresses carried over from the old Google Site, since Cloudflare Pages serves that file.
+- [x] Renaming or moving a content file changes its address and breaks any link to it. The content sweep (scope feature 9) should add a `public/_redirects` map for the addresses carried over from the old Google Site, since Cloudflare Pages serves that file. Done: `public/_redirects` carries the seven old addresses whose content now exists, and `content.files.test.ts` guards it.
 - [ ] Revisit precaching the PDFs: add `.pdf` to the service worker's precache list once their real sizes are known, so a booklet a member has never opened also works offline.
-- [ ] The sample video and the sample PDF are placeholders that prove the thread end to end. The content sweep (scope feature 9) replaces them with the temple's real material and settles the final file sizes. The three sample videos, the two posters, and the sample PDF are committed; only the real material is outstanding.
+- [ ] The sample video and the sample PDF are placeholders that prove the thread end to end. The content sweep (scope feature 9) replaces them with the temple's real material and settles the final file sizes. The three sample videos, the two posters, and the sample PDF are committed; only the real material is outstanding. The sweep has now recorded all five outstanding recordings and the booklet in `docs/sweep/content-sweep.md`, along with the two empty old pages (Yom Kippur and Shavuot) that have no content to carry.
 
 ## References
 

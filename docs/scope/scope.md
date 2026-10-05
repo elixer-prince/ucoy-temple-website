@@ -20,7 +20,7 @@ _These are recommendations to keep your build orderly, not requirements. Skip an
 | 7   | Weekly Torah portion page                     | Slice 2    | done        |
 | 8   | Closing of Shabbat page                       | Slice 2    | done        |
 | 24  | Commentary for every Torah portion            | Slice 2    | done        |
-| 9   | Content sweep of the current site             | Slice 3    | planned     |
+| 9   | Content sweep of the current site             | Slice 3    | in-progress |
 | 10  | High Holy Days section                        | Slice 3    | planned     |
 | 11  | Temple information & contact                  | Slice 3    | in-progress |
 | 21  | Exact palette from the current site           | Slice 3    | planned     |
@@ -221,12 +221,15 @@ Same pattern; the last of the regular weekly services.
 
 ## Slice 3: full completeness
 
-### 9. Content sweep of the current site · planned
+### 9. Content sweep of the current site · in-progress
 
 Walk the current Google Site page by page and mirror anything not yet carried over, so nothing the temple published is lost, and carry the old page addresses across so links keep working. Anything sizable found here becomes its own row.
 **Done when:** a page by page pass over the current site finds nothing the new site lacks, or a written list of what was intentionally left out, and old addresses redirect to the new pages.
 
-- [ ] Build it: `/develop content sweep of the current site`
+The pass is done: all ten old pages are accounted for in `docs/sweep/content-sweep.md`, the five with real text now carry it verbatim, `public/_redirects` carries the old addresses, and the one service the old site published and this site was missing (Saturday afternoon) is a content file that reached the menu on its own. It stays `in-progress` rather than `done` because five recordings and the real prayer booklet are still outstanding from the temple, so no service page yet plays the material the old site played.
+
+- [x] Build it: `/develop content sweep of the current site`
+- [ ] Close it out: the temple supplies the five recordings and the real booklet
 
 ### 10. High Holy Days section · planned
 

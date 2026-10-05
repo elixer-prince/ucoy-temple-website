@@ -19,6 +19,19 @@ html {
   font-size: 100%; /* 16 px root */
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
+
+  /* A table of contents entry scrolls to its section rather than jumping, which
+     reads better on a long service order. The reduced motion block below already
+     forces this back to auto, so a member who asks for less motion still gets an
+     instant jump. Anchors only. Scrolling with a wheel or finger is untouched. */
+  scroll-behavior: smooth;
+}
+
+/* Headings are the anchor targets the table of contents points at. They carry top
+   margin already; this adds clearance above them so a section never lands flush
+   against the top of the viewport, which on a phone reads as a stray line. */
+:where(h2, h3, h4, h5, h6)[id] {
+  scroll-margin-top: var(--space-m);
 }
 
 body {

@@ -29,3 +29,7 @@ package-lock.json
 
 # No TOML parser is installed, so an explicit run on this file errors out.
 wrangler.toml
+
+# Cloudflare's redirect map. Its lines are `address address status`, which no
+# installed parser recognises, so `prettier --write .` would error on it.
+public/_redirects

@@ -6,10 +6,13 @@ order: 2
 
 # About the United Congregation of Yisra'Yah
 
-The United Congregation of Yisra'Yah is a Messianic congregation rooted in
-the Hebrew roots of the faith. We gather to worship in both English and
-Hebrew, studying the Tanakh and the Testimony through the lens of the
-apostolic and prophetic witness.
+The United Congregation of Yisra'Yah (UCOY) is an Orthodox Jewish temple in
+Jamaica. Our aim is to spread the word of Yahweh with the world and make it
+enjoyable for the masses. We hope to inspire the population to live a more
+upright life and turn from wrongdoing.
+
+We gather to worship in both English and Hebrew, studying the Tanakh and the
+Testimony through the lens of the apostolic and prophetic witness.
 
 ## Our name
 
