@@ -308,6 +308,281 @@ describe('feature 6: the Friday body writes the ritual in the order it is kept',
   })
 })
 
+describe('feature 8: the closing of Shabbat file', () => {
+  // The closing of Shabbat was its own address on the old site, because it is a
+  // ritual with its own order rather than a part of one service. It stays a
+  // separate file here for the same reason: a time and an order live in exactly
+  // one content file, so the closing is never copied into each service page.
+  const file = readFileSync(join(contentDir, 'services/closing-of-shabbat.mdx'), 'utf-8')
+  const body = getBody(file)
+
+  it('is a valid weekly service, so it builds under /services', () => {
+    const result = servicesSchema.safeParse(parseFrontMatter(file))
+    expect(result.success).toBe(true)
+    if (result.success) {
+      expect(result.data.kind).toBe('weekly')
+      expect(result.data.title).toBe('Closing of Shabbat')
+    }
+  })
+
+  it('keeps a description within the schema limit, so it can be a page summary', () => {
+    const description = parseFrontMatter(file).description
+    expect(typeof description).toBe('string')
+    expect((description as string).length).toBeLessThanOrEqual(160)
+  })
+
+  it('states the day and time as the temple keeps them', () => {
+    const fm = parseFrontMatter(file)
+    expect(fm.day).toBe('Saturday evening')
+    expect(fm.time).toBe('After dark')
+  })
+
+  it('sorts after Shabbat morning, so the three weekly services run in order', () => {
+    // Friday evening 0, Shabbat morning 1, the closing 2: the order a Shabbat
+    // actually runs in, shared by the sidebar, the home page and /services.
+    const fm = parseFrontMatter(file)
+    const morning = parseFrontMatter(
+      readFileSync(join(contentDir, 'services/shabbat-morning-service.mdx'), 'utf-8')
+    )
+    expect(fm.order).toBe(2)
+    expect(fm.order as number).toBeGreaterThan(morning.order as number)
+  })
+
+  it('starts the body at ## , so the front matter title stays the only h1', () => {
+    expect(body.match(/^(#{1,6}\s)/m)?.[1]).toBe('## ')
+    expect(body).not.toMatch(/^#\s/)
+  })
+})
+
+describe('feature 8: the closing body carries real Hebrew in both directions', () => {
+  const body = getBody(readFileSync(join(contentDir, 'services/closing-of-shabbat.mdx'), 'utf-8'))
+
+  it('marks each Hebrew passage as a right to left block', () => {
+    // The regression: a span let MDX put a <p> inside it, which is invalid HTML
+    // and loses the block styling from prose.css.
+    expect(body).toContain('<div lang="he" dir="rtl">')
+    expect(body).not.toMatch(/<span[^>]*lang="he"/)
+    expect(body).not.toMatch(/<span[^>]*dir="rtl"/)
+  })
+
+  it('writes Hebrew script inside that block', () => {
+    const blocks = [...body.matchAll(/<div lang="he" dir="rtl">([\s\S]*?)<\/div>/g)]
+    expect(blocks.length).toBeGreaterThan(0)
+    for (const [, block] of blocks) {
+      expect(block).toMatch(/[֐-׿]/)
+    }
+  })
+
+  it('marks the Hebrew phrase inside English with dir="auto" on a span', () => {
+    const span = body.match(/<span dir="auto">([\s\S]*?)<\/span>/)?.[1] ?? ''
+    expect(span).toMatch(/[֐-׿]/)
+  })
+
+  it('carries no direction rule of its own, so prose.css owns direction', () => {
+    expect(body).not.toMatch(/direction:\s*rtl/)
+    expect(body).not.toMatch(/text-align:\s*right/)
+  })
+})
+
+describe('feature 8: the closing body writes the ritual in the order it is kept', () => {
+  const body = getBody(readFileSync(join(contentDir, 'services/closing-of-shabbat.mdx'), 'utf-8'))
+
+  it('gives every step its own ## heading, in the order of the ritual', () => {
+    const headings = [...body.matchAll(/^##\s+(.+)$/gm)].map((m) => m[1].trim())
+    expect(headings).toEqual([
+      'Waiting for the stars',
+      'The blessing over the cup',
+      'The closing of the Sabbath',
+      'Keeping it in a household'
+    ])
+  })
+
+  it('waits for the stars before the blessing, and the blessing before the end', () => {
+    // A member follows along from a phone, so a step printed out of order is a
+    // wrong ritual rather than a cosmetic slip.
+    const stars = body.indexOf('## Waiting for the stars')
+    const cup = body.indexOf('## The blessing over the cup')
+    const closing = body.indexOf('## The closing of the Sabbath')
+    expect(stars).toBeGreaterThan(-1)
+    expect(stars).toBeLessThan(cup)
+    expect(cup).toBeLessThan(closing)
+  })
+
+  it('gives the blessing over the cup an English rendering beside it', () => {
+    expect(body).toMatch(/The English of the same words/)
+    expect(body).toMatch(/distinguish between the sacred and the/)
+  })
+})
+
+describe('feature 8: the closing body carries no video until the recording exists', () => {
+  const body = getBody(readFileSync(join(contentDir, 'services/closing-of-shabbat.mdx'), 'utf-8'))
+
+  it('carries no Video call', () => {
+    // public/videos/ holds no closing asset. Naming one would point the offline page
+    // at a file that does not exist, and it would fail exactly on the phone with no
+    // signal where a member is following the ritual from home.
+    expect(body).not.toContain('<Video')
+  })
+
+  it('names no src with no file behind it', () => {
+    // The offline promise in one assertion: any src the body names must have a file
+    // behind it in public/.
+    const source = readFileSync(join(contentDir, 'services/closing-of-shabbat.mdx'), 'utf-8')
+    for (const match of source.matchAll(/src="([^"]+)"/g)) {
+      expect(existsSync(join(process.cwd(), 'public', match[1]))).toBe(true)
+    }
+  })
+})
+
+describe('feature 8: the closing body names no gathering time it cannot keep', () => {
+  const body = getBody(readFileSync(join(contentDir, 'services/closing-of-shabbat.mdx'), 'utf-8'))
+
+  it('points at the calendar rather than printing a clock time', () => {
+    // The closing is kept at the table at home and at the building on the occasions
+    // the calendar gives. A time written into the body goes stale the day the temple
+    // moves it, and could only be changed by a rebuild.
+    expect(body).not.toMatch(/\b\d{1,2}[:.]\d{2}\s*(am|pm|AM|PM)/)
+    expect(body).not.toMatch(/at \d/)
+  })
+
+  it('sends the member to the home page, where the announcements and calendar live', () => {
+    expect(body).toMatch(/temple calendar/)
+    expect(body).toContain('](/)')
+  })
+})
+
+describe('feature 8: the closing page is built and published', () => {
+  /*
+   * What `/check verify` drove in a real browser at 390 by 844, asserted here
+   * against the HTML a build produced, so it is checked on every run rather than
+   * only when a person looks at the page.
+   *
+   * Read from dist, so it asserts only after a build has run, the way
+   * sw-navigation.test.ts and offline.test.ts handle it. Producing dist is the
+   * verify gate's job, not this suite's.
+   */
+  const builtPage = join(process.cwd(), 'dist', 'services', 'closing-of-shabbat', 'index.html')
+
+  /** The built page, or undefined when no build has run yet. */
+  function page(): string | undefined {
+    return existsSync(builtPage) ? readFileSync(builtPage, 'utf-8') : undefined
+  }
+
+  it('gives the page exactly one h1, which is the front matter title', () => {
+    const html = page()
+    if (!html) {
+      expect(true).toBe(true)
+      return
+    }
+
+    const h1s = [...html.matchAll(/<h1[^>]*>([\s\S]*?)<\/h1>/g)].map((m) =>
+      m[1].replace(/<[^>]+>/g, '').trim()
+    )
+    expect(h1s).toEqual(['Closing of Shabbat'])
+  })
+
+  it('prints the four steps as h2 headings in the order of the ritual', () => {
+    // A member follows along from a phone, so the printed order is the ritual.
+    const html = page()
+    if (!html) {
+      expect(true).toBe(true)
+      return
+    }
+
+    const headings = [...html.matchAll(/<h2[^>]*>([\s\S]*?)<\/h2>/g)]
+      .map((m) => m[1].replace(/<[^>]+>/g, '').trim())
+      .filter((text) => text.length > 0)
+    expect(headings).toEqual([
+      'Waiting for the stars',
+      'The blessing over the cup',
+      'The closing of the Sabbath',
+      'Keeping it in a household'
+    ])
+  })
+
+  it('renders both Hebrew passages as right to left blocks that survived the build', () => {
+    // The regression this guards: MDX can turn a span into a <p> nested inside it,
+    // which is invalid HTML and drops the block styling from prose.css. The written
+    // file cannot show that; only the built page can.
+    const html = page()
+    if (!html) {
+      expect(true).toBe(true)
+      return
+    }
+
+    const blocks = [...html.matchAll(/<div lang="he" dir="rtl">([\s\S]*?)<\/div>/g)]
+    expect(blocks).toHaveLength(2)
+    for (const [, block] of blocks) {
+      expect(block).toMatch(/[֐-׿]/)
+    }
+  })
+
+  it('renders the Hebrew phrase inside the English sentence as an inline auto span', () => {
+    const html = page()
+    if (!html) {
+      expect(true).toBe(true)
+      return
+    }
+
+    const span = html.match(/<span dir="auto">([\s\S]*?)<\/span>/)?.[1] ?? ''
+    expect(span).toMatch(/[֐-׿]/)
+    // Inline, not a block: שבת שעברה sits inside an English sentence, so it must not
+    // be promoted to a paragraph of its own.
+    expect(html).not.toMatch(/<p[^>]*>\s*<span dir="auto">/)
+  })
+
+  it('lists the closing last among the weekly services, so the menu reads in Shabbat order', () => {
+    const html = page()
+    if (!html) {
+      expect(true).toBe(true)
+      return
+    }
+
+    const nav = html.match(/<nav class="sidebar-nav"[\s\S]*?<\/nav>/)?.[0] ?? ''
+    const weekly = [...nav.matchAll(/href="(\/services\/[a-z-]*)"/g)].map((m) => m[1])
+    expect(weekly).toEqual([
+      '/services/friday-evening-home-ritual',
+      '/services/shabbat-morning-service',
+      '/services/closing-of-shabbat'
+    ])
+  })
+
+  it('marks the closing as the current page in the menu, so a reader knows where they are', () => {
+    const html = page()
+    if (!html) {
+      expect(true).toBe(true)
+      return
+    }
+
+    const nav = html.match(/<nav class="sidebar-nav"[\s\S]*?<\/nav>/)?.[0] ?? ''
+    const link = nav.match(/<a href="\/services\/closing-of-shabbat"[\s\S]*?<\/a>/)?.[0] ?? ''
+    expect(link).toContain('aria-current="page"')
+  })
+
+  it('reaches the prayer booklet through its resource page, never the file path', () => {
+    // A PDF is linked through /resources/<slug> so the page around it works too.
+    const html = page()
+    if (!html) {
+      expect(true).toBe(true)
+      return
+    }
+
+    expect(html).toContain('href="/resources/prayer-booklet"')
+    expect(html).not.toContain('/pdfs/')
+  })
+
+  it('takes its page summary from the front matter description', () => {
+    const html = page()
+    if (!html) {
+      expect(true).toBe(true)
+      return
+    }
+
+    const description = html.match(/<meta name="description" content="([^"]*)"/)?.[1] ?? ''
+    expect(description).toContain('Havdalah')
+  })
+})
+
 describe('feature 6: the Friday body names no video until the recording exists', () => {
   const body = getBody(
     readFileSync(join(contentDir, 'services/friday-evening-home-ritual.mdx'), 'utf-8')

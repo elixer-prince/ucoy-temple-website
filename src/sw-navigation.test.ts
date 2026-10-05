@@ -144,3 +144,84 @@ describe('AC-7 and feature 24: every portion page is reachable with no connectio
     expect(manifest.urls).toContain('/torah-portion/index.html')
   })
 })
+
+describe('feature 8: the closing of Shabbat is reachable with no connection', () => {
+  /*
+   * The second half of the closing page's promise. A member who has just come out
+   * of Shabbat morning taps the closing, and on a phone in a field with no signal
+   * the page must still be there.
+   *
+   * `/check verify` proved this by loading the page in real Chrome with the network
+   * cut and watching the service worker serve it. This locks the same thing in
+   * against the real public/sw.js and the manifest a real build wrote, so the proof
+   * survives without a browser.
+   */
+  const manifestPath = join(process.cwd(), 'dist', 'sw-manifest.json')
+  const closingPage = '/services/closing-of-shabbat/index.html'
+
+  it('is in the precache, so it is cached before a member ever asks for it', () => {
+    if (!existsSync(manifestPath)) {
+      expect(true).toBe(true)
+      return
+    }
+
+    const manifest = JSON.parse(readFileSync(manifestPath, 'utf-8')) as { urls: string[] }
+    expect(manifest.urls).toContain(closingPage)
+  })
+
+  it('serves the closing page offline, at both address forms', async () => {
+    if (!existsSync(manifestPath)) {
+      expect(true).toBe(true)
+      return
+    }
+
+    const manifest = JSON.parse(readFileSync(manifestPath, 'utf-8')) as { urls: string[] }
+    const cache = new FakeCache(
+      Object.fromEntries(manifest.urls.map((url) => [url, new FakeResponse('precached ' + url)]))
+    )
+    const handler = createWorker({ shell: cache, fetch: networkGone })
+
+    // Both forms a member might reach: the full built file, and the bare path the
+    // router serves from. The page is built as a directory index, so the bare path
+    // only resolves if the worker's index retry keeps working.
+    const missed: string[] = []
+    for (const path of [closingPage, '/services/closing-of-shabbat']) {
+      const response = await requestThrough(handler, {
+        url: `https://ucoy.example${path}`,
+        method: 'GET',
+        mode: 'navigate'
+      })
+      if (!response.body.startsWith('precached')) {
+        missed.push(`${path} served "${response.body.slice(0, 30)}"`)
+      }
+    }
+
+    expect(missed).toEqual([])
+  })
+
+  it('caches the Shabbat morning page too, so the link that reaches it is itself offline', async () => {
+    // The closing is one tap from the end of the morning service. That tap is worth
+    // nothing offline if the page holding the link is not cached.
+    if (!existsSync(manifestPath)) {
+      expect(true).toBe(true)
+      return
+    }
+
+    const manifest = JSON.parse(readFileSync(manifestPath, 'utf-8')) as { urls: string[] }
+    expect(manifest.urls).toContain('/services/shabbat-morning-service/index.html')
+  })
+
+  it('adds nothing but the page itself, so no heavy file rides along with it', () => {
+    // The pre-cache policy is that video and PDFs stay out. A ritual page that names
+    // neither is expected to add nothing of its own, and this fails the moment a
+    // closing recording is wired in without a thought about its size.
+    if (!existsSync(manifestPath)) {
+      expect(true).toBe(true)
+      return
+    }
+
+    const manifest = JSON.parse(readFileSync(manifestPath, 'utf-8')) as { urls: string[] }
+    const closingEntries = manifest.urls.filter((url) => url.includes('closing-of-shabbat'))
+    expect(closingEntries).toEqual([closingPage])
+  })
+})

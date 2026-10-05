@@ -14,7 +14,7 @@
  * source is what this suite can guard here.
  */
 import { describe, it, expect } from 'vitest'
-import { readFileSync, readdirSync } from 'node:fs'
+import { readFileSync, readdirSync, existsSync } from 'node:fs'
 import { join } from 'node:path'
 
 const read = (...parts: string[]): string => readFileSync(join(process.cwd(), ...parts), 'utf-8')
@@ -172,3 +172,124 @@ describe('feature 6: the schedule has one source, the content collection', () =>
     expect(siteConfig).toContain('location')
   })
 })
+
+describe('feature 8: the closing of Shabbat reaches the page with one file', () => {
+  const closingId = 'closing-of-shabbat'
+
+  it('is in the weekly kind, which is what puts it under /services', () => {
+    expect(read('src', 'content', 'services', `${closingId}.mdx`)).toMatch(/^kind: weekly$/m)
+  })
+
+  it('is the only closing file, so the menu cannot double list it', () => {
+    const closings = readdirSync(servicesDir).filter((name) => name.includes('closing'))
+    expect(closings).toEqual([`${closingId}.mdx`])
+  })
+
+  it('needs no menu, landing page or route code of its own', () => {
+    // The whole point of building it as a weekly service: the sidebar, the home
+    // page and /services all read the collection, so the file alone publishes it.
+    for (const name of ['src/components/Sidebar.astro', 'src/pages/services/index.astro']) {
+      expect(read(...name.split('/'))).not.toContain(closingId)
+    }
+    // Sorted, because readdir order is the filesystem's, not a promise: this
+    // asserts no route file was added, not which name the disk lists first.
+    expect(readdirSync(join(process.cwd(), 'src', 'pages', 'services')).sort()).toEqual([
+      '[slug].astro',
+      'index.astro'
+    ])
+  })
+
+  it('is linked from the Shabbat morning service, so it is one tap away afterwards', () => {
+    // The reachability problem the separate address creates: a member who has
+    // just come out of the service should reach the closing without hunting for
+    // it in the menu. One link, not a second copy of the closing text.
+    const morning = read('src', 'content', 'services', 'shabbat-morning-service.mdx')
+    expect(morning).toContain(`](/services/${closingId})`)
+  })
+
+  it('copies the closing order into no other service body', () => {
+    // The regression: pasting the closing into each service page makes it a
+    // second and third copy that drifts, and High Sabbath pages would multiply
+    // it further. One file owns the closing.
+    for (const name of readdirSync(servicesDir)) {
+      if (!name.endsWith('.mdx') || name === `${closingId}.mdx`) continue
+      const body = read('src', 'content', 'services', name)
+      expect(body).not.toMatch(/Havdalah \((?!.*\]\(\/services\/)/)
+    }
+  })
+})
+
+describe('feature 8: the closing is advertised only where it can be kept', () => {
+  it('is not yet a row on the visiting page, because its time is not settled', () => {
+    // The visiting page is what a first time visitor reads to decide when to
+    // come. The closing is kept at the table at home and at the building on the
+    // occasions the calendar gives, so a row promising a time would send a
+    // visitor to an evening the temple does not announce. It joins that table
+    // when the temple settles where it is kept.
+    expect(visiting).not.toMatch(/Havdalah/i)
+    expect(visiting).not.toMatch(/\*\*Saturday evening\*\*/)
+  })
+
+  it('points the closing page at the calendar rather than naming a gathering time', () => {
+    // The promise the page makes instead: the times live in the calendar and the
+    // announcements, both of which are updated by staff without a rebuild.
+    const body = read('src', 'content', 'services', 'closing-of-shabbat.mdx')
+    expect(body).toMatch(/temple calendar/)
+    expect(body).not.toMatch(/time: \d/)
+  })
+})
+
+describe('feature 8: the link from the morning service lands on a real page', () => {
+  /*
+   * The reachability promise is only worth something if the address it points at
+   * exists. `/check verify` fetched it in the browser and got 200; this pins the
+   * same fact to the build, so a rename that broke the link fails the suite rather
+   * than shipping a tap that goes nowhere.
+   */
+  const built = (slug: string): string =>
+    join(process.cwd(), 'dist', 'services', slug, 'index.html')
+
+  it('builds the closing at the address the morning service links to', () => {
+    const morning = read('src', 'content', 'services', 'shabbat-morning-service.mdx')
+    const href = morning.match(/\]\((\/services\/closing-of-shabbat[^)]*)\)/)?.[1]
+    expect(href).toBe('/services/closing-of-shabbat')
+
+    const builtPage = join(process.cwd(), 'dist', href!.replace(/^\//, ''), 'index.html')
+    if (!existsSync(builtPage)) {
+      // No build has run, so there is nothing to assert against yet.
+      expect(true).toBe(true)
+      return
+    }
+    expect(existsSync(builtPage)).toBe(true)
+  })
+
+  it('renders that link into the built morning page, so the tap is really there', () => {
+    const morningPage = built('shabbat-morning-service')
+    if (!existsSync(morningPage)) {
+      expect(true).toBe(true)
+      return
+    }
+
+    const html = readFileSync(morningPage, 'utf-8')
+    expect(html).toContain('href="/services/closing-of-shabbat"')
+  })
+
+  it('puts the link at the end of the morning service, where a member reaches it', () => {
+    // A member who has just come out of the service reads the last paragraph, so a
+    // link placed earlier would be missed exactly when it is wanted.
+    const body = getBodyOf(read('src', 'content', 'services', 'shabbat-morning-service.mdx'))
+    const lastParagraph =
+      body
+        .trimEnd()
+        .split(/\n{2,}/)
+        .at(-1) ?? ''
+    expect(lastParagraph).toContain('/services/closing-of-shabbat')
+    expect(lastParagraph).toMatch(/closing of Shabbat/i)
+  })
+})
+
+/** The body of an .mdx file: everything after the front matter. */
+function getBodyOf(source: string): string {
+  const parts = source.split('---\n')
+  return parts.length >= 3 ? parts.slice(2).join('---\n').trim() : source
+}

@@ -18,7 +18,7 @@ _These are recommendations to keep your build orderly, not requirements. Skip an
 | 5   | Site shell, home & first service page offline | Slice 1    | done        |
 | 6   | Friday service page                           | Slice 2    | done        |
 | 7   | Weekly Torah portion page                     | Slice 2    | done        |
-| 8   | Closing of Shabbat page                       | Slice 2    | planned     |
+| 8   | Closing of Shabbat page                       | Slice 2    | done        |
 | 24  | Commentary for every Torah portion            | Slice 2    | done        |
 | 9   | Content sweep of the current site             | Slice 3    | planned     |
 | 10  | High Holy Days section                        | Slice 3    | planned     |
@@ -185,12 +185,39 @@ The temple's own commentary for each of the 53 weekly portions, moved from paper
   - The last test written caught a real bug: the page typed `53` into its byline while its routes came from `allPortionSlugs()`. Fixed in `/debug`, the byline now reads the length from the same list the routes come from, proven by shortening the cycle to 52 and watching the page follow
   - Not covered: visual and interaction behaviour (screenshots, keyboard order, narrow phone layout, reduced motion, high contrast) cannot be automated here, and the Chrome tools were not connected during that run
 
-### 8. Closing of Shabbat page · planned
+### 8. Closing of Shabbat page · done
 
 Same pattern; the last of the regular weekly services.
 **Done when:** every part of the old page is present and complete, and the page works offline on a phone.
 
-- [ ] Build it: `/develop closing of Shabbat page`
+- [x] Build it: `/develop closing of Shabbat page`
+  - Settled the open question with the engineer: the closing keeps its own address, as it had on the old site, because it is a ritual with its own order rather than the tail of one service. What changes is the reason, and it is the project's own rule rather than the old site's convenience. A day and a time live in exactly one content file, so pasting the closing into the Shabbat morning page, the Friday page and then the High Sabbath pages would make three or more copies that drift. One file owns the closing, and every service page links to it
+  - Body written as one `.mdx` service file, `src/content/services/closing-of-shabbat.mdx`, in the order the closing is kept: waiting for the stars, the blessing over the cup, the closing of the Sabbath, keeping it in a household. Two Hebrew passages as `lang="he" dir="rtl"` blocks and `שבת שעברה` as a `dir="auto"` span, so it follows the same Hebrew rules as the other two service bodies
+  - `order: 2`, after Friday evening (0) and Shabbat morning (1), so the three weekly services appear in the order a Shabbat actually runs, on the sidebar, the home page and `/services` alike
+  - The reachability cost of a separate address is paid with one link rather than a copy: the Shabbat morning page ends with a sentence pointing to the closing, so a member who has just come out of the service is one tap from it
+  - No `<Video>` on this page: `public/videos/` holds no closing asset, and pointing at a missing file would break the offline promise. The temple's recording drops in as one added line
+  - Not added to the `visiting.md` table, deliberately. The closing is kept at the table at home and at the building on the occasions the calendar gives, so a row promising a gathering time would send a visitor to an evening the temple does not announce. It joins that table once the temple settles where it is kept, and the page points at the calendar instead
+  - Built at `/services/closing-of-shabbat/`; the build writes it into `sw-manifest.json`, so it is precached for offline with no code change. `npm run verify` is green (0 errors, 0 warnings, 69 pages) and the suite passes at 251 tests in 13 files, 20 of them new across `src/content.files.test.ts` and `src/friday-ritual.wiring.test.ts`
+    Code in `src/content/services/closing-of-shabbat.mdx`, `src/content/services/shabbat-morning-service.mdx`
+    Tests in `src/content.files.test.ts`, `src/friday-ritual.wiring.test.ts`
+  - One real bug found and fixed during the build: the new file was written with Windows line endings, which the suite's front matter parser reads as one long line and so every assertion against it failed. Converted to LF, matching the rest of the repo. Worth knowing that any content file added on Windows hits this
+  - Still owed: the temple's own wording, which feature 9 replaces, and the `visiting.md` row once the closing's place is settled
+- [x] Verify it: `/check verify closing of Shabbat page`
+  - 9 behaviors met against the built site served over plain static HTTP. No spec carries feature 8, so the bar was the scope's own done when: the page is complete, and it works offline on a phone
+  - The Chrome tools were not connected, so real Chrome was launched on the debug port and driven over the DevTools protocol from Node at 390 by 844. That covered the narrow phone layout and airplane mode, which the earlier feature 7 run had to leave unexercised
+  - The page builds and serves 200, `astro check` reports 0 errors and 0 warnings across 52 files, and the suite passes at 251 tests in 13 files
+  - Front matter title is the page's only `h1`, and the four `##` headings arrive in the order the closing is kept: waiting for the stars, the blessing over the cup, the closing of the Sabbath, keeping it in a household
+  - Hebrew reads correctly in both directions on screen: two `lang="he" dir="rtl"` blocks and שבת שעברה as a `dir="auto"` span. Checked in both colour modes
+  - Third in the Shabbat run everywhere it is listed: the sidebar, `/services`, and the link at the end of the Shabbat morning page, which resolves 200. The narrow screen menu opens and holds it in the same position
+  - The offline promise is real evidence, not a manifest listing: reloaded with the network cut through DevTools, the full page rendered from the service worker with `navigator.serviceWorker.controller` true and a screenshot identical to the online one
+  - Not exercised, and needing a display setting rather than an emulation: Windows High Contrast and reduced motion
+- [x] Test it: `/test closing of Shabbat page` (270 passing, 13 files; `astro check` 0 errors and 0 warnings, ESLint and build green)
+  - 19 new tests across 3 files, all covering what the verify run proved and the written file could not
+  - `src/content.files.test.ts`: the closing body carries no `<Video>` and names no `src` with no file behind it, and it prints no clock time, because the times live in the calendar. Then the built page itself, read from `dist`: exactly one `h1`, the four steps as `h2` in the order of the ritual, both Hebrew passages still right to left blocks after MDX, the phrase still inline, the closing last among the weekly services in the menu and marked as the current page, the booklet reached through its resource page, and the summary taken from the front matter
+  - `src/sw-navigation.test.ts`: the closing page is in the precache and is served by the real `public/sw.js` with a dead network, at both the full path and the bare path. The Shabbat morning page is asserted cached too, since the link that reaches the closing is worth nothing if the page holding it is not there
+  - `src/friday-ritual.wiring.test.ts`: the address the morning service links to is the one that is actually built, the link is really rendered into the built morning page, and it sits in the last paragraph, where a member who has just come out of the service reads
+  - One real bug found and fixed during this run, and it was only visible in the built page: a blank line before `<span dir="auto">שבת שעברה</span>` made MDX open a new paragraph, so the phrase rendered alone instead of inside the English sentence. The cause was Prettier, which treats a tag that starts a line as an HTML block and separates it again on every format run, so removing the blank line by hand did not hold. Fixed by keeping the span on the same line as the English, which is how the Friday and Shabbat morning files already avoid it. Worth knowing for any content file that carries an inline Hebrew phrase
+  - Not covered: visual and interaction behaviour cannot be automated here, and Windows High Contrast and reduced motion need a display setting rather than an emulation
 
 ## Slice 3: full completeness
 
