@@ -21,6 +21,8 @@
 
 # High Shabbatot
 /high-shabbatot/yom-teruah          /shabbatonim/shabbaton-yom-teruah     301
+/high-shabbatot/yom-kippur          /shabbatonim/shabbaton-yom-kippur     301
+/high-shabbatot/shavuot             /shabbatonim/shabbaton-shavuot        301
 
 # This Week's Torah Portion
 /this-weeks-torah-portion          /torah-portion                         301

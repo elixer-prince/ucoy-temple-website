@@ -21,7 +21,7 @@ _These are recommendations to keep your build orderly, not requirements. Skip an
 | 8   | Closing of Shabbat page                       | Slice 2    | done        |
 | 24  | Commentary for every Torah portion            | Slice 2    | done        |
 | 9   | Content sweep of the current site             | Slice 3    | in-progress |
-| 10  | High Holy Days section                        | Slice 3    | planned     |
+| 10  | High Holy Days section                        | Slice 3    | in-progress |
 | 11  | Temple information & contact                  | Slice 3    | in-progress |
 | 21  | Exact palette from the current site           | Slice 3    | planned     |
 | 12  | Holy Days calendar                            | Slice 4    | planned     |
@@ -231,12 +231,16 @@ The pass is done: all ten old pages are accounted for in `docs/sweep/content-swe
 - [x] Build it: `/develop content sweep of the current site`
 - [ ] Close it out: the temple supplies the five recordings and the real booklet
 
-### 10. High Holy Days section · planned
+### 10. High Holy Days section · in-progress
 
 Complete the pages the old site created but never finished: one real page per High Sabbath and Holy Day the congregation observes, on the service page pattern. Content gaps get filled with your input, so expect to supply material here.
 **Done when:** every High Sabbath and Holy Day the congregation keeps has a complete, offline capable page, reachable from the navigation.
 
-- [ ] Build it: `/develop high holy days section`
+- [x] Build it: `/develop high holy days section`
+  - `src/content/services/shabbaton-yom-kippur.mdx`: Yom Kippur morning service verbatim from the temple booklet, `order: 3`
+  - `src/content/services/shabbaton-shavuot.mdx`: Shavuot and Confirmation verbatim from the temple booklet, `order: 2`
+  - Both reach the menu with no code change, and the old `/high-shabbatot/yom-kippur` and `/high-shabbatot/shavuot` addresses redirect in `public/_redirects`
+  - Still open: Pesach and Sukkot booklets exist in the same file but have no pages yet; enroll them when the temple asks
 
 ### 11. Temple information & contact · in-progress
 

@@ -42,12 +42,11 @@ closing of Shabbat (now `order: 3`), because that is the order a Shabbat runs in
 ### Yom Kippur and Shavuot pages
 
 Both pages existed on the old site but carried **no content**: a heading and
-nothing else, no text and no media. There is nothing to mirror, and inventing
-an order for a Holy Day the temple has not published would be worse than an
-honest absence. Scope feature 10, the High Holy Days section, is where those two
-days get written. No redirect is listed for them yet, because redirecting to a
-page that does not exist would turn a working old address into a 404; the two
-lines join `public/_redirects` when feature 10 lands.
+nothing else, no text and no media. Scope feature 10 has now written both from
+the temple's own booklets, supplied as `docs/UCOY Service Booklets.txt`:
+`src/content/services/shabbaton-yom-kippur.mdx` carries the Yom Kippur morning
+service, and `src/content/services/shabbaton-shavuot.mdx` carries Shavuot and
+Confirmation. Their old addresses now redirect in `public/_redirects`.
 
 ### Important Dates
 
