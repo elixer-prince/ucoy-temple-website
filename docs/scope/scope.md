@@ -20,8 +20,8 @@ _These are recommendations to keep your build orderly, not requirements. Skip an
 | 7   | Weekly Torah portion page                     | Slice 2    | done        |
 | 8   | Closing of Shabbat page                       | Slice 2    | done        |
 | 24  | Commentary for every Torah portion            | Slice 2    | done        |
-| 9   | Content sweep of the current site             | Slice 3    | in-progress |
-| 10  | High Holy Days section                        | Slice 3    | in-progress |
+| 9   | Content sweep of the current site             | Slice 3    | done        |
+| 10  | High Holy Days section                        | Slice 3    | done        |
 | 11  | Temple information & contact                  | Slice 3    | in-progress |
 | 21  | Exact palette from the current site           | Slice 3    | planned     |
 | 12  | Holy Days calendar                            | Slice 4    | planned     |
@@ -30,6 +30,7 @@ _These are recommendations to keep your build orderly, not requirements. Skip an
 | 15  | SEO, metadata & performance                   | Slice 4    | planned     |
 | 16  | Site wide offline & install                   | Slice 4    | planned     |
 | 22  | Offline PDFs                                  | Slice 4    | planned     |
+| 26  | Commentary index                              | Slice 4    | planned     |
 | 25  | UI rework and style guide revamp              | Rework     | planned     |
 | 23  | Hebrew body face                              | Rework     | planned     |
 | 17  | Private Temple Treasury                       | Deferred   | planned     |
@@ -221,26 +222,28 @@ Same pattern; the last of the regular weekly services.
 
 ## Slice 3: full completeness
 
-### 9. Content sweep of the current site · in-progress
+### 9. Content sweep of the current site · done
 
 Walk the current Google Site page by page and mirror anything not yet carried over, so nothing the temple published is lost, and carry the old page addresses across so links keep working. Anything sizable found here becomes its own row.
 **Done when:** a page by page pass over the current site finds nothing the new site lacks, or a written list of what was intentionally left out, and old addresses redirect to the new pages.
 
-The pass is done: all ten old pages are accounted for in `docs/sweep/content-sweep.md`, the five with real text now carry it verbatim, `public/_redirects` carries the old addresses, and the one service the old site published and this site was missing (Saturday afternoon) is a content file that reached the menu on its own. It stays `in-progress` rather than `done` because five recordings and the real prayer booklet are still outstanding from the temple, so no service page yet plays the material the old site played.
+The pass is done: all ten old pages are accounted for in `docs/sweep/content-sweep.md`, the five with real text now carry it verbatim, `public/_redirects` carries the old addresses, and the one service the old site published and this site was missing (Saturday afternoon) is a content file that reached the menu on its own. The five YouTube embeds the old site played are now the site's own five local `.mp4` files under `public/videos/` (two anthems and two theme songs on the Shabbat morning and Yom Teruah pages, Shabbat Rest on the Friday ritual page), each wired inline through `<Video src>` and cached for offline by the real worker. The two `shabbat-opening.mp4`/`shabbat-torah.mp4` example videos were spec illustrations the temple never recorded, so their `<Video>` calls were removed rather than left pointing at files that do not exist. The temple has now supplied the five recordings (jamaica-anthem, israel-anthem, shabbat-shalom, hinei-ma-tov, shabbat-rest) as local `.mp4` files in `public/videos/`, each wired inline through `<Video src>` and offline-cached by the real worker, so no service page is left with a `<Video>` reference pointing at a file that does not exist. The `/resources/shabbat-service-booklet` page now serves the temple's real Shabbat morning service booklet PDF in `public/pdfs/`, replacing the placeholder. This closes feature 9: the page by page pass found nothing the new site lacked, and every old address redirects to a new page.
 
 - [x] Build it: `/develop content sweep of the current site`
-- [ ] Close it out: the temple supplies the five recordings and the real booklet
+- [x] The temple supplies the five recordings (`jamaica-anthem`, `israel-anthem`, `shabbat-shalom`, `hinei-ma-tov`, `shabbat-rest`), all served locally and verified offline-cached
+- [x] Close it out: the temple supplies the real booklet to replace the placeholder PDF
 
-### 10. High Holy Days section · in-progress
+### 10. High Holy Days section · done
 
 Complete the pages the old site created but never finished: one real page per High Sabbath and Holy Day the congregation observes, on the service page pattern. Content gaps get filled with your input, so expect to supply material here.
 **Done when:** every High Sabbath and Holy Day the congregation keeps has a complete, offline capable page, reachable from the navigation.
 
 - [x] Build it: `/develop high holy days section`
-  - `src/content/services/shabbaton-yom-kippur.mdx`: Yom Kippur morning service verbatim from the temple booklet, `order: 3`
-  - `src/content/services/shabbaton-shavuot.mdx`: Shavuot and Confirmation verbatim from the temple booklet, `order: 2`
-  - Both reach the menu with no code change, and the old `/high-shabbatot/yom-kippur` and `/high-shabbatot/shavuot` addresses redirect in `public/_redirects`
-  - Still open: Pesach and Sukkot booklets exist in the same file but have no pages yet; enroll them when the temple asks
+  - Seven pages now built from the temple booklets in `docs/inbox/`: `shabbaton-pesach.mdx` (`order: 1`), `shabbaton-unleavened-bread-first-day.mdx` (`order: 2`), `shabbaton-pesach-seventh-day.mdx` (`order: 3`), `shabbaton-shavuot.mdx` (`order: 4`), `shabbaton-yom-teruah.mdx` (`order: 5`), `shabbaton-yom-kippur.mdx` (`order: 6`), `shabbaton-sukkot.mdx` (`order: 7`)
+  - All reach the menu with no code change, and the old `/high-shabbatot/yom-kippur` and `/high-shabbatot/shavuot` addresses redirect in `public/_redirects`
+  - Order follows the settled plan in `docs/inbox/README.md`: by place in the year, Nisan first. Shavuot moved 2 to 4, Yom Teruah 1 to 5, Yom Kippur 3 to 6, and Sukkot lands at 7
+  - Verified: `npm run test` 14 files passed, `npm run verify` 0 errors and 76 pages built including `/shabbatonim/shabbaton-sukkot`
+  - Code in `src/content/services/`
 
 ### 11. Temple information & contact · in-progress
 
@@ -307,6 +310,13 @@ The temple's booklets are deliberately kept out of the precache, so a booklet a 
 **Done when:** a booklet a member has never opened opens with no connection, and the precache stays inside a size budget recorded in the spec.
 
 - [ ] Decide the PDF precache (spec): `/architect offline pdfs`
+
+### 26. Commentary index · planned
+
+List all 53 portions in one place with links to each page, so members can find any commentary once more than a handful exist.
+**Done when:** a member can open one list and reach every portion page from it, with written and unwritten clearly shown.
+
+- [ ] Build it: `/develop commentary index`
 
 ## Rework: the look, after the features
 

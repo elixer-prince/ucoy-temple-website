@@ -131,9 +131,9 @@ describe('AC-1: services schema', () => {
 describe('AC-1: resources schema', () => {
   it('accepts a PDF resource with a site path', () => {
     const result = resourcesSchema.safeParse({
-      title: 'Shabbat prayer booklet',
-      file: '/pdfs/prayer-booklet.pdf',
-      category: 'Prayer booklets',
+      title: 'Shabbat service booklet',
+      file: '/pdfs/shabbat-service-booklet.pdf',
+      category: 'Service booklets',
       order: 1
     })
     expect(result.success).toBe(true)
@@ -152,7 +152,7 @@ describe('AC-1: resources schema', () => {
   it('keeps the leading slash in the file path it is given', () => {
     const result = resourcesSchema.safeParse({
       title: 'Resource',
-      file: '/pdfs/prayer-booklet.pdf'
+      file: '/pdfs/shabbat-service-booklet.pdf'
     })
     expect(result.success).toBe(true)
     if (result.success) {

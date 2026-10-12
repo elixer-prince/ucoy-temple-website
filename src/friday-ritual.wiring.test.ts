@@ -77,7 +77,7 @@ describe('feature 6: the Friday file alone is enough to publish the page', () =>
     const orderOf = (slug: string): number =>
       Number(read('src', 'content', 'services', `${slug}.mdx`).match(/^order:\s*(\d+)$/m)?.[1])
     expect(orderOf(fridayId)).toBe(0)
-    expect(orderOf(fridayId)).toBeLessThan(orderOf('shabbat-morning-service'))
+    expect(orderOf(fridayId)).toBeLessThan(orderOf('shabbat-morning'))
   })
 
   it('names no address for itself anywhere else in src/', () => {
@@ -203,7 +203,7 @@ describe('feature 8: the closing of Shabbat reaches the page with one file', () 
     // The reachability problem the separate address creates: a member who has
     // just come out of the service should reach the closing without hunting for
     // it in the menu. One link, not a second copy of the closing text.
-    const morning = read('src', 'content', 'services', 'shabbat-morning-service.mdx')
+    const morning = read('src', 'content', 'services', 'shabbat-morning.mdx')
     expect(morning).toContain(`](/services/${closingId})`)
   })
 
@@ -250,7 +250,7 @@ describe('feature 8: the link from the morning service lands on a real page', ()
     join(process.cwd(), 'dist', 'services', slug, 'index.html')
 
   it('builds the closing at the address the morning service links to', () => {
-    const morning = read('src', 'content', 'services', 'shabbat-morning-service.mdx')
+    const morning = read('src', 'content', 'services', 'shabbat-morning.mdx')
     const href = morning.match(/\]\((\/services\/closing-of-shabbat[^)]*)\)/)?.[1]
     expect(href).toBe('/services/closing-of-shabbat')
 
@@ -264,7 +264,7 @@ describe('feature 8: the link from the morning service lands on a real page', ()
   })
 
   it('renders that link into the built morning page, so the tap is really there', () => {
-    const morningPage = built('shabbat-morning-service')
+    const morningPage = built('shabbat-morning')
     if (!existsSync(morningPage)) {
       expect(true).toBe(true)
       return
@@ -277,7 +277,7 @@ describe('feature 8: the link from the morning service lands on a real page', ()
   it('puts the link at the end of the morning service, where a member reaches it', () => {
     // A member who has just come out of the service reads the last paragraph, so a
     // link placed earlier would be missed exactly when it is wanted.
-    const body = getBodyOf(read('src', 'content', 'services', 'shabbat-morning-service.mdx'))
+    const body = getBodyOf(read('src', 'content', 'services', 'shabbat-morning.mdx'))
     const lastParagraph =
       body
         .trimEnd()

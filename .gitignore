@@ -27,3 +27,7 @@ Thumbs.db
 
 # Agent scratch files
 .tmp-*
+
+# Raw material waiting to become content (scope feature 10)
+docs/inbox/
+

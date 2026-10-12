@@ -96,7 +96,7 @@ const resources = defineCollection({
   }),
   schema: z.object({
     title: z.string().min(1, 'Title is required'),
-    // A path under public/, such as /pdfs/prayer-booklet.pdf.
+    // A path under public/, such as /pdfs/shabbat-service-booklet.pdf.
     file: z.string().min(1, 'A file path under public/ is required'),
     category: z.string().optional(),
     description: z.string().max(160).optional(),

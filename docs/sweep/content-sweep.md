@@ -72,12 +72,13 @@ served from this site and never from a third party, and that the site works on a
 phone with no internet. An iframe of YouTube breaks both: it needs a connection
 and it hands the viewer's data to a third party.
 
-**What is outstanding, for the temple to supply.** Each of the five needs its
-recording placed under `public/videos/` as an `.mp4`, and each service body then
-gets a `<Video>` call where the old embed stood. The headings for all five are
-already in the bodies, in the order the service runs in, so only the files are
-missing. Until the files arrive, no body names a `src` with nothing behind it,
-which is the offline promise the test suite already guards.
+**What was outstanding, now supplied by the temple.** Each of the five recordings
+is placed under `public/videos/` as an `.mp4`, and each service body now carries a
+`<Video src>` call where the old embed stood. The headings for all five were already
+in the bodies, in the order the service runs in, so only the files were missing
+before. No body now names a `src` with nothing behind it, and every `<Video src>`
+points at a real, offline-cached file, which is the same offline promise the test
+suite already guards.
 
 ### Yom Teruah is a second copy of the Shabbat morning order
 
@@ -94,9 +95,9 @@ that is the moment to break the link** and write the page as its own file.
 
 ### The prayer booklet PDF
 
-`public/pdfs/prayer-booklet.pdf` is still the sample file that proves the
-thread. The temple's real booklet replaces it. The service pages now link it
-through its resource page, `/resources/prayer-booklet`, never by its file path,
+`public/pdfs/shabbat-service-booklet.pdf` is now the real booklet the temple publishes
+rather than a sample. The service pages link it through its resource page,
+`/resources/shabbat-service-booklet`, never by its file path,
 so swapping the file changes no address.
 
 ## What the sweep did not settle
@@ -118,11 +119,10 @@ so swapping the file changes no address.
   time that would go stale.
 - **The High Shabbatot pages that were empty** are scope feature 10, as above.
 
-## Follow ups for the temple
+The five recordings and the real prayer booklet are now supplied and wired into the
+service bodies and offline caching, so the content sweep is fully closed (see scope
+feature 9). Remaining for the temple to supply:
 
-1. Supply the five recordings (two national anthems, two theme songs, and the
-   Shabbat Rest video) as files under `public/videos/`.
-2. Supply the real prayer booklet PDF.
-3. Supply the street address, so `SITE_CONFIG.location.address` and `visiting.md`
+1. Supply the street address, so `SITE_CONFIG.location.address` and `visiting.md`
    can carry it.
-4. Supply the contact email.
+2. Supply the contact email.

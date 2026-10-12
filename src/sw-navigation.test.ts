@@ -7,8 +7,8 @@
  *
  * The regression this locks in (spec 0001, AC-7, the offline feature): pages are
  * built as directory indexes, so the pre-cache holds `/index.html` and
- * `/services/shabbat-morning-service/index.html` while a member requests `/` and
- * `/services/shabbat-morning-service`. The Cache API matches the exact URL, so
+ * `/services/shabbat-morning/index.html` while a member requests `/` and
+ * `/services/shabbat-morning`. The Cache API matches the exact URL, so
  * without a retry on the directory index form every page load offline fell
  * through to offline.html even though the page was in the cache.
  */
@@ -35,7 +35,7 @@ function navigate(cache: FakeCache, path: string): Promise<FakeResponse> {
 const PRECACHED: Record<string, FakeResponse> = {
   '/offline.html': new FakeResponse('offline page'),
   '/index.html': new FakeResponse('home page'),
-  '/services/shabbat-morning-service/index.html': new FakeResponse('service page')
+  '/services/shabbat-morning/index.html': new FakeResponse('service page')
 }
 
 describe('AC-7: an offline page load finds the pre-cached page', () => {
@@ -46,7 +46,7 @@ describe('AC-7: an offline page load finds the pre-cached page', () => {
   })
 
   it('serves a service page for its bare path though only the index file is cached', async () => {
-    const response = await navigate(new FakeCache(PRECACHED), '/services/shabbat-morning-service')
+    const response = await navigate(new FakeCache(PRECACHED), '/services/shabbat-morning')
 
     expect(response.body).toBe('service page')
   })
@@ -208,7 +208,7 @@ describe('feature 8: the closing of Shabbat is reachable with no connection', ()
     }
 
     const manifest = JSON.parse(readFileSync(manifestPath, 'utf-8')) as { urls: string[] }
-    expect(manifest.urls).toContain('/services/shabbat-morning-service/index.html')
+    expect(manifest.urls).toContain('/services/shabbat-morning/index.html')
   })
 
   it('adds nothing but the page itself, so no heavy file rides along with it', () => {

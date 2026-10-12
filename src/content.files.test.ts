@@ -72,8 +72,8 @@ function getBody(fileContent: string): string {
 const contentDir = join(process.cwd(), 'src/content')
 
 describe('AC-2: Sample service files exist and validate against schema', () => {
-  it('shabbat-morning-service.mdx is a valid weekly service', () => {
-    const file = readFileSync(join(contentDir, 'services/shabbat-morning-service.mdx'), 'utf-8')
+  it('shabbat-morning.mdx is a valid weekly service', () => {
+    const file = readFileSync(join(contentDir, 'services/shabbat-morning.mdx'), 'utf-8')
     const fm = parseFrontMatter(file)
     const result = servicesSchema.safeParse(fm)
     expect(result.success).toBe(true)
@@ -83,8 +83,8 @@ describe('AC-2: Sample service files exist and validate against schema', () => {
     }
   })
 
-  it('shabbaton-yom-teruah.mdx is a valid shabbaton', () => {
-    const file = readFileSync(join(contentDir, 'services/shabbaton-yom-teruah.mdx'), 'utf-8')
+  it('yom-teruah.mdx is a valid shabbaton', () => {
+    const file = readFileSync(join(contentDir, 'services/yom-teruah.mdx'), 'utf-8')
     const fm = parseFrontMatter(file)
     const result = servicesSchema.safeParse(fm)
     expect(result.success).toBe(true)
@@ -95,23 +95,26 @@ describe('AC-2: Sample service files exist and validate against schema', () => {
 })
 
 describe('AC-4: Videos appear in body in written order with text around them', () => {
-  it('shabbat-morning-service.mdx has two Video calls with text before, between, and after', () => {
-    const file = readFileSync(join(contentDir, 'services/shabbat-morning-service.mdx'), 'utf-8')
+  it('shabbat-morning.mdx has four Video calls with text before, between, and after', () => {
+    // The four recordings the content sweep brought in (two anthems, two theme
+    // songs), all served locally. The opening and Torah reading videos were spec
+    // examples never supplied by the temple, so their Video calls are removed.
+    const file = readFileSync(join(contentDir, 'services/shabbat-morning.mdx'), 'utf-8')
     const videoTagCount = (file.match(/<Video/g) || []).length
-    expect(videoTagCount).toBe(2)
+    expect(videoTagCount).toBe(4)
   })
 
-  it('shabbaton-yom-teruah.mdx carries the same two Video calls as the morning service', () => {
+  it('yom-teruah.mdx carries the same four Video calls as the morning service', () => {
     // The old site's Yom Teruah page was the Shabbat morning order with a Teruah
     // opening in front of it, and the sweep carried the order across as it stood.
     // The count therefore matches the morning service rather than being one.
-    const file = readFileSync(join(contentDir, 'services/shabbaton-yom-teruah.mdx'), 'utf-8')
+    const file = readFileSync(join(contentDir, 'services/yom-teruah.mdx'), 'utf-8')
     const videoTagCount = (file.match(/<Video/g) || []).length
-    expect(videoTagCount).toBe(2)
+    expect(videoTagCount).toBe(4)
   })
 
-  it('the second Video in shabbat-morning-service.mdx has caption only, no poster', () => {
-    const file = readFileSync(join(contentDir, 'services/shabbat-morning-service.mdx'), 'utf-8')
+  it('the second Video in shabbat-morning.mdx has caption only, no poster', () => {
+    const file = readFileSync(join(contentDir, 'services/shabbat-morning.mdx'), 'utf-8')
     const secondVideoBlock = file.split('<Video')[2]
     expect(secondVideoBlock).toContain('caption=')
     expect(secondVideoBlock).not.toContain('poster')
@@ -119,15 +122,15 @@ describe('AC-4: Videos appear in body in written order with text around them', (
 })
 
 describe('AC-3: Body headings start at ## level (front matter title is the only h1)', () => {
-  it('shabbat-morning-service.mdx body starts with ## not #', () => {
-    const file = readFileSync(join(contentDir, 'services/shabbat-morning-service.mdx'), 'utf-8')
+  it('shabbat-morning.mdx body starts with ## not #', () => {
+    const file = readFileSync(join(contentDir, 'services/shabbat-morning.mdx'), 'utf-8')
     const body = getBody(file)
     const firstHeading = body.match(/^(#{1,6}\s)/m)?.[1]
     expect(firstHeading).toBe('## ')
   })
 
-  it('shabbaton-yom-teruah.mdx body starts with ## not #', () => {
-    const file = readFileSync(join(contentDir, 'services/shabbaton-yom-teruah.mdx'), 'utf-8')
+  it('yom-teruah.mdx body starts with ## not #', () => {
+    const file = readFileSync(join(contentDir, 'services/yom-teruah.mdx'), 'utf-8')
     const body = getBody(file)
     const firstHeading = body.match(/^(#{1,6}\s)/m)?.[1]
     expect(firstHeading).toBe('## ')
@@ -140,7 +143,7 @@ describe('feature 5: the Sabbath morning body carries real Hebrew', () => {
   // is a block with lang="he" and dir="rtl", a phrase inside English carries
   // dir="auto" on a span, and prose.css alone styles both.
   const body = getBody(
-    readFileSync(join(contentDir, 'services/shabbat-morning-service.mdx'), 'utf-8')
+    readFileSync(join(contentDir, 'services/shabbat-morning.mdx'), 'utf-8')
   )
 
   it('marks a full Hebrew passage as a right to left block', () => {
@@ -177,21 +180,24 @@ describe('feature 5: the Sabbath morning body carries real Hebrew', () => {
 })
 
 describe('AC-6: Resource links go through resource pages', () => {
-  it('prayer-booklet.md validates against resources schema', () => {
-    const file = readFileSync(join(contentDir, 'resources/prayer-booklet.md'), 'utf-8')
+  it('shabbat-service-booklet.md validates against resources schema', () => {
+    const file = readFileSync(
+      join(contentDir, 'resources/shabbat-service-booklet.md'),
+      'utf-8'
+    )
     const fm = parseFrontMatter(file)
     const result = resourcesSchema.safeParse(fm)
     expect(result.success).toBe(true)
     if (result.success) {
-      expect(result.data.file).toBe('/pdfs/prayer-booklet.pdf')
-      expect(result.data.category).toBe('Prayer booklets')
+      expect(result.data.file).toBe('/pdfs/shabbat-service-booklet.pdf')
+      expect(result.data.category).toBe('Service booklets')
     }
   })
 
-  it('shabbat-morning-service.mdx links to the resource page, not the PDF path', () => {
-    const file = readFileSync(join(contentDir, 'services/shabbat-morning-service.mdx'), 'utf-8')
-    expect(file).toContain('](/resources/prayer-booklet)')
-    expect(file).not.toContain('/pdfs/prayer-booklet.pdf')
+  it('shabbat-morning.mdx links to the resource page, not the PDF path', () => {
+    const file = readFileSync(join(contentDir, 'services/shabbat-morning.mdx'), 'utf-8')
+    expect(file).toContain('](/resources/shabbat-service-booklet)')
+    expect(file).not.toContain('/pdfs/shabbat-service-booklet.pdf')
   })
 })
 describe('feature 6: the Friday evening home ritual file', () => {
@@ -227,7 +233,7 @@ describe('feature 6: the Friday evening home ritual file', () => {
     // /services, the home page, and the sidebar, which all share this order.
     const friday = parseFrontMatter(file)
     const morning = parseFrontMatter(
-      readFileSync(join(contentDir, 'services/shabbat-morning-service.mdx'), 'utf-8')
+      readFileSync(join(contentDir, 'services/shabbat-morning.mdx'), 'utf-8')
     )
     expect(friday.order).toBe(0)
     expect(friday.order).toBeLessThan(morning.order as number)
@@ -374,10 +380,10 @@ describe('feature 8: the closing of Shabbat file', () => {
     // /services. The Saturday afternoon service is scope feature 9.
     const fm = parseFrontMatter(file)
     const morning = parseFrontMatter(
-      readFileSync(join(contentDir, 'services/shabbat-morning-service.mdx'), 'utf-8')
+      readFileSync(join(contentDir, 'services/shabbat-morning.mdx'), 'utf-8')
     )
     const afternoon = parseFrontMatter(
-      readFileSync(join(contentDir, 'services/saturday-afternoon-service.mdx'), 'utf-8')
+      readFileSync(join(contentDir, 'services/shabbat-afternoon.mdx'), 'utf-8')
     )
     expect(fm.order).toBe(3)
     expect(fm.order as number).toBeGreaterThan(morning.order as number)
@@ -594,8 +600,8 @@ describe('feature 8: the closing page is built and published', () => {
     const weekly = [...nav.matchAll(/href="(\/services\/[a-z-]*)"/g)].map((m) => m[1])
     expect(weekly).toEqual([
       '/services/friday-evening-home-ritual',
-      '/services/shabbat-morning-service',
-      '/services/saturday-afternoon-service',
+      '/services/shabbat-morning',
+      '/services/shabbat-afternoon',
       '/services/closing-of-shabbat'
     ])
   })
@@ -612,7 +618,7 @@ describe('feature 8: the closing page is built and published', () => {
     expect(link).toContain('aria-current="page"')
   })
 
-  it('reaches the prayer booklet through its resource page, never the file path', () => {
+  it('reaches the Shabbat booklet through its resource page, never the file path', () => {
     // A PDF is linked through /resources/<slug> so the page around it works too.
     const html = page()
     if (!html) {
@@ -620,7 +626,7 @@ describe('feature 8: the closing page is built and published', () => {
       return
     }
 
-    expect(html).toContain('href="/resources/prayer-booklet"')
+    expect(html).toContain('href="/resources/shabbat-service-booklet"')
     expect(html).not.toContain('/pdfs/')
   })
 
@@ -636,13 +642,17 @@ describe('feature 8: the closing page is built and published', () => {
   })
 })
 
-describe('feature 6: the Friday body names no video until the recording exists', () => {
+describe('feature 6: the Friday body names the Shabbat Rest video now that the recording exists', () => {
   const body = getBody(
     readFileSync(join(contentDir, 'services/friday-evening-home-ritual.mdx'), 'utf-8')
   )
 
-  it('carries no Video call', () => {
-    expect(body).not.toContain('<Video')
+  it('carries exactly one Video call, pointing at the Shabbat Rest recording', () => {
+    // The sweep placed one video under Shabbat Rest on this page; the recording
+    // now exists, so the body names it and it must resolve to a real file below.
+    const videoTagCount = (body.match(/<Video/g) || []).length
+    expect(videoTagCount).toBe(1)
+    expect(body).toContain('/videos/shabbat-rest.mp4')
   })
 
   it('points no Video at a file that is missing from public/', () => {
@@ -663,7 +673,7 @@ describe('feature 9: the Saturday afternoon service the old site published', () 
   // The sweep's one real gap: the old site listed a Saturday afternoon service and
   // the new build had no page for it. One content file publishes it, because the
   // sidebar, the home page and /services all build from the collection.
-  const file = readFileSync(join(contentDir, 'services/saturday-afternoon-service.mdx'), 'utf-8')
+  const file = readFileSync(join(contentDir, 'services/shabbat-afternoon.mdx'), 'utf-8')
   const body = getBody(file)
 
   it('is a valid weekly service, so it builds under /services', () => {
@@ -685,10 +695,10 @@ describe('feature 9: the Saturday afternoon service the old site published', () 
     const orderOf = (slug: string): number =>
       parseFrontMatter(readFileSync(join(contentDir, `services/${slug}.mdx`), 'utf-8'))
         .order as number
-    expect(orderOf('saturday-afternoon-service')).toBeGreaterThan(
-      orderOf('shabbat-morning-service')
+    expect(orderOf('shabbat-afternoon')).toBeGreaterThan(
+      orderOf('shabbat-morning')
     )
-    expect(orderOf('saturday-afternoon-service')).toBeLessThan(orderOf('closing-of-shabbat'))
+    expect(orderOf('shabbat-afternoon')).toBeLessThan(orderOf('closing-of-shabbat'))
   })
 
   it('starts the body at ## , so the front matter title stays the only h1', () => {
@@ -714,9 +724,9 @@ describe('feature 9: the Saturday afternoon service the old site published', () 
     expect(body).not.toContain('<Video')
   })
 
-  it('reaches the prayer booklet through its resource page, never the file path', () => {
-    expect(file).toContain('](/resources/prayer-booklet)')
-    expect(file).not.toContain('/pdfs/prayer-booklet.pdf')
+  it('reaches the Shabbat booklet through its resource page, never the file path', () => {
+    expect(file).toContain('](/resources/shabbat-service-booklet)')
+    expect(file).not.toContain('/pdfs/shabbat-service-booklet.pdf')
   })
 })
 
@@ -725,7 +735,7 @@ describe('feature 9: the sweep carried the old site text into the service bodies
   // temple published is lost. These pin the passages that were the longest on the
   // old pages, so a later edit that quietly trims them fails the suite.
   const morning = getBody(
-    readFileSync(join(contentDir, 'services/shabbat-morning-service.mdx'), 'utf-8')
+    readFileSync(join(contentDir, 'services/shabbat-morning.mdx'), 'utf-8')
   )
 
   it('carries all seven of the old page Tehillim, 90 through 96', () => {
@@ -770,11 +780,11 @@ describe('feature 9: the sweep carried the old site text into the service bodies
     // an anchor the page really has, checked against the built HTML, because the
     // anchor only exists after the build slugifies the heading.
     const dirs = [
-      'services/shabbat-morning-service',
-      'shabbatonim/shabbaton-yom-teruah',
+      'services/shabbat-morning',
+      'shabbatonim/yom-teruah',
       'services/closing-of-shabbat',
       'services/friday-evening-home-ritual',
-      'services/saturday-afternoon-service'
+      'services/shabbat-afternoon'
     ]
 
     let checked = 0
@@ -825,7 +835,7 @@ describe('feature 9: the sweep carried the old site text into the service bodies
     // needs a guard: an edit to one order that does not reach the other would show
     // a member a different service depending on which day they opened.
     const teruah = getBody(
-      readFileSync(join(contentDir, 'services/shabbaton-yom-teruah.mdx'), 'utf-8')
+      readFileSync(join(contentDir, 'services/yom-teruah.mdx'), 'utf-8')
     )
 
     // Both files run the same order, so their section headings must match exactly.
@@ -874,15 +884,15 @@ describe('feature 9: the old site addresses redirect to the pages that replaced 
       '/services/friday-evening-home-ritual'
     )
     expect(pairs.get('/weekly-shabbat-services/saturday-morning-service')).toBe(
-      '/services/shabbat-morning-service'
+      '/services/shabbat-morning'
     )
     expect(pairs.get('/weekly-shabbat-services/saturday-afternoon-service')).toBe(
-      '/services/saturday-afternoon-service'
+      '/services/shabbat-afternoon'
     )
     expect(pairs.get('/weekly-shabbat-services/closing-of-the-shabbat')).toBe(
       '/services/closing-of-shabbat'
     )
-    expect(pairs.get('/high-shabbatot/yom-teruah')).toBe('/shabbatonim/shabbaton-yom-teruah')
+    expect(pairs.get('/high-shabbatot/yom-teruah')).toBe('/shabbatonim/yom-teruah')
     expect(pairs.get('/this-weeks-torah-portion')).toBe('/torah-portion')
   })
 
@@ -895,11 +905,17 @@ describe('feature 9: the old site addresses redirect to the pages that replaced 
       '/torah-portion',
       '/contact',
       ...readdirSync(join(contentDir, 'pages')).map((name) => `/${name.replace(/\.mdx?$/, '')}`),
-      ...readdirSync(join(contentDir, 'services')).map((name) =>
-        name.startsWith('shabbaton-')
+      ...readdirSync(join(contentDir, 'services')).map((name) => {
+        // `kind` decides the area, not the filename: a Shabbaton goes to
+        // /shabbatonim/ and a weekly service to /services/, whatever the slug,
+        // so a Shabbaton slug is free to drop any "shabbaton-" prefix.
+        const kind = parseFrontMatter(
+          readFileSync(join(contentDir, 'services', name), 'utf-8')
+        ).kind
+        return kind === 'shabbaton'
           ? `/shabbatonim/${name.replace(/\.mdx$/, '')}`
           : `/services/${name.replace(/\.mdx$/, '')}`
-      ),
+      }),
       ...readdirSync(join(contentDir, 'resources')).map(
         (name) => `/resources/${name.replace(/\.mdx?$/, '')}`
       )
