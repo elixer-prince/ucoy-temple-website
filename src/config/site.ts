@@ -11,7 +11,7 @@
 import {
   CONTACT_EMAIL,
   FORM_ENDPOINT,
-  CALENDAR_ID,
+  CALENDAR_URL,
   CALENDAR_TIMEZONE,
   CF_ANALYTICS_TOKEN
 } from 'astro:env/client'
@@ -37,10 +37,16 @@ export const SITE_CONFIG = {
   /** Formspree endpoint the contact form posts to. */
   formEndpoint: FORM_ENDPOINT ?? 'https://formspree.io/f/placeholder',
 
-  // Calendar (spec 0001, AC-2)
-  /** Google Calendar embed ID. */
-  calendarId: CALENDAR_ID ?? 'ucoy.placeholder@group.calendar.google.com',
-  /** Timezone string used by the calendar embed. */
+  // Calendar (spec 0007, assumed)
+  /**
+   * Proton Calendar share link that returns an iCalendar (ICS) feed. Read once
+   * at build time and written into the home page as plain HTML, so no visitor's
+   * browser contacts a third party to see the list. Empty means no feed is
+   * configured yet: the home page then shows a quiet notice and the build still
+   * succeeds.
+   */
+  calendarUrl: CALENDAR_URL ?? '',
+  /** Timezone the event list is rendered in, the temple's own. */
   calendarTimezone: CALENDAR_TIMEZONE ?? 'America/New_York',
 
   // Analytics (spec 0001, AC-3)
@@ -53,7 +59,7 @@ export const SITE_CONFIG = {
   // so it is not guessed here.
   location: {
     name: "United Congregation of Yisra'Yah",
-    address: 'Address to be provided by the temple',
+    address: '24 Gandhi, Kingston 11, St. Andrew',
     parish: 'St. Andrew',
     community: 'Waterhouse',
     country: 'Jamaica',

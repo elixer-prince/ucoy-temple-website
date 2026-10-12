@@ -168,7 +168,7 @@ describe('feature 6: the schedule has one source, the content collection', () =>
   it('keeps the environment backed config the site still uses', () => {
     expect(siteConfig).toContain('contactEmail')
     expect(siteConfig).toContain('formEndpoint')
-    expect(siteConfig).toContain('calendarId')
+    expect(siteConfig).toContain('calendarUrl')
     expect(siteConfig).toContain('location')
   })
 })

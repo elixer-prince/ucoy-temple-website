@@ -17,7 +17,7 @@ pages_build_output_dir = "dist"
 # SITE_URL = "https://ucoy-temple-website.pages.dev"
 # CONTACT_EMAIL = "contact@ucoy.org"
 # FORM_ENDPOINT = "https://formspree.io/f/XXXXXX"
-# CALENDAR_ID = "<calendar-id>@group.calendar.google.com"
+# CALENDAR_URL = "<proton-calendar-share-link>"
 # CALENDAR_TIMEZONE = "America/New_York"
 # CF_ANALYTICS_TOKEN = "<cloudflare-web-analytics-token>"
 

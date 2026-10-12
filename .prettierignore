@@ -10,6 +10,7 @@
 .continue/
 .windsurf/
 .cline/
+.kilo/
 
 # Husky's generated hook shims. The hand written .husky/pre-commit stays in
 # scope, only the generated _ folder is skipped.

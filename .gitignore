@@ -28,6 +28,10 @@ Thumbs.db
 # Agent scratch files
 .tmp-*
 
+# A tool's forked worktree copy of this repository. It is never part of the
+# site, and no check may report against it.
+.kilo/
+
 # Raw material waiting to become content (scope feature 10)
 docs/inbox/
 

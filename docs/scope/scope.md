@@ -253,7 +253,7 @@ Who the temple is, where and when it meets, and how to reach it, plus a simple m
 - [x] Decide the form approach (spec): `/architect temple information & contact`, settled inside spec 0001 as Formspree, no separate spec needed
 - [x] Build it: `/develop temple information & contact` (spec 0001 AC-2, AC-3)
   - `src/pages/contact.astro`, `src/content/pages/{about,history,visiting}.md`, and the `SITE_CONFIG` values behind them are done
-  - Privacy wording now names all five: the Formspree delivery, the host's request logs, the Google Calendar embed, the cookieless page view counts, and the theme choice kept under `ucoy-theme`
+  - Privacy wording now names all five: the Formspree delivery, the host's request logs, the build-time events list, the cookieless page view counts, and the theme choice kept under `ucoy-theme`
   - The success notice was dead code (a `sent` prop no route ever passed). Formspree's `_next` now returns to `/contact?sent=1` and a small script reveals the notice, so a member sees confirmation the message went
   - `visiting.md` promised "call the temple office", a phone number the site does not have, and pointed at `[calendar](#)` and `[announcements](#)`, both dead anchors. Fixed to the home page and to the message form
   - `visiting.md` also listed Saturday afternoon and Saturday evening services that were never authored, sending visitors to services with no page. Removed, with a test that fails if a day is advertised without a service file behind it

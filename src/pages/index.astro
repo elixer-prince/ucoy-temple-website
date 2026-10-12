@@ -1,6 +1,7 @@
 ---
 import { getCollection } from 'astro:content'
 import { SITE_CONFIG } from '@/config/site'
+import { fetchCalendarEvents, type CalendarEvent, type CalendarWindow } from '@/lib/calendar-events'
 import Layout from '@layouts/Layout.astro'
 import Panel from '@components/Panel.astro'
 import Callout from '@components/Callout.astro'
@@ -33,21 +34,57 @@ const weeklyServices = (await getCollection('services', ({ data }) => data.kind 
   (a, b) => a.data.order - b.data.order || a.data.title.localeCompare(b.data.title)
 )
 
-// Build the Google Calendar embed URL (AC-2: agenda view, temple timezone).
-const calendarUrl =
-  'https://calendar.google.com/calendar/embed?' +
-  new URLSearchParams({
-    src: SITE_CONFIG.calendarId,
-    ctz: SITE_CONFIG.calendarTimezone,
-    mode: 'AGENDA',
-    showTitle: '0',
-    showNav: '0',
-    showDate: '0',
-    showPrint: '0',
-    showTabs: '0',
-    showCalendars: '0',
-    showTz: '0'
+/**
+ * Format one upcoming event's date and time for the list.
+ *
+ * An all day event shows just the date, since a time would be invented. A timed
+ * event shows the time beside the date, read in the temple's own timezone so a
+ * member in Kingston sees the time that matters to them (spec 0007).
+ */
+function formatEventDate(event: CalendarEvent): string {
+  if (event.allDay) {
+    return event.start.toLocaleDateString('en-US', {
+      weekday: 'short',
+      month: 'short',
+      day: 'numeric',
+      timeZone: SITE_CONFIG.calendarTimezone
+    })
+  }
+  return event.start.toLocaleString('en-US', {
+    weekday: 'short',
+    month: 'short',
+    day: 'numeric',
+    hour: 'numeric',
+    minute: '2-digit',
+    timeZone: SITE_CONFIG.calendarTimezone
   })
+}
+
+// Upcoming events, read from the temple's Proton Calendar feed at build time
+// (spec 0007). This runs once while the site builds and writes plain HTML, so a
+// visitor's browser never contacts a third party to see the list, and the page
+// works offline once cached. The window looks from the start of today out 90
+// days, which is far enough to carry a season of Holy Days without listing a
+// year at once. A missing feed, or a feed that cannot be read, never fails the
+// build: the page falls back to a quiet notice, exactly like the service list.
+let upcomingEvents: CalendarEvent[] = []
+let eventsNotice: string | null = null
+
+if (SITE_CONFIG.calendarUrl) {
+  const today = new Date()
+  today.setHours(0, 0, 0, 0)
+  const window: CalendarWindow = { from: today, to: new Date(today.getTime() + 90 * 86_400_000) }
+  try {
+    upcomingEvents = await fetchCalendarEvents(SITE_CONFIG.calendarUrl, window)
+    if (upcomingEvents.length === 0) {
+      eventsNotice = 'No upcoming events are listed right now. Please check back soon.'
+    }
+  } catch {
+    eventsNotice = 'The events list could not be loaded. Please check back soon.'
+  }
+} else {
+  eventsNotice = 'Upcoming events will be listed here once the calendar is connected.'
+}
 ---
 
 <Layout title="Home" description={SITE_CONFIG.description}>
@@ -144,27 +181,36 @@ const calendarUrl =
     </div>
   </section>
 
-  <!-- Upcoming events from Google Calendar (AC-2) -->
+  <!-- Upcoming events, read from the temple's Proton Calendar feed at build
+       time (spec 0007). Plain HTML, no iframe, no third party at view time. -->
   <section class="calendar">
     <div class="prose">
       <h2>Upcoming events</h2>
       <Callout title="Where events come from">
-        Events come directly from the temple's Google Calendar — staff update calendar.google.com
-        and the changes appear here with the next visit.
+        Events come from the temple's shared calendar. Staff update the calendar and the changes
+        appear here the next time the site is published.
       </Callout>
 
-      <iframe
-        src={calendarUrl}
-        class="calendar-embed"
-        style="border: 0"
-        width="100%"
-        height="650"
-        loading="lazy"
-        title="Upcoming events from the temple Google Calendar"
-      >
-        <!-- Iframes do not require JavaScript. -->
-        <p>Your browser does not support iframes.</p>
-      </iframe>
+      {upcomingEvents.length > 0 ? (
+        <ul class="event-list">
+          {upcomingEvents.map((event) => (
+            <li class="event-row">
+              {event.url ? (
+                <a class="event-link" href={event.url}>
+                  {event.title}
+                </a>
+              ) : (
+                <span class="event-title">{event.title}</span>
+              )}
+              <span class="event-when text-muted">
+                {[formatEventDate(event), event.location].filter(Boolean).join(' · ')}
+              </span>
+            </li>
+          ))}
+        </ul>
+      ) : (
+        <p class="text-muted">{eventsNotice}</p>
+      )}
     </div>
   </section>
 </Layout>
@@ -257,9 +303,29 @@ const calendarUrl =
     padding: var(--space-xl) 0;
   }
 
-  .calendar-embed {
-    border-radius: var(--radius);
-    border: var(--border-width) solid var(--color-border);
-    margin-top: var(--space-s);
+  /* The list is the upcoming events, styled like the service list above: the
+     title leads, the date, time, and place sit after it in muted text. */
+  .event-list {
+    list-style: none;
+    padding-inline-start: 0;
+    margin: var(--space-s) 0 0;
+  }
+
+  .event-row {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: baseline;
+    justify-content: space-between;
+    gap: var(--space-3xs) var(--space-s);
+    padding: var(--space-2xs) 0;
+    border-bottom: var(--border-width) solid var(--color-border);
+  }
+
+  .event-row:last-child {
+    border-bottom: none;
+  }
+
+  .event-when {
+    font-size: var(--text-small);
   }
 </style>

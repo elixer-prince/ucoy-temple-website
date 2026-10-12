@@ -31,13 +31,14 @@ export default defineConfig({
         access: 'public',
         optional: true
       }),
-      // Google Calendar embed ID for the upcoming-events agenda view.
-      CALENDAR_ID: envField.string({
+      // Proton Calendar share link (ICS feed) for the upcoming-events list.
+      // Read once at build time; see docs/specs/0007-upcoming-events-proton-calendar.md.
+      CALENDAR_URL: envField.string({
         context: 'client',
         access: 'public',
         optional: true
       }),
-      // Temple local timezone for the calendar embed.
+      // Temple local timezone for the event list rendering.
       CALENDAR_TIMEZONE: envField.string({
         context: 'client',
         access: 'public',

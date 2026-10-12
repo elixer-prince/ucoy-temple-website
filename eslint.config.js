@@ -67,6 +67,7 @@ export default [
       'node_modules/',
       '.astro/',
       '.agents/',
+      '.kilo/',
       'docs/.agent-cache/',
       '**/*.d.ts',
       '**/dist/**'
