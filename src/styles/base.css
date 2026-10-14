@@ -285,7 +285,36 @@ blockquote p {
   }
 }
 
+/* ---- Navigation swap: no animation (spec 0008, AC-4) ---- */
+
+/*
+ * Every page swap runs inside the browser's view transition. The shell elements
+ * carry transition:animate="none" in Layout.astro, which names each of them
+ * separately and turns their own animation off, but anything not named is the
+ * root snapshot, and the browser crossfades that root by default. That default
+ * is the only animation a navigation can show, so these three rules turn it
+ * off in every motion setting, for a swap that is a single silent step. The
+ * declarations mirror what Astro emits for an element marked none
+ * (astro/dist/runtime/server/transition.js): animation off, no blending, the
+ * old snapshot hidden.
+ */
+::view-transition-old(root) {
+  animation: none;
+  opacity: 0;
+  mix-blend-mode: normal;
+}
+
+::view-transition-new(root) {
+  animation: none;
+  mix-blend-mode: normal;
+}
+
+::view-transition-group(root) {
+  animation: none;
+}
+
 /* ---- High contrast mode (spec 0004, AC-11) ---- */
+
 
 @media (forced-colors: active) {
   .button {

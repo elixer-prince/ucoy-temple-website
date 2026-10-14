@@ -4,6 +4,7 @@
  * Imports stylesheets once, renders header, sidebar, content, footer.
  */
 import { SITE_CONFIG } from '@/config/site'
+import { ClientRouter } from 'astro:transitions'
 import Header from '@components/Header.astro'
 import Footer from '@components/Footer.astro'
 import Sidebar from '@components/Sidebar.astro'
@@ -45,6 +46,13 @@ const hasBanner = Astro.slots.has('banner')
     <meta name="theme-color" media="(prefers-color-scheme: dark)" content="#14151b" />
     <meta name="color-scheme" content="light dark" />
 
+    <!-- ClientRouter: instant page swaps with no animation (spec 0008).
+         No handleFallback: a fallback of none stops the router registering
+         its listeners where View Transitions are missing, leaving
+         astro:page-load unfired and the theme switch dead. No prefetch key
+         in astro.config.mjs either: pages already sit in the worker cache. -->
+    <ClientRouter />
+
     <!-- Theme choice on device, applied before paint. -->
     <script is:inline>
       try {
@@ -59,14 +67,14 @@ const hasBanner = Astro.slots.has('banner')
   </head>
 
   <body>
-    <SkipLink />
-    <Header />
+    <SkipLink transition:animate="none" />
+    <Header transition:animate="none" />
 
     <input class="sidebar-toggle" type="checkbox" id="sidebar-toggle" aria-label="Show menu" />
 
     <div class:list={['shell', { 'shell--with-banner': hasBanner }]}>
       <label class="sidebar-backdrop" for="sidebar-toggle" aria-hidden="true"></label>
-      <aside class="sidebar" id="sidebar">
+      <aside class="sidebar" id="sidebar" transition:animate="none">
         <Sidebar />
         <div class="theme-switch">
           <button class="theme-button" id="theme-button" type="button" hidden>
@@ -80,27 +88,35 @@ const hasBanner = Astro.slots.has('banner')
 
       <div class:list={['page', hasBanner && 'page--with-banner']}>
         <slot name="banner" />
-        <main id="main-content" class="content">
+        <main id="main-content" class="content" transition:animate="none">
           <slot />
         </main>
       </div>
     </div>
 
-    <Footer />
+    <Footer transition:animate="none" />
 
     <!-- Theme switch: one button cycling System, Light, Dark.
          The button starts hidden and is shown by this script, so nothing
-         renders when JavaScript is off (spec 0004, AC-4). -->
+         renders when JavaScript is off (spec 0004, AC-4).
+         The binding runs again on astro:page-load and the saved choice is
+         reapplied on astro:after-swap, so both survive client navigation. -->
     <script is:inline>
       ;(function () {
-        const button = document.getElementById('theme-button')
-        if (!button) return
-        button.hidden = false
         const order = ['system', 'light', 'dark']
         function label(mode) {
           return 'Theme: ' + mode.charAt(0).toUpperCase() + mode.slice(1)
         }
-        function apply(mode) {
+        function current() {
+          try {
+            const saved = localStorage.getItem('ucoy-theme')
+            if (saved === 'light' || saved === 'dark') return saved
+          } catch {
+            /* keep system */
+          }
+          return 'system'
+        }
+        function apply(mode, button) {
           try {
             if (mode === 'system') {
               document.documentElement.removeAttribute('data-theme')
@@ -112,27 +128,39 @@ const hasBanner = Astro.slots.has('banner')
           } catch {
             if (mode !== 'system') document.documentElement.setAttribute('data-theme', mode)
           }
-          button.textContent = label(mode)
+          if (button) button.textContent = label(mode)
         }
-        let start = 'system'
-        try {
-          const saved = localStorage.getItem('ucoy-theme')
-          if (saved === 'light' || saved === 'dark') start = saved
-        } catch {
-          /* keep system */
+        // Spec 0008: the swap rebuilds the document root and no built page
+        // carries data-theme, so the saved choice is written back after
+        // every swap. Idempotent: running it twice changes nothing.
+        function reapplyTheme() {
+          apply(current(), document.getElementById('theme-button'))
         }
-        apply(start)
-        button.addEventListener('click', function () {
-          let current = 'system'
-          try {
-            const savedNow = localStorage.getItem('ucoy-theme')
-            if (savedNow === 'light' || savedNow === 'dark') current = savedNow
-          } catch {
-            /* keep system */
-          }
-          const next = order[(order.indexOf(current) + 1) % order.length]
-          apply(next)
-        })
+        function initThemeButton() {
+          const button = document.getElementById('theme-button')
+          if (!button) return
+          button.hidden = false
+          // A swapped-in page re-runs this script, so the same button would
+          // collect two click handlers and skip a mode per press. The flag
+          // keeps one handler per element; a swapped-in button is a fresh
+          // element and binds normally.
+          apply(current(), button)
+          if (button.dataset.themeBound) return
+          button.dataset.themeBound = 'true'
+          button.addEventListener('click', function () {
+            const next = order[(order.indexOf(current()) + 1) % order.length]
+            apply(next, button)
+          })
+        }
+        initThemeButton()
+        // The router dispatches these on document after every swap. The
+        // window flag stops this script collecting a duplicate pair each
+        // time a swapped-in page re-runs it; window outlives the swap.
+        if (!window.__ucoyThemeRouterWired) {
+          document.addEventListener('astro:after-swap', reapplyTheme)
+          document.addEventListener('astro:page-load', initThemeButton)
+          window.__ucoyThemeRouterWired = true
+        }
       })()
     </script>
     <!-- Cloudflare Web Analytics (cookieless, AC-3).
