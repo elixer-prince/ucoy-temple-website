@@ -15,6 +15,7 @@ _These are recommendations to keep your build orderly, not requirements. Skip an
 | 2   | Coding standards & tooling                    | Foundation | done        |
 | 3   | Content model                                 | Foundation | done        |
 | 4   | Design system & UI foundation                 | Foundation | done        |
+| 27  | Client side navigation                        | Foundation | done        |
 | 5   | Site shell, home & first service page offline | Slice 1    | done        |
 | 6   | Friday service page                           | Slice 2    | done        |
 | 7   | Weekly Torah portion page                     | Slice 2    | done        |
@@ -99,6 +100,22 @@ The base look and building blocks every page stands on: typography that renders 
 - [x] Verify it: `/check verify design system & UI foundation` (nine of ten steps confirmed in a real Chrome on 2026-09-26; the tenth, reduced motion and Windows High Contrast, was accepted by the engineer on the strength of the shipped rules rather than run, because the tooling cannot force those two media features)
 - [x] Test it: `/test design system & UI foundation`
       Spec [0004](../specs/0004-design-system-ui-foundation/index.md) · code in `src/styles/`, `src/components/`, `src/layouts/`, `src/config/nav.ts`, `src/pages/`
+
+### 27. Client side navigation · done
+
+Every link on the site currently causes a full page load, so a member on a phone sees a blank flash between sections while the browser rebuilds a sidebar, header and font set that have not changed. Turn on Astro's own ClientRouter so only the reading column is swapped, with no animation, and keep the theme choice and its switch alive across the swap. It sits with the foundations because it changes the shell every other feature builds on.
+**Done when:** navigation no longer reloads the page, the saved theme and its switch survive every navigation, and the offline promise still holds in airplane mode.
+
+- [x] Decide the navigation model (spec): `/architect client side navigation`
+- [x] Build it: `/develop client side navigation`
+  - Router on with no animation, and no `handleFallback` (AC-1, AC-4)
+  - Theme attribute restored after each swap, and the theme button rebound on every page load (AC-2, AC-3)
+  - `data-astro-reload` on the PDF links and the contact form (AC-6, AC-7)
+  - Test driving the real theme reapply logic through a fake document (AC-10)
+  - Airplane mode walk over a plain static server, plus the no JavaScript walk (AC-5, AC-9, AC-11, AC-12)
+- [ ] Verify it: `/check verify client side navigation`
+- [x] Test it: `/test client side navigation`
+      Spec [0008](../specs/0008-client-side-navigation/index.md) · code in `src/layouts/Layout.astro`, `src/styles/base.css`, `src/components/PdfLink.astro`, `src/pages/contact.astro`, `src/navigation.test.ts`
 
 ## Slice 1: the first working thread
 

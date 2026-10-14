@@ -101,8 +101,13 @@ import '@styles/base.css'
             <p>We read every message and usually respond within a day or two.</p>
           </div>
 
+          <!-- data-astro-reload (spec 0008, AC-7): a submit must stay a real
+               navigation so Formspree redirects back to ?sent=1 and the
+               confirmation script below runs untouched. Without it the router
+               intercepts the POST and the round trip breaks. -->
           <form
             id="contact-form"
+            data-astro-reload
             action={SITE_CONFIG.formEndpoint}
             method="POST"
             class="contact-form"
