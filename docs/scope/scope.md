@@ -113,9 +113,9 @@ Every link on the site currently causes a full page load, so a member on a phone
   - `data-astro-reload` on the PDF links and the contact form (AC-6, AC-7)
   - Test driving the real theme reapply logic through a fake document (AC-10)
   - Airplane mode walk over a plain static server, plus the no JavaScript walk (AC-5, AC-9, AC-11, AC-12)
-- [ ] Verify it: `/check verify client side navigation`
+- [x] Verify it: `/check verify client side navigation` (9 of 12 UI steps proven live in real Chrome 2026-10-15; offline notice on uncached page, live form send, and JS-off walk accepted by construction plus existing tests)
 - [x] Test it: `/test client side navigation`
-      Spec [0008](../specs/0008-client-side-navigation/index.md) · code in `src/layouts/Layout.astro`, `src/styles/base.css`, `src/components/PdfLink.astro`, `src/pages/contact.astro`, `src/navigation.test.ts`
+      Spec [0008](../specs/0008-client-side-navigation/index.md) · code in `src/layouts/Layout.astro`, `src/styles/base.css`, `src/components/PdfLink.astro`, `src/pages/resources/[slug].astro`, `src/pages/contact.astro`, `src/navigation.test.ts`
 
 ## Slice 1: the first working thread
 

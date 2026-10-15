@@ -192,3 +192,17 @@ describe('the theme survives a client side swap (spec 0008)', () => {
     expect(sandbox.handlerCount('astro:page-load')).toBe(1)
   })
 })
+
+describe('PDF links and the contact form skip the router (spec 0008, AC-6, AC-7)', () => {
+  it('marks the resource page PDF link with data-astro-reload so it fetches once', () => {
+    // The regression: PdfLink.astro carried the attribute but the resource
+    // detail route every service body links to did not, so the router could
+    // fetch the PDF as HTML and discard it before the real navigation.
+    const route = readFileSync(
+      join(process.cwd(), 'src', 'pages', 'resources', '[slug].astro'),
+      'utf-8'
+    )
+    const pdfLink = route.match(/<a[^>]*href=\{resource\.data\.file\}[^>]*>/)?.[0] ?? ''
+    expect(pdfLink).toContain('data-astro-reload')
+  })
+})

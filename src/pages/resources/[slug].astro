@@ -40,10 +40,12 @@ const { Content } = await render(resource)
 
       {resource.data.description && <p class="lead">{resource.data.description}</p>}
 
-      <!-- An ordinary link, so following it is a navigation the service worker
-           caches: a booklet opened once works offline afterwards (spec 0003). -->
+      <!-- data-astro-reload (spec 0008, AC-6): the router fetches this as HTML,
+           sees a PDF it cannot swap, and discards it — a wasted second request.
+           A real navigation fetches the file exactly once, and the service worker
+           caches it: a booklet opened once works offline afterwards (spec 0003). -->
       <p>
-        <a class="button" href={resource.data.file}>
+        <a class="button" href={resource.data.file} data-astro-reload>
           Download the PDF
         </a>
       </p>
