@@ -9,35 +9,35 @@ _These are recommendations to keep your build orderly, not requirements. Skip an
 
 ## At a glance
 
-| #   | Feature                                       | Phase      | Status      |
-| --- | --------------------------------------------- | ---------- | ----------- |
-| 1   | Stack & architecture                          | Foundation | done        |
-| 2   | Coding standards & tooling                    | Foundation | done        |
-| 3   | Content model                                 | Foundation | done        |
-| 4   | Design system & UI foundation                 | Foundation | done        |
-| 27  | Client side navigation                        | Foundation | done        |
-| 5   | Site shell, home & first service page offline | Slice 1    | done        |
-| 6   | Friday service page                           | Slice 2    | done        |
-| 7   | Weekly Torah portion page                     | Slice 2    | done        |
-| 8   | Closing of Shabbat page                       | Slice 2    | done        |
-| 24  | Commentary for every Torah portion            | Slice 2    | done        |
-| 9   | Content sweep of the current site             | Slice 3    | done        |
-| 10  | High Holy Days section                        | Slice 3    | done        |
-| 11  | Temple information & contact                  | Slice 3    | in-progress |
-| 21  | Exact palette from the current site           | Slice 3    | done        |
-| 12  | Holy Days calendar                            | Slice 4    | planned     |
-| 13  | Site search                                   | Slice 4    | planned     |
-| 14  | Product analytics                             | Slice 4    | planned     |
-| 15  | SEO, metadata & performance                   | Slice 4    | planned     |
-| 16  | Site wide offline & install                   | Slice 4    | planned     |
-| 22  | Offline PDFs                                  | Slice 4    | planned     |
-| 26  | Commentary index                              | Slice 4    | planned     |
-| 25  | UI rework and style guide revamp              | Rework     | planned     |
-| 23  | Hebrew body face                              | Rework     | planned     |
-| 17  | Private Temple Treasury                       | Deferred   | planned     |
-| 18  | Attendance tracking                           | Deferred   | planned     |
-| 19  | Admin dashboard & member accounts             | Deferred   | planned     |
-| 20  | Private documents & member area               | Deferred   | planned     |
+| #   | Feature                                       | Phase      | Status  |
+| --- | --------------------------------------------- | ---------- | ------- |
+| 1   | Stack & architecture                          | Foundation | done    |
+| 2   | Coding standards & tooling                    | Foundation | done    |
+| 3   | Content model                                 | Foundation | done    |
+| 4   | Design system & UI foundation                 | Foundation | done    |
+| 27  | Client side navigation                        | Foundation | done    |
+| 5   | Site shell, home & first service page offline | Slice 1    | done    |
+| 6   | Friday service page                           | Slice 2    | done    |
+| 7   | Weekly Torah portion page                     | Slice 2    | done    |
+| 8   | Closing of Shabbat page                       | Slice 2    | done    |
+| 24  | Commentary for every Torah portion            | Slice 2    | done    |
+| 9   | Content sweep of the current site             | Slice 3    | done    |
+| 10  | High Holy Days section                        | Slice 3    | done    |
+| 11  | Temple information & contact                  | Slice 3    | done    |
+| 21  | Exact palette from the current site           | Slice 3    | done    |
+| 12  | Holy Days calendar                            | Slice 4    | planned |
+| 13  | Site search                                   | Slice 4    | planned |
+| 14  | Product analytics                             | Slice 4    | planned |
+| 15  | SEO, metadata & performance                   | Slice 4    | planned |
+| 16  | Site wide offline & install                   | Slice 4    | planned |
+| 22  | Offline PDFs                                  | Slice 4    | planned |
+| 26  | Commentary index                              | Slice 4    | planned |
+| 25  | UI rework and style guide revamp              | Rework     | planned |
+| 23  | Hebrew body face                              | Rework     | planned |
+| 17  | Private Temple Treasury                       | Deferred   | planned |
+| 18  | Attendance tracking                           | Deferred   | planned |
+| 19  | Admin dashboard & member accounts             | Deferred   | planned |
+| 20  | Private documents & member area               | Deferred   | planned |
 
 ## Foundations
 
@@ -262,9 +262,9 @@ Complete the pages the old site created but never finished: one real page per Hi
   - Verified: `npm run test` 14 files passed, `npm run verify` 0 errors and 76 pages built including `/shabbatonim/shabbaton-sukkot`
   - Code in `src/content/services/`
 
-### 11. Temple information & contact · in-progress
+### 11. Temple information & contact · done
 
-Who the temple is, where and when it meets, and how to reach it, plus a simple message form and the privacy wording that names the host's request logs, the outside services, and the theme choice kept on the device. Built: the about, history, and visiting pages, the contact page, the Formspree form, and the full privacy wording, all under spec 0001 (AC-2, AC-3). It stays `in-progress` rather than `done` only because the temple has not yet supplied the real email, street address, and Formspree endpoint, so the page cannot be proven end to end with a message actually arriving.
+Who the temple is, where and when it meets, and how to reach it, plus a simple message form and the privacy wording that names the host's request logs, the outside services, and the theme choice kept on the device. Built: the about, history, and visiting pages, the contact page, the Formspree form, and the full privacy wording, all under spec 0001 (AC-2, AC-3).
 **Done when:** a first time visitor learns what the congregation is, where it meets, and when services happen, and a message sent from the contact page reaches the temple.
 
 - [x] Decide the form approach (spec): `/architect temple information & contact`, settled inside spec 0001 as Formspree, no separate spec needed
@@ -274,7 +274,7 @@ Who the temple is, where and when it meets, and how to reach it, plus a simple m
   - The success notice was dead code (a `sent` prop no route ever passed). Formspree's `_next` now returns to `/contact?sent=1` and a small script reveals the notice, so a member sees confirmation the message went
   - `visiting.md` promised "call the temple office", a phone number the site does not have, and pointed at `[calendar](#)` and `[announcements](#)`, both dead anchors. Fixed to the home page and to the message form
   - `visiting.md` also listed Saturday afternoon and Saturday evening services that were never authored, sending visitors to services with no page. Removed, with a test that fails if a day is advertised without a service file behind it
-  - Still the temple's to supply: the real email, street address, and Formspree endpoint, which come from env vars
+  - Temple-supplied values in place: contact email (`ucoy.temple@proton.me`), street address (`24 Gandhi, Kingston 11, St. Andrew`), and Formspree endpoint (`https://formspree.io/f/mjygeawa`), all wired through `SITE_CONFIG` from env vars
     Spec [0001](../specs/0001-adopt-static-site-stack.md) · code in `src/pages/contact.astro`, `src/content/pages/`
 
 ### 21. Exact palette from the current site · done
