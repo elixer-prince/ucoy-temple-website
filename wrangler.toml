@@ -8,7 +8,10 @@
 # See docs/specs/0001-adopt-static-site-stack.md
 
 name = "ucoy-temple-website"
-pages_build_output_dir = "dist"
+compatibility_date = "2026-10-16"
+
+[pages]
+build_output_dir = "dist"
 
 # Environment variables — set the real values in the Cloudflare Pages
 # dashboard before deploying.  Listed here as documentation.
