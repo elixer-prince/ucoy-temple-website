@@ -2,13 +2,10 @@
  * Design tokens for the United Congregation of Yisra'Yah website.
  *
  * Two layers (spec 0004, AC-2):
- *   Layer 1, ladders: raw values with no meaning. Grey plus the three
+ *   Layer 1, ladders: raw values with no meaning. Black plus the three
  *   temple hues (Royal Gold, Hebrew Red, Kosher Blue) with steps 50 to 950, plus
- *   plain black and white. Anchors sampled from the old site screenshots
- *   (Royal Gold near #c9970d, Hebrew Red near #d6261c, Kosher Blue near #2b7bbb); the middle
- *   steps are the closest plain read of those anchors and the ends are
- *   blended toward white and black. Send exact hex values any time and
- *   the steps get replaced without touching roles or components.
+ *   plain black and white. Exact colours from the site theme. Send new hex values
+ *   any time and the steps get replaced without touching roles or components.
  *   Layer 2, roles: the ten job names pages actually use. Roles point at
  *   ladder steps with var(), never at literals. No component or page
  *   stylesheet names a ladder step directly.
@@ -25,72 +22,71 @@
 :root {
   /* ---- Layer 1: ladders (raw values, no meaning) ---- */
 
-  /* Warm neutral grey, lightest to darkest. */
-  --color-grey-50: #ffffff;
-  --color-grey-100: #fbfaf7;
-  --color-grey-200: #f3f2ed;
-  --color-grey-300: #d8d6d0;
-  --color-grey-400: #a7a7ad;
-  --color-grey-500: #8e8d98;
-  --color-grey-600: #6f6c62;
-  --color-grey-700: #5c5e69;
-  --color-grey-800: #383a44;
-  --color-grey-900: #191a20;
-  --color-grey-950: #14151b;
+  /* Warm neutral black, lightest to darkest. */
+  --color-black-50: #fafafa;
+  --color-black-100: #f5f5f5;
+  --color-black-200: #e6e6e6;
+  --color-black-300: #d6d6d6;
+  --color-black-400: #a5a5a5;
+  --color-black-500: #767676;
+  --color-black-600: #575757;
+  --color-black-700: #434343;
+  --color-black-800: #292929;
+  --color-black-900: #1a1a1a;
+  --color-black-950: #000000;
 
-  /* Royal Gold, sampled near #c9970d. */
-  --color-royal-gold-50: #fdf9ec;
-  --color-royal-gold-100: #faf0d0;
-  --color-royal-gold-200: #f4e0a0;
-  --color-royal-gold-300: #eccc6e;
-  --color-royal-gold-400: #ddb53e;
-  --color-royal-gold-500: #c9970d;
-  --color-royal-gold-600: #a67a0b;
-  --color-royal-gold-700: #856009;
-  --color-royal-gold-800: #5e4408;
-  --color-royal-gold-900: #3a2a06;
-  --color-royal-gold-950: #221806;
+  /* Royal Gold. */
+  --color-royal-gold-50: #fefee8;
+  --color-royal-gold-100: #fffec2;
+  --color-royal-gold-200: #fff988;
+  --color-royal-gold-300: #ffef43;
+  --color-royal-gold-400: #ffe010;
+  --color-royal-gold-500: #efc703;
+  --color-royal-gold-600: #bf8f00;
+  --color-royal-gold-700: #a46e04;
+  --color-royal-gold-800: #87560c;
+  --color-royal-gold-900: #734610;
+  --color-royal-gold-950: #432405;
 
-  /* Hebrew Red, sampled near #d6261c. */
-  --color-hebrew-red-50: #fdeeed;
-  --color-hebrew-red-100: #fbd9d6;
-  --color-hebrew-red-200: #f5ada8;
-  --color-hebrew-red-300: #ec7b74;
-  --color-hebrew-red-400: #e24e45;
-  --color-hebrew-red-500: #d6261c;
-  --color-hebrew-red-600: #ac1f17;
-  --color-hebrew-red-700: #891913;
-  --color-hebrew-red-800: #61120e;
-  --color-hebrew-red-900: #3c0b08;
-  --color-hebrew-red-950: #230605;
+  /* Hebrew Red. */
+  --color-hebrew-red-50: #fff0f0;
+  --color-hebrew-red-100: #ffdddd;
+  --color-hebrew-red-200: #ffc0c0;
+  --color-hebrew-red-300: #ff9494;
+  --color-hebrew-red-400: #ff5757;
+  --color-hebrew-red-500: #ff2323;
+  --color-hebrew-red-600: #ff0000;
+  --color-hebrew-red-700: #d70000;
+  --color-hebrew-red-800: #b10303;
+  --color-hebrew-red-900: #920a0a;
+  --color-hebrew-red-950: #500000;
 
-  /* Kosher Blue, sampled near #2b7bbb. */
-  --color-kosher-blue-50: #edf4fb;
-  --color-kosher-blue-100: #d6e6f5;
-  --color-kosher-blue-200: #a9cbe9;
-  --color-kosher-blue-300: #7aabdb;
-  --color-kosher-blue-400: #4f8fc9;
-  --color-kosher-blue-500: #2b7bbb;
-  --color-kosher-blue-600: #236397;
-  --color-kosher-blue-700: #1c4f79;
-  --color-kosher-blue-800: #143856;
-  --color-kosher-blue-900: #0d2335;
-  --color-kosher-blue-950: #07141f;
+  /* Kosher Blue. */
+  --color-kosher-blue-50: #f0f8ff;
+  --color-kosher-blue-100: #e0f0fe;
+  --color-kosher-blue-200: #b9e1fe;
+  --color-kosher-blue-300: #7cc9fd;
+  --color-kosher-blue-400: #36affa;
+  --color-kosher-blue-500: #0c95eb;
+  --color-kosher-blue-600: #0070c0;
+  --color-kosher-blue-700: #015da3;
+  --color-kosher-blue-800: #065086;
+  --color-kosher-blue-900: #0b436f;
+  --color-kosher-blue-950: #072a4a;
 
   --color-black: #000000;
   --color-white: #ffffff;
 
   /* ---- Layer 2: roles, light mode (the default) ---- */
-  /* Accent stays on Kosher Blue until you pick the final accent: kosher-blue-700 passes
-     AA on the canvas while Royal Gold reads as the tint behind notes. */
-  --color-canvas: var(--color-grey-100);
-  --color-surface: var(--color-grey-50);
-  --color-border: var(--color-grey-600);
-  --color-text: var(--color-grey-900);
-  --color-text-muted: var(--color-grey-700);
+  /* Accent stays on Kosher Blue as the final accent. Royal Gold reads as the tint behind notes. */
+  --color-canvas: var(--color-black-100);
+  --color-surface: var(--color-black-50);
+  --color-border: var(--color-black-600);
+  --color-text: var(--color-black-900);
+  --color-text-muted: var(--color-black-700);
   --color-accent: var(--color-kosher-blue-700);
   --color-accent-hover: var(--color-kosher-blue-800);
-  --color-on-accent: var(--color-grey-50);
+  --color-on-accent: var(--color-black-50);
   --color-focus: var(--color-kosher-blue-700);
   --color-tint: var(--color-royal-gold-100);
 
@@ -99,10 +95,10 @@
      Components inside the sidebar name only these, never a ladder step. */
   --color-sidebar-bg: var(--color-black);
   --color-sidebar-text: var(--color-white);
-  --color-sidebar-muted: var(--color-grey-300);
-  --color-sidebar-hover: var(--color-grey-800);
+  --color-sidebar-muted: var(--color-black-300);
+  --color-sidebar-hover: var(--color-black-800);
   --color-sidebar-marker: var(--color-royal-gold-400);
-  --color-sidebar-scroll: var(--color-grey-700);
+  --color-sidebar-scroll: var(--color-black-700);
 
   /* ---- Text family ---- */
   --font-sans: 'Roboto', system-ui, -apple-system, 'Segoe UI', sans-serif;
@@ -174,14 +170,14 @@
    The :not guard keeps an explicit light choice winning over the OS. */
 @media (prefers-color-scheme: dark) {
   :root:not([data-theme='light']) {
-    --color-canvas: var(--color-grey-950);
-    --color-surface: var(--color-grey-900);
-    --color-border: var(--color-grey-500);
-    --color-text: var(--color-grey-200);
-    --color-text-muted: var(--color-grey-400);
+    --color-canvas: var(--color-black-950);
+    --color-surface: var(--color-black-900);
+    --color-border: var(--color-black-500);
+    --color-text: var(--color-black-200);
+    --color-text-muted: var(--color-black-400);
     --color-accent: var(--color-kosher-blue-300);
     --color-accent-hover: var(--color-kosher-blue-200);
-    --color-on-accent: var(--color-grey-950);
+    --color-on-accent: var(--color-black-950);
     --color-focus: var(--color-kosher-blue-300);
     --color-tint: var(--color-royal-gold-900);
   }
@@ -189,28 +185,28 @@
 
 /* Explicit choice wins over the OS setting. */
 :root[data-theme='light'] {
-  --color-canvas: var(--color-grey-100);
-  --color-surface: var(--color-grey-50);
-  --color-border: var(--color-grey-600);
-  --color-text: var(--color-grey-900);
-  --color-text-muted: var(--color-grey-700);
+  --color-canvas: var(--color-black-100);
+  --color-surface: var(--color-black-50);
+  --color-border: var(--color-black-600);
+  --color-text: var(--color-black-900);
+  --color-text-muted: var(--color-black-700);
   --color-accent: var(--color-kosher-blue-700);
   --color-accent-hover: var(--color-kosher-blue-800);
-  --color-on-accent: var(--color-grey-50);
+  --color-on-accent: var(--color-black-50);
   --color-focus: var(--color-kosher-blue-700);
   --color-tint: var(--color-royal-gold-100);
   color-scheme: light;
 }
 
 :root[data-theme='dark'] {
-  --color-canvas: var(--color-grey-950);
-  --color-surface: var(--color-grey-900);
-  --color-border: var(--color-grey-500);
-  --color-text: var(--color-grey-200);
-  --color-text-muted: var(--color-grey-400);
+  --color-canvas: var(--color-black-950);
+  --color-surface: var(--color-black-900);
+  --color-border: var(--color-black-500);
+  --color-text: var(--color-black-200);
+  --color-text-muted: var(--color-black-400);
   --color-accent: var(--color-kosher-blue-300);
   --color-accent-hover: var(--color-kosher-blue-200);
-  --color-on-accent: var(--color-grey-950);
+  --color-on-accent: var(--color-black-950);
   --color-focus: var(--color-kosher-blue-300);
   --color-tint: var(--color-royal-gold-900);
   color-scheme: dark;

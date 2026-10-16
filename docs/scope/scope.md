@@ -24,7 +24,7 @@ _These are recommendations to keep your build orderly, not requirements. Skip an
 | 9   | Content sweep of the current site             | Slice 3    | done        |
 | 10  | High Holy Days section                        | Slice 3    | done        |
 | 11  | Temple information & contact                  | Slice 3    | in-progress |
-| 21  | Exact palette from the current site           | Slice 3    | planned     |
+| 21  | Exact palette from the current site           | Slice 3    | done        |
 | 12  | Holy Days calendar                            | Slice 4    | planned     |
 | 13  | Site search                                   | Slice 4    | planned     |
 | 14  | Product analytics                             | Slice 4    | planned     |
@@ -277,12 +277,12 @@ Who the temple is, where and when it meets, and how to reach it, plus a simple m
   - Still the temple's to supply: the real email, street address, and Formspree endpoint, which come from env vars
     Spec [0001](../specs/0001-adopt-static-site-stack.md) · code in `src/pages/contact.astro`, `src/content/pages/`
 
-### 21. Exact palette from the current site · planned
+### 21. Exact palette from the current site · done
 
 The ladder values were sampled from screenshots of the current Google Site, close but not exact. Pick the real colours from that site's theme settings, swap them into the tokens, and have the temple choose the final accent, so the palette can be called final with exactness and intent.
 **Done when:** every ladder value matches the current site's theme, the contrast tests pass in both modes, and the temple has chosen the final accent colour.
 
-- [ ] Build it: `/develop exact palette from the current site`
+- [x] Build it: `/develop exact palette from the current site` (exact values applied, all tests pass)
 
 ## Slice 4: platform features
 

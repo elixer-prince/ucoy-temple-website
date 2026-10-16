@@ -42,82 +42,82 @@ const SIDEBAR_ROLES = [
 type SidebarRole = (typeof SIDEBAR_ROLES)[number]
 
 const LADDERS: Record<string, Record<string, string>> = {
-  grey: {
-    '50': '#ffffff',
-    '100': '#fbfaf7',
-    '200': '#f3f2ed',
-    '300': '#d8d6d0',
-    '400': '#a7a7ad',
-    '500': '#8e8d98',
-    '600': '#6f6c62',
-    '700': '#5c5e69',
-    '800': '#383a44',
-    '900': '#191a20',
-    '950': '#14151b'
+  black: {
+    '50': '#fafafa',
+    '100': '#f5f5f5',
+    '200': '#e6e6e6',
+    '300': '#d6d6d6',
+    '400': '#a5a5a5',
+    '500': '#767676',
+    '600': '#575757',
+    '700': '#434343',
+    '800': '#292929',
+    '900': '#1a1a1a',
+    '950': '#000000'
   },
   'royal-gold': {
-    '50': '#fdf9ec',
-    '100': '#faf0d0',
-    '200': '#f4e0a0',
-    '300': '#eccc6e',
-    '400': '#ddb53e',
-    '500': '#c9970d',
-    '600': '#a67a0b',
-    '700': '#856009',
-    '800': '#5e4408',
-    '900': '#3a2a06',
-    '950': '#221806'
+    '50': '#fefee8',
+    '100': '#fffec2',
+    '200': '#fff988',
+    '300': '#ffef43',
+    '400': '#ffe010',
+    '500': '#efc703',
+    '600': '#bf8f00',
+    '700': '#a46e04',
+    '800': '#87560c',
+    '900': '#734610',
+    '950': '#432405'
   },
   'hebrew-red': {
-    '50': '#fdeeed',
-    '100': '#fbd9d6',
-    '200': '#f5ada8',
-    '300': '#ec7b74',
-    '400': '#e24e45',
-    '500': '#d6261c',
-    '600': '#ac1f17',
-    '700': '#891913',
-    '800': '#61120e',
-    '900': '#3c0b08',
-    '950': '#230605'
+    '50': '#fff0f0',
+    '100': '#ffdddd',
+    '200': '#ffc0c0',
+    '300': '#ff9494',
+    '400': '#ff5757',
+    '500': '#ff2323',
+    '600': '#ff0000',
+    '700': '#d70000',
+    '800': '#b10303',
+    '900': '#920a0a',
+    '950': '#500000'
   },
   'kosher-blue': {
-    '50': '#edf4fb',
-    '100': '#d6e6f5',
-    '200': '#a9cbe9',
-    '300': '#7aabdb',
-    '400': '#4f8fc9',
-    '500': '#2b7bbb',
-    '600': '#236397',
-    '700': '#1c4f79',
-    '800': '#143856',
-    '900': '#0d2335',
-    '950': '#07141f'
+    '50': '#f0f8ff',
+    '100': '#e0f0fe',
+    '200': '#b9e1fe',
+    '300': '#7cc9fd',
+    '400': '#36affa',
+    '500': '#0c95eb',
+    '600': '#0070c0',
+    '700': '#015da3',
+    '800': '#065086',
+    '900': '#0b436f',
+    '950': '#072a4a'
   }
 }
 
 const LIGHT_ROLES: Record<Role, string> = {
-  canvas: 'grey-100',
-  surface: 'grey-50',
-  border: 'grey-600',
-  text: 'grey-900',
-  'text-muted': 'grey-700',
+  canvas: 'black-100',
+  surface: 'black-50',
+  border: 'black-600',
+  text: 'black-900',
+  'text-muted': 'black-700',
   accent: 'kosher-blue-700',
   'accent-hover': 'kosher-blue-800',
-  'on-accent': 'grey-50',
+  'on-accent': 'black-50',
   focus: 'kosher-blue-700',
   tint: 'royal-gold-100'
 }
 
 const DARK_ROLES: Record<Role, string> = {
-  canvas: 'grey-950',
-  surface: 'grey-900',
-  border: 'grey-500',
-  text: 'grey-200',
-  'text-muted': 'grey-400',
+  canvas: 'black-950',
+  surface: 'black-900',
+  border: 'black-500',
+  text: 'black-200',
+  'text-muted': 'black-400',
   accent: 'kosher-blue-300',
   'accent-hover': 'kosher-blue-200',
-  'on-accent': 'grey-950',
+  'on-accent': 'black-950',
   focus: 'kosher-blue-300',
   tint: 'royal-gold-900'
 }
@@ -125,10 +125,10 @@ const DARK_ROLES: Record<Role, string> = {
 const SIDEBAR_POINTS: Record<SidebarRole, string> = {
   'sidebar-bg': 'black',
   'sidebar-text': 'white',
-  'sidebar-muted': 'grey-300',
-  'sidebar-hover': 'grey-800',
+  'sidebar-muted': 'black-300',
+  'sidebar-hover': 'black-800',
   'sidebar-marker': 'royal-gold-400',
-  'sidebar-scroll': 'grey-700'
+  'sidebar-scroll': 'black-700'
 }
 
 const TEXT_PAIRS: Array<[Role, Role]> = [
@@ -199,7 +199,7 @@ function collectStyleFiles(dir: string, found: string[] = []): string[] {
 
 describe('AC-2 ladders', () => {
   it('grey royal-gold hebrew-red kosher-blue each hold eleven steps', () => {
-    for (const hue of ['grey', 'royal-gold', 'hebrew-red', 'kosher-blue']) {
+    for (const hue of ['black', 'royal-gold', 'hebrew-red', 'kosher-blue']) {
       for (const step of Object.keys(LADDERS[hue])) {
         expect(tokens).toContain('--color-' + hue + '-' + step + ': ' + LADDERS[hue][step])
       }
