@@ -9,9 +9,7 @@
 
 name = "ucoy-temple-website"
 compatibility_date = "2026-10-16"
-
-[pages]
-build_output_dir = "dist"
+pages_build_output_dir = "dist"
 
 # Environment variables — set the real values in the Cloudflare Pages
 # dashboard before deploying.  Listed here as documentation.
