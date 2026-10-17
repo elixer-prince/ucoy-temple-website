@@ -76,55 +76,6 @@ Copy `.env.example` to `.env` locally, and set the real values in the Cloudflare
 | `CF_ANALYTICS_TOKEN` | Cloudflare Web Analytics beacon token                                | No (empty = analytics disabled)            |
 | `SITE_URL`           | Absolute site URL for canonical links and the sitemap                | No (falls back to the pages.dev URL)       |
 
-## Getting started
-
-Requirements: **Node 22+** (see `.nvmrc`).
-
-```bash
-# Install dependencies
-npm install
-
-# Copy the environment template and fill in the temple-supplied values
-cp .env.example .env
-
-# Start the dev server
-npm run dev
-```
-
-Then open `http://localhost:4322` (Astro's default). The style guide is at `/style-guide`.
-
-### Scripts
-
-| Script                 | Purpose                                                     |
-| ---------------------- | ----------------------------------------------------------- |
-| `npm run dev`          | Start the Astro dev server                                  |
-| `npm run build`        | Build the static site to `dist/`                            |
-| `npm run preview`      | Preview the built site locally                              |
-| `npm run check`        | Run Astro check (TypeScript)                                |
-| `npm run verify`       | Check and build together (the Beta gate before test)        |
-| `npm run test`         | Run the Vitest suite                                        |
-| `npm run lint`         | Run ESLint across the project                               |
-| `npm run format`       | Format everything with Prettier                             |
-| `npm run format:check` | Check formatting without writing                            |
-| `npm run setup:mcp`    | Write this project's MCP servers to Cline's global settings |
-
-The pre-commit hook (husky + lint-staged) runs Prettier and ESLint fix on staged files, so `npm run format` and `npm run lint` stay clean on every commit.
-
-## Environment variables
-
-Copy `.env.example` to `.env` locally, and set the real values in the Cloudflare Pages dashboard under Settings → Environment Variables → Production. These are public client-side variables and must not contain secrets.
-
-| Variable             | Purpose                                                              | Required                                   |
-| -------------------- | -------------------------------------------------------------------- | ------------------------------------------ |
-| `CONTACT_EMAIL`      | Temple email shown on the contact page and in the privacy notice     | No (falls back to `contact@ucoy.org`)      |
-| `FORM_ENDPOINT`      | Formspree form action URL the contact form posts to                  | No (falls back to a placeholder)           |
-| `CALENDAR_URL`       | Proton Calendar share link returning an ICS feed for upcoming events | No (empty = quiet notice on the home page) |
-| `CALENDAR_TIMEZONE`  | Timezone the event list is rendered in                               | No (defaults to `America/New_York`)        |
-| `CF_ANALYTICS_TOKEN` | Cloudflare Web Analytics beacon token                                | No (empty = analytics disabled)            |
-| `SITE_URL`           | Absolute site URL for canonical links and the sitemap                | No (falls back to the pages.dev URL)       |
-
-## Content model & writing content
-
 Content is authored in `src/content/` across five collections:
 
 - **`pages`** — static pages (`about`, `history`, `visiting`), rendered through the `[...slug]` route
