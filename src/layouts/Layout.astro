@@ -248,7 +248,12 @@ const hasBanner = Astro.slots.has('banner')
     position: fixed;
     inset: 0 auto 0 0;
     width: var(--sidebar-width);
-    height: 100dvh;
+    /* Anchor to both viewport edges instead of a fixed height: on Firefox
+             mobile the search bar retracts when the page scrolls up and the
+             visual viewport grows, but `100dvh` can stay stuck at the smaller
+             size and leave a gap below the panel. Stretching between top and
+             bottom keeps the sidebar flush to the screen at every scroll
+             position, and overflow-y: auto still scrolls the panel contents. */
     overflow-y: auto;
     overscroll-behavior: contain;
     z-index: 60;
@@ -399,7 +404,9 @@ const hasBanner = Astro.slots.has('banner')
       transform: none;
       visibility: visible;
       inset: 0 auto 0 0;
-      height: 100dvh;
+      /* Stretch to the viewport height like the narrow screen panel: a fixed
+                     height can fall short of the visual viewport when Firefox retracts
+                     its search bar on scroll up. */
       padding: var(--space-m);
     }
 
