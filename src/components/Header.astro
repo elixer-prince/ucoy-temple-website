@@ -75,16 +75,19 @@ const { label = 'Menu' } = Astro.props
     text-overflow: ellipsis;
   }
 
-  /* The initials stand in for the full name on the narrowest phones, where
-     the name and the mark together leave the menu button no room. Both
-     labels are in the markup and CSS picks one, so nothing runs here.
-     23.4375em is 375 pixels, the width the temple asked for. */
+  /* The initials stand in for the full name on narrow screens, where the
+     full name and the mark together leave the menu button no room (the
+     "Menu" button gets pushed off the right edge just above 375px). Both
+     labels are in the markup and CSS picks one by width, so nothing runs
+     here. 30em is 480 pixels: every phone in portrait width shows the
+     short mark, which always fits, and the full name returns from tablet
+     width up where there is ample room. */
   .logo-short {
     display: none;
     letter-spacing: var(--tracking-wide);
   }
 
-  @media (max-width: 23.4375em) {
+  @media (max-width: 30em) {
     .logo-text {
       display: none;
     }
