@@ -163,6 +163,36 @@ const hasBanner = Astro.slots.has('banner')
         }
       })()
     </script>
+    <!-- Menu toggle: the labels drive a hidden checkbox. A label's click
+         normally activates the checkbox and, in some browsers, moves focus to
+         it — scrolling the checkbox (at the top of the page) into view and
+         yanking the reader back to the top on every open or close. Cancel the
+         default action and flip the checked state by hand so focus, and the
+         scroll position, stay put. Re-wire on every page load: a swapped-in
+         page brings fresh labels, and the data flag keeps one handler per
+         label. -->
+    <script is:inline>
+      ;(function () {
+        const FOR = 'sidebar-toggle'
+        function bind(label) {
+          if (label.dataset.menuBound) return
+          label.dataset.menuBound = 'true'
+          label.addEventListener('click', function (event) {
+            event.preventDefault()
+            const toggle = document.getElementById(FOR)
+            if (toggle) toggle.checked = !toggle.checked
+          })
+        }
+        function init() {
+          document.querySelectorAll('label[for="' + FOR + '"]').forEach(bind)
+        }
+        init()
+        if (!window.__ucoyMenuRouterWired) {
+          document.addEventListener('astro:page-load', init)
+          window.__ucoyMenuRouterWired = true
+        }
+      })()
+    </script>
     <!-- Cloudflare Web Analytics (cookieless, AC-3).
          Only loaded when a token is provided. -->
     {SITE_CONFIG.cfAnalyticsToken ? (
@@ -249,11 +279,11 @@ const hasBanner = Astro.slots.has('banner')
     inset: 0 auto 0 0;
     width: var(--sidebar-width);
     /* Anchor to both viewport edges instead of a fixed height: on Firefox
-             mobile the search bar retracts when the page scrolls up and the
-             visual viewport grows, but `100dvh` can stay stuck at the smaller
-             size and leave a gap below the panel. Stretching between top and
-             bottom keeps the sidebar flush to the screen at every scroll
-             position, and overflow-y: auto still scrolls the panel contents. */
+               mobile the search bar retracts when the page scrolls up and the
+               visual viewport grows, but `100dvh` can stay stuck at the smaller
+               size and leave a gap below the panel. Stretching between top and
+               bottom keeps the sidebar flush to the screen at every scroll
+               position, and overflow-y: auto still scrolls the panel contents. */
     overflow-y: auto;
     overscroll-behavior: contain;
     z-index: 60;
@@ -405,8 +435,8 @@ const hasBanner = Astro.slots.has('banner')
       visibility: visible;
       inset: 0 auto 0 0;
       /* Stretch to the viewport height like the narrow screen panel: a fixed
-                     height can fall short of the visual viewport when Firefox retracts
-                     its search bar on scroll up. */
+                         height can fall short of the visual viewport when Firefox retracts
+                         its search bar on scroll up. */
       padding: var(--space-m);
     }
 
