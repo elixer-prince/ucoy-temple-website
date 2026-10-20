@@ -15,14 +15,17 @@
  * in advance.
  */
 
-const VERSION = 'v2'
+const VERSION = '__BUILD_VERSION__'
 
 /*
- * Bumping VERSION is what replaces the pre-cache after a deploy, which is the
- * mechanism spec 0001 commits to here. Scope feature 16 owns the finished
- * update experience (telling a visitor a new version is ready, and applying it
- * at a moment of their choosing); this worker only guarantees that a fresh
- * install always starts from a clean cache.
+ * The service worker version is derived at build time from the build output,
+ * then written into dist/sw.js by integrations/precache-manifest.mjs.
+ *
+ * It is intentionally NOT a hard-coded value. Browsers only re-install the
+ * worker when the sw.js file itself changes, so the version must be embedded
+ * in the file and updated automatically on every deploy. A byte-identical
+ * sw.js would never re-install, and the stale cached pages would keep being
+ * served.
  */
 const SHELL_CACHE = `shell-${VERSION}`
 const RUNTIME_CACHE = `runtime-${VERSION}`
@@ -134,37 +137,41 @@ async function precacheShell() {
 /**
  * Handle navigation requests (HTML page loads).
  *
- * Strategy: cache-first, then network, then offline fallback.
- *   1. Serve the cached page immediately if available.
- *   2. If not cached, fetch from the network and cache the result.
- *   3. If the network fails, serve /offline.html.
+ * Strategy: network-first, then the pre-cached page, then the offline page.
+ *   1. Fetch the fresh page from the network so a redeploy is reflected
+ *      immediately. The page is already cached at build time (the manifest
+ *      lists all build output), and the reply is cached for future offline
+ *      visits. This replaces the earlier cache-first behaviour, which served
+ *      the stale cached page on every repeat visit and left text untouched
+ *      after a deploy (a byte-identical sw.js never re-installs the worker).
  *
- * This keeps pages fast on repeat visits while letting first-time
- * visitors get the content online.
- *
- * A page is built as a directory index: the file for /services is
- * /services/index.html. The Cache API matches on the exact URL, so a request for
- * /services does not match the cached /services/index.html and a member offline
- * would land on the fallback page even though the page is in the cache. So a
- * miss retries the directory index form before giving up.
+ *   2. If the network is unavailable, fall back to the page pre-cached at
+ *      install time (the directory index form is retried via matchPage so a
+ *      bare path such as /services still resolves to /services/index.html).
+ *   3. If the page was never cached, serve /offline.html.
  */
 async function respondToNavigation(request) {
-  const cache = await caches.open(SHELL_CACHE)
-
-  // 1. Cache-first: serve the precached page immediately.
-  const cached = await matchPage(cache, request)
-  if (cached) return cached
-
-  // 2. Cache miss — try the network.
+  // 1. Network-first: fetch the fresh page from the network so a redeploy is
+  //    reflected immediately (the same URL is reused across builds, so the old
+  //    cached copy would otherwise be served forever). The fresh page is also
+  //    cached for future offline visits. This replaces the previous
+  //    cache-first behaviour, which is why stale text persisted after a deploy
+  //    (a byte-identical sw.js never re-installs the worker).
   try {
     const response = await fetch(request)
     if (response.ok) {
-      // Cache for future offline visits.
-      await cache.put(request, response.clone())
+      // Cache the fresh page for future offline visits (the shared shell).
+      await caches.open(SHELL_CACHE).then((cache) => cache.put(request, response.clone()))
     }
     return response
   } catch {
-    // 3. Network failed — fall back to the offline page.
+    // 2. Network unavailable — fall back to the pre-cached page, then the
+    //    offline page. network-first with cache fallback keeps content fresh
+    //    online while still working offline.
+    const cache = await caches.open(SHELL_CACHE)
+    const cached = await matchPage(cache, request)
+    if (cached) return cached
+
     const offline = await cache.match(OFFLINE_URL)
     if (offline) return offline
 

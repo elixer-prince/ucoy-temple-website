@@ -24,8 +24,12 @@ const SETTINGS_PATH = join(homedir(), '.cline', 'data', 'settings', 'cline_mcp_s
  *
  * chrome-devtools drives a real Chrome, which is how the keyboard, narrow
  * screen, reduced motion, High Contrast and both colour mode steps in
- * docs/specs/0004-design-system-ui-foundation/verify.md get exercised. Add the
- * Astro and Cloudflare servers from AGENTS.md here when their time comes.
+ * docs/specs/0004-design-system-ui-foundation/verify.md get exercised.
+ * cloudflare is the Cloudflare API MCP server
+ * (https://mcp.cloudflare.com/mcp), registered per
+ * https://developers.cloudflare.com/agent-setup/prompt.md so the agent can work
+ * with the custom domain, DNS records, and analytics when the site is ready to
+ * deploy.
  */
 const SERVERS = {
   'chrome-devtools': {
@@ -40,6 +44,11 @@ const SERVERS = {
       '--screenshot-max-width',
       '1280'
     ],
+    disabled: false,
+    autoApprove: []
+  },
+  cloudflare: {
+    url: 'https://mcp.cloudflare.com/mcp',
     disabled: false,
     autoApprove: []
   }
