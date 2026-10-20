@@ -180,7 +180,14 @@ const hasBanner = Astro.slots.has('banner')
           label.addEventListener('click', function (event) {
             event.preventDefault()
             const toggle = document.getElementById(FOR)
-            if (toggle) toggle.checked = !toggle.checked
+            if (toggle) {
+              toggle.checked = !toggle.checked
+              // Lock the page scroll while the menu is open so the backdrop
+              // and panel stay put and the reader doesn't scroll the content
+              // behind them. The attribute mirrors `data-theme`, already set
+              // on html by the theme switch.
+              document.documentElement.toggleAttribute('data-menu-open', toggle.checked)
+            }
           })
         }
         function init() {
@@ -264,6 +271,14 @@ const hasBanner = Astro.slots.has('banner')
     visibility: visible;
   }
 
+  /* With the menu open, stop the page behind the panel from scrolling so the
+     backdrop and panel stay fixed while the sidebar itself still scrolls
+     (it has overflow-y: auto). The scrollbar disappearing can nudge content
+     by a few pixels, which is acceptable for a narrow-screen menu. */
+  html[data-menu-open] {
+    overflow: hidden;
+  }
+
   .shell {
     display: block;
   }
@@ -279,11 +294,11 @@ const hasBanner = Astro.slots.has('banner')
     inset: 0 auto 0 0;
     width: var(--sidebar-width);
     /* Anchor to both viewport edges instead of a fixed height: on Firefox
-               mobile the search bar retracts when the page scrolls up and the
-               visual viewport grows, but `100dvh` can stay stuck at the smaller
-               size and leave a gap below the panel. Stretching between top and
-               bottom keeps the sidebar flush to the screen at every scroll
-               position, and overflow-y: auto still scrolls the panel contents. */
+                 mobile the search bar retracts when the page scrolls up and the
+                 visual viewport grows, but `100dvh` can stay stuck at the smaller
+                 size and leave a gap below the panel. Stretching between top and
+                 bottom keeps the sidebar flush to the screen at every scroll
+                 position, and overflow-y: auto still scrolls the panel contents. */
     overflow-y: auto;
     overscroll-behavior: contain;
     z-index: 60;
@@ -435,8 +450,8 @@ const hasBanner = Astro.slots.has('banner')
       visibility: visible;
       inset: 0 auto 0 0;
       /* Stretch to the viewport height like the narrow screen panel: a fixed
-                         height can fall short of the visual viewport when Firefox retracts
-                         its search bar on scroll up. */
+                             height can fall short of the visual viewport when Firefox retracts
+                             its search bar on scroll up. */
       padding: var(--space-m);
     }
 
