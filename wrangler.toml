@@ -2,19 +2,14 @@ name = "ucoy-temple-website"
 compatibility_date = "2026-10-12"
 compatibility_flags = ["global_fetch_strictly_public"]
 
-# If you have a Worker script (server-side code), point to it:
-# main = "src/index.ts"
-
-# If this is a static-only site (no server code), use assets only:
+# United Congregation of Yisra'Yah is a static Astro site (output: 'static' in
+# astro.config.mjs) with no server code, so there is no `main` Worker script.
+# `wrangler deploy` publishes the built `dist/` directory directly as static
+# assets. An assets-only deployment must not bind the assets to a Worker, so
+# there is no `binding` here — that binding is what the deploy rejected.
+#
+# The temple's runtime values (CONTACT_EMAIL, FORM_ENDPOINT, CALENDAR_URL,
+# CF_ANALYTICS_TOKEN) are set in the hosting platform's dashboard, not in this
+# file (see .env.example).
 [assets]
-directory = "⟶ ./dist"          # path to your built static files
-binding = "ASSETS"
-
-# Plaintext environment variables
-[vars]
-MY_VARIABLE = "⟶ my-value"
-ANOTHER_VAR = "⟶ another-value"
-
-# Declare which secrets your Worker expects (names only, not values)
-[secrets]
-required = ["⟶ CONTACT_EMAIL", "⟶ FORM_ENDPOINT", "⟶ CALENDAR_TIMEZONE"]
+directory = "./dist"
