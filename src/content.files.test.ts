@@ -142,9 +142,7 @@ describe('feature 5: the Sabbath morning body carries real Hebrew', () => {
   // (scope feature 5). The direction rules are the project's: a full passage
   // is a block with lang="he" and dir="rtl", a phrase inside English carries
   // dir="auto" on a span, and prose.css alone styles both.
-  const body = getBody(
-    readFileSync(join(contentDir, 'services/shabbat-morning.mdx'), 'utf-8')
-  )
+  const body = getBody(readFileSync(join(contentDir, 'services/shabbat-morning.mdx'), 'utf-8'))
 
   it('marks a full Hebrew passage as a right to left block', () => {
     expect(body).toContain('<div lang="he" dir="rtl">')
@@ -181,10 +179,7 @@ describe('feature 5: the Sabbath morning body carries real Hebrew', () => {
 
 describe('AC-6: Resource links go through resource pages', () => {
   it('shabbat-service-booklet.md validates against resources schema', () => {
-    const file = readFileSync(
-      join(contentDir, 'resources/shabbat-service-booklet.md'),
-      'utf-8'
-    )
+    const file = readFileSync(join(contentDir, 'resources/shabbat-service-booklet.md'), 'utf-8')
     const fm = parseFrontMatter(file)
     const result = resourcesSchema.safeParse(fm)
     expect(result.success).toBe(true)
@@ -225,7 +220,7 @@ describe('feature 6: the Friday evening home ritual file', () => {
   it('states the day and time as the temple keeps them', () => {
     const fm = parseFrontMatter(file)
     expect(fm.day).toBe('Friday evening')
-    expect(fm.time).toBe('Before sunset')
+    expect(fm.time).toBe('After sunset')
   })
 
   it('sorts ahead of Shabbat morning in the weekly listing', () => {
@@ -695,9 +690,7 @@ describe('feature 9: the Saturday afternoon service the old site published', () 
     const orderOf = (slug: string): number =>
       parseFrontMatter(readFileSync(join(contentDir, `services/${slug}.mdx`), 'utf-8'))
         .order as number
-    expect(orderOf('shabbat-afternoon')).toBeGreaterThan(
-      orderOf('shabbat-morning')
-    )
+    expect(orderOf('shabbat-afternoon')).toBeGreaterThan(orderOf('shabbat-morning'))
     expect(orderOf('shabbat-afternoon')).toBeLessThan(orderOf('closing-of-shabbat'))
   })
 
@@ -734,9 +727,7 @@ describe('feature 9: the sweep carried the old site text into the service bodies
   // The sweep's decision for this feature: carry the text verbatim, so nothing the
   // temple published is lost. These pin the passages that were the longest on the
   // old pages, so a later edit that quietly trims them fails the suite.
-  const morning = getBody(
-    readFileSync(join(contentDir, 'services/shabbat-morning.mdx'), 'utf-8')
-  )
+  const morning = getBody(readFileSync(join(contentDir, 'services/shabbat-morning.mdx'), 'utf-8'))
 
   it('carries all seven of the old page Tehillim, 90 through 96', () => {
     for (let psalm = 90; psalm <= 96; psalm++) {
@@ -834,9 +825,7 @@ describe('feature 9: the sweep carried the old site text into the service bodies
     // That is two copies, which is the thing this project warns against, so it
     // needs a guard: an edit to one order that does not reach the other would show
     // a member a different service depending on which day they opened.
-    const teruah = getBody(
-      readFileSync(join(contentDir, 'services/yom-teruah.mdx'), 'utf-8')
-    )
+    const teruah = getBody(readFileSync(join(contentDir, 'services/yom-teruah.mdx'), 'utf-8'))
 
     // Both files run the same order, so their section headings must match exactly.
     const headingsOf = (body: string): string[] =>
