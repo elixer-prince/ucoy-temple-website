@@ -111,6 +111,7 @@ import '@styles/base.css'
             action={SITE_CONFIG.formEndpoint}
             method="POST"
             class="contact-form"
+            autocomplete="off"
           >
             <input type="hidden" name="_subject" value="Message from the temple website" />
             <input type="hidden" name="_next" value={`${Astro.site}contact?sent=1`} />
@@ -174,12 +175,19 @@ import '@styles/base.css'
 
   <script is:inline>
     ;(function () {
-      if (new URLSearchParams(window.location.search).get('sent') !== '1') return
-      const notice = document.getElementById('form-sent')
       const form = document.getElementById('contact-form')
-      if (!notice || !form) return
-      notice.hidden = false
-      form.hidden = true
+      const notice = document.getElementById('form-sent')
+      if (!form || !notice) return
+      const sent = new URLSearchParams(window.location.search).get('sent') === '1'
+      if (sent) {
+        notice.hidden = false
+        form.hidden = true
+        form.reset()
+      } else {
+        // Clear any values the browser restored from a previous submission
+        // when the visitor navigates back to this page.
+        form.reset()
+      }
     })()
   </script>
 </Layout>
