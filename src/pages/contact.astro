@@ -101,13 +101,20 @@ import '@styles/base.css'
             <p>We read every message and usually respond within a day or two.</p>
           </div>
 
-          <!-- data-astro-reload (spec 0008, AC-7): a submit must stay a real
-               navigation so Formspree redirects back to ?sent=1 and the
-               confirmation script below runs untouched. Without it the router
-               intercepts the POST and the round trip breaks. -->
+          <div id="form-error" class="notice" role="alert" hidden>
+            <p>
+              <strong>The message could not be sent.</strong> Please try again, or write directly to{' '}
+              <a href={`mailto:${SITE_CONFIG.contactEmail}`}>{SITE_CONFIG.contactEmail}</a>.
+            </p>
+          </div>
+
+          <!-- The submit is handled in page (see the script below): Formspree
+               answers with JSON (Accept: application/json) and the browser
+               never leaves for Formspree's thank-you page. The action and
+               _next stay in the markup so the form still works through
+               Formspree when JavaScript is off. -->
           <form
             id="contact-form"
-            data-astro-reload
             action={SITE_CONFIG.formEndpoint}
             method="POST"
             class="contact-form"
@@ -177,17 +184,59 @@ import '@styles/base.css'
     ;(function () {
       const form = document.getElementById('contact-form')
       const notice = document.getElementById('form-sent')
-      if (!form || !notice) return
+      const error = document.getElementById('form-error')
+      if (!form || !notice || !error) return
+
+      // Formspree redirects back here with ?sent=1 when JavaScript is off:
+      // reveal the confirmation, hide the form, and clear it.
       const sent = new URLSearchParams(window.location.search).get('sent') === '1'
       if (sent) {
         notice.hidden = false
         form.hidden = true
         form.reset()
       } else {
-        // Clear any values the browser restored from a previous submission
-        // when the visitor navigates back to this page.
+        // Clear any values the browser restored from a previous fill-in
+        // (for example after hitting Back). A back-forward-cache restore
+        // skips this script, so pageshow below clears the form in that case.
         form.reset()
       }
+
+      // If the browser restores this page from its back-forward cache, the
+      // form comes back filled in. Start every return visit with an empty form.
+      window.addEventListener('pageshow', (event) => {
+        if (event.persisted) form.reset()
+      })
+
+      // Submit in page via Formspree's AJAX endpoint (Accept:
+      // application/json) so Formspree answers with JSON instead of sending
+      // the browser to its thank-you page. On success the form is cleared
+      // and the confirmation shows; on failure the error notice shows and
+      // the form stays open for another attempt.
+      form.addEventListener('submit', async (event) => {
+        event.preventDefault()
+        notice.hidden = true
+        error.hidden = true
+        const button = form.querySelector('button[type="submit"]')
+        if (button) button.disabled = true
+        try {
+          const response = await fetch(form.action, {
+            method: form.method,
+            body: new FormData(form),
+            headers: { Accept: 'application/json' }
+          })
+          if (response.ok) {
+            form.reset()
+            form.hidden = true
+            notice.hidden = false
+          } else {
+            error.hidden = false
+          }
+        } catch {
+          error.hidden = false
+        } finally {
+          if (button) button.disabled = false
+        }
+      })
     })()
   </script>
 </Layout>
