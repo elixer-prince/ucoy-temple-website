@@ -24,10 +24,30 @@ async function networkGone(): Promise<FakeResponse> {
 
 /** Runs one navigation request through a fresh worker and returns its answer. */
 function navigate(cache: FakeCache, path: string): Promise<FakeResponse> {
-  return requestThrough(createWorker({ shell: cache, fetch: networkGone }), {
+  return navigateRuntime(new FakeCache(), cache, path)
+}
+
+/** Runs one navigation request through a fresh worker, with its own runtime cache. */
+function navigateRuntime(
+  runtime: FakeCache,
+  shell: FakeCache,
+  path: string
+): Promise<FakeResponse> {
+  return requestThrough(createWorker({ shell, runtime, fetch: networkGone }), {
     url: `https://ucoy.example${path}`,
     method: 'GET',
     mode: 'navigate'
+  })
+}
+
+/** Runs one ClientRouter-style asset request through a fresh worker. ClientRouter
+ * fetches pages with no `mode` (it defaults to `cors`), so they never reach the
+ * navigation branch of the worker. */
+function asset(cache: FakeCache, path: string): Promise<FakeResponse> {
+  return requestThrough(createWorker({ shell: cache, fetch: networkGone }), {
+    url: `https://ucoy.example${path}`,
+    method: 'GET',
+    mode: 'cors'
   })
 }
 
@@ -71,6 +91,61 @@ describe('AC-7: an offline page load finds the pre-cached page', () => {
     const response = await navigate(new FakeCache(PRECACHED), '/never-visited')
 
     expect(response.body).toBe('offline page')
+  })
+})
+
+describe('feature 16: an offline reload finds a page however it was stored', () => {
+  it('serves a page fetched while online from the runtime cache', async () => {
+    // A page visited online via ClientRouter is stored in the runtime cache at
+    // the bare path requested. A later reload while offline must find it there,
+    // even when the pre-cache never stored that page.
+    const runtime = new FakeCache({
+      '/services/shabbat-morning': new FakeResponse('runtime copy')
+    })
+    const response = await navigateRuntime(runtime, new FakeCache(), '/services/shabbat-morning')
+
+    expect(response.body).toBe('runtime copy')
+  })
+
+  it('serves a pre-cached page from the directory index form', async () => {
+    const response = await navigateRuntime(
+      new FakeCache(),
+      new FakeCache({ '/services/shabbat-morning/index.html': new FakeResponse('shell copy') }),
+      '/services/shabbat-morning'
+    )
+
+    expect(response.body).toBe('shell copy')
+  })
+
+  it('prefers the shell copy when both caches hold the page', async () => {
+    const response = await navigateRuntime(
+      new FakeCache({ '/services/shabbat-morning': new FakeResponse('runtime copy') }),
+      new FakeCache({ '/services/shabbat-morning': new FakeResponse('shell copy') }),
+      '/services/shabbat-morning'
+    )
+
+    expect(response.body).toBe('shell copy')
+  })
+})
+
+describe('feature 16: ClientRouter link clicks find pre-cached pages offline', () => {
+  it('serves a pre-cached page for a bare-path asset request', async () => {
+    // ClientRouter fetches pages at the bare path with no `navigate` mode, so
+    // they go through the asset branch. The directory index retry means a page
+    // pre-cached at /services/shabbat-morning/index.html is served for a
+    // request to /services/shabbat-morning, with no network.
+    const response = await asset(
+      new FakeCache({ '/services/shabbat-morning/index.html': new FakeResponse('shell copy') }),
+      '/services/shabbat-morning'
+    )
+
+    expect(response.body).toBe('shell copy')
+  })
+
+  it('returns 503 when nothing is cached and there is no network', async () => {
+    const response = await asset(new FakeCache(), '/never-visited')
+
+    expect(response.status).toBe(503)
   })
 })
 

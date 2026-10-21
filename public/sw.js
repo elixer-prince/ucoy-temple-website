@@ -119,7 +119,9 @@ async function precacheShell() {
     console.warn('SW: could not cache offline page', err)
   }
 
-  // Fetch and cache every file listed in the build manifest.
+  // Fetch and cache every file listed in the build manifest. Each URL is
+  // cached on its own: a single flaky download must not abort the whole
+  // pre-cache and leave every other page uncached.
   try {
     const manifestResponse = await fetch(MANIFEST_URL, {
       cache: 'reload'
@@ -127,27 +129,39 @@ async function precacheShell() {
     if (!manifestResponse.ok) return
 
     const manifest = await manifestResponse.json()
-    const requests = manifest.urls.map((url) => new Request(url, { cache: 'reload' }))
-    await cache.addAll(requests)
+    for (const url of manifest.urls) {
+      try {
+        await cache.add(new Request(url, { cache: 'reload' }))
+      } catch (err) {
+        console.warn('SW: could not pre-cache', url, err)
+      }
+    }
   } catch (err) {
-    console.warn('SW: could not pre-cache manifest URLs', err)
+    console.warn('SW: could not read the pre-cache manifest', err)
   }
 }
 
 /**
  * Handle navigation requests (HTML page loads).
  *
- * Strategy: network-first, then the pre-cached page, then the offline page.
+ * Strategy: network-first, then a cached copy, then the offline page.
  *   1. Fetch the fresh page from the network so a redeploy is reflected
- *      immediately. The page is already cached at build time (the manifest
- *      lists all build output), and the reply is cached for future offline
- *      visits. This replaces the earlier cache-first behaviour, which served
- *      the stale cached page on every repeat visit and left text untouched
- *      after a deploy (a byte-identical sw.js never re-installs the worker).
+ *      immediately (the same URL is reused across builds, so the old cached
+ *      copy would otherwise be served forever). The reply is cached for
+ *      future offline visits. This replaces the earlier cache-first
+ *      behaviour, which served the stale cached page on every repeat visit
+ *      and left text untouched after a deploy (a byte-identical sw.js never
+ *      re-installs the worker). If storing the fresh copy fails (a full
+ *      device cache, common on phones), the fresh page is still served —
+ *      only the caching is skipped.
  *
- *   2. If the network is unavailable, fall back to the page pre-cached at
- *      install time (the directory index form is retried via matchPage so a
- *      bare path such as /services still resolves to /services/index.html).
+ *   2. If the network is unavailable, fall back to a cached copy. The
+ *      pre-cache holds pages at their directory index form
+ *      (/services/shabbat-morning/index.html), while ClientRouter stores the
+ *      pages it fetches at the bare path requested
+ *      (/services/shabbat-morning) in the runtime cache. Both caches are
+ *      checked, each trying the exact URL first and then the directory index
+ *      form, so a reload finds a page no matter how it was stored.
  *   3. If the page was never cached, serve /offline.html.
  */
 async function respondToNavigation(request) {
@@ -160,18 +174,24 @@ async function respondToNavigation(request) {
   try {
     const response = await fetch(request)
     if (response.ok) {
-      // Cache the fresh page for future offline visits (the shared shell).
-      await caches.open(SHELL_CACHE).then((cache) => cache.put(request, response.clone()))
+      // Cache the fresh page for future offline visits (the shared shell). A
+      // full device cache must not withhold the fresh page, so a failure to
+      // store is only warned about.
+      try {
+        await (await caches.open(SHELL_CACHE)).put(request, response.clone())
+      } catch (error) {
+        console.warn('SW: could not cache fresh page', request.url, error)
+      }
     }
     return response
   } catch {
-    // 2. Network unavailable — fall back to the pre-cached page, then the
-    //    offline page. network-first with cache fallback keeps content fresh
-    //    online while still working offline.
-    const cache = await caches.open(SHELL_CACHE)
-    const cached = await matchPage(cache, request)
+    // 2. Network unavailable — fall back to a cached copy, then the offline
+    //    page. network-first with cache fallback keeps content fresh online
+    //    while still working offline.
+    const cached = await matchShellOrRuntime(request)
     if (cached) return cached
 
+    const cache = await caches.open(SHELL_CACHE)
     const offline = await cache.match(OFFLINE_URL)
     if (offline) return offline
 
@@ -192,6 +212,25 @@ async function matchPage(cache, request) {
   const url = new URL(request.url)
   const indexPath = `${url.pathname.replace(/\/$/, '')}/index.html`
   return cache.match(indexPath)
+}
+
+/**
+ * Finds a cached copy of a page, whatever form it was stored under.
+ *
+ * The pre-cache holds pages at their directory index form
+ * (/services/shabbat-morning/index.html), while ClientRouter stores the pages
+ * it fetches at the bare path requested (/services/shabbat-morning) in the
+ * runtime cache. A member can reach either form, so both caches are checked —
+ * shell first, so a freshly pre-cached copy wins over a stale runtime one —
+ * and each cache tries the exact URL before the directory index form.
+ */
+async function matchShellOrRuntime(request) {
+  for (const name of [SHELL_CACHE, RUNTIME_CACHE]) {
+    const cache = await caches.open(name)
+    const cached = await matchPage(cache, request)
+    if (cached) return cached
+  }
+  return undefined
 }
 
 /**
@@ -290,34 +329,39 @@ async function storeMedia(request, response) {
 }
 
 /**
- * Handle asset requests (CSS, JS, fonts, images, JSON).
+ * Handle asset requests (CSS, JS, fonts, images, JSON, and ClientRouter page
+ * fetches).
  *
  * Strategy: cache-first, then network.
- *   1. Check the shell cache (precached at install).
- *   2. If not found, check the runtime cache.
- *   3. If still not found, fetch from the network and cache the result.
- *   4. If the network fails, return a 503.
+ *   1. Check the shell cache (precached at install), then the runtime cache
+ *      (pages a member fetched while online via ClientRouter). Each cache
+ *      tries the exact URL first and then the directory index form, so a
+ *      ClientRouter fetch for /services/shabbat-morning finds the page
+ *      pre-cached at /services/shabbat-morning/index.html.
+ *   2. If still not found, fetch from the network and cache the result.
+ *   3. If the network fails, return a 503.
  */
 async function respondToAsset(request) {
-  // 1. Shell cache (precached build output).
-  const shellCache = await caches.open(SHELL_CACHE)
-  const cached = await shellCache.match(request)
+  // 1. Shell cache (precached build output), then the runtime cache (pages
+  //    fetched while online). Both try the directory index form as well.
+  const cached = await matchShellOrRuntime(request)
   if (cached) return cached
 
-  // 2. Runtime cache.
-  const runtimeCache = await caches.open(RUNTIME_CACHE)
-  const runtimeCached = await runtimeCache.match(request)
-  if (runtimeCached) return runtimeCached
-
-  // 3. Network fallback.
+  // 2. Network fallback.
   try {
     const response = await fetch(request)
     if (response.ok) {
-      await runtimeCache.put(request, response.clone())
+      try {
+        const runtimeCache = await caches.open(RUNTIME_CACHE)
+        await runtimeCache.put(request, response.clone())
+      } catch (error) {
+        // A full device cache must not withhold the fresh download.
+        console.warn('SW: could not cache asset', request.url, error)
+      }
     }
     return response
   } catch {
-    // 4. Everything failed.
+    // 3. Everything failed.
     return new Response('', { status: 503, statusText: 'Service Unavailable' })
   }
 }

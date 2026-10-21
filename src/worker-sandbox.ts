@@ -137,6 +137,8 @@ export class FakeCache {
 export interface SandboxOptions {
   /** The cache the worker pre-caches the shell into. */
   shell?: FakeCache
+  /** The cache the worker keeps runtime copies (ClientRouter fetches) in. */
+  runtime?: FakeCache
   /** The cache the worker keeps media in. */
   media?: FakeCache
   /** What the network answers. Throwing from here stands for no connection. */
@@ -150,6 +152,7 @@ export interface SandboxOptions {
  */
 export function createWorker({
   shell = new FakeCache(),
+  runtime = new FakeCache(),
   media = new FakeCache(),
   fetch
 }: SandboxOptions): FetchHandler {
@@ -171,7 +174,11 @@ export function createWorker({
     Response: FakeResponse,
     fetch,
     caches: {
-      open: async (name: string): Promise<FakeCache> => (name.includes('media') ? media : shell),
+      open: async (name: string): Promise<FakeCache> => {
+        if (name.startsWith('media')) return media
+        if (name.startsWith('runtime')) return runtime
+        return shell
+      },
       keys: async (): Promise<string[]> => []
     },
     self: {
