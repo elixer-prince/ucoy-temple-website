@@ -86,6 +86,14 @@ describe('AC-1 no raw literals', () => {
     expect(base).toMatch(/scroll-margin-top:\s*var\(--space-/)
   })
 
+  it('clears the narrow screen header so anchor targets land below it', () => {
+    // The sticky narrow screen header covers the top of the viewport, so
+    // fragment targets and the skip link need scroll padding that clears it.
+    // Wide screens have no header and keep the plain scroll margin alone.
+    const base = readFileSync(join(root, 'src', 'styles', 'base.css'), 'utf-8')
+    expect(base).toMatch(/scroll-padding-top:\s*calc\(var\(--touch-target\)/)
+  })
+
   // The scan above reads real files, so a hole in it stays invisible until a
   // real literal walks through. These cases pin the patterns to the shapes they
   // are meant to catch, including the alpha forms the first version missed.

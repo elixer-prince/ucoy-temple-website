@@ -34,6 +34,17 @@ html {
   scroll-margin-top: var(--space-m);
 }
 
+/* On a narrow screen the site header is sticky chrome at the top of the
+   viewport with an opaque background, so a fragment target (and the skip link)
+   must land below it instead of behind it. The header is hidden on wide
+   screens, where the scroll margin above is enough on its own. The offset is
+   the header's touch target plus its top and bottom padding, all tokens. */
+@media (max-width: 47.99em) {
+  html {
+    scroll-padding-top: calc(var(--touch-target) + var(--space-s) * 2);
+  }
+}
+
 body {
   margin: 0;
   font-family: var(--font-sans);
@@ -314,7 +325,6 @@ blockquote p {
 }
 
 /* ---- High contrast mode (spec 0004, AC-11) ---- */
-
 
 @media (forced-colors: active) {
   .button {
