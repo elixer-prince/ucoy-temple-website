@@ -144,7 +144,8 @@ Create `src/content/portion-notes/<slug>.md` where `<slug>` is the portion slug 
 ```md
 ---
 title: Portion Name
-description: >- Description goes here...
+description: >-
+    Description goes here...
   
 order: 999
 ---
