@@ -1,6 +1,7 @@
 ---
 title: Lech Lecha
-description: > Description goes here...
+description: >-
+    Description goes here...
   
 order: 3
 ---
