@@ -32,10 +32,7 @@ The commentary for the prophets wring goes here...
 
 ## Thought for the week
 
-> This is an example of a thought for the week that goes
-> in two or more lines like this...
-
-And this is some additional details or it can be used alone if no quote is needed...
+Abram encountered Yahweh, and it changed his life. We have all sorts of different names for this experience. Some call it a conversion. Others refer to it as being "born again." To others it is a "spiritual awakening." Regardless of what we call it, it is pure joy. It is a conversion of the heart, a Ruach'kal awakening of the nephesh (soul); it is a new birth.
 
 ## Commentary Summary
 
