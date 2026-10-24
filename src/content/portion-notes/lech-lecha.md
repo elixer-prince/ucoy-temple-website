@@ -16,7 +16,7 @@ Bereshit 13:1 | Abram and Lot Separate
 
 Bereshit 14:1 | Lot's Captivity and Rescue
 
-Bereshit 14:17 | Abram Barack by Melchizedek
+Bereshit 14:17 | Abram Barak by Melchizedek
 
 Bereshit 15:1 | Yahweh's Berit with Abram
 
