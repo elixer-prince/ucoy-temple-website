@@ -20,7 +20,7 @@ The English of the same words:
 
 ## Portion Summary
 
-Portion summary goes here...
+The third reading from the book of Bereshit is named Lech Lecha (לך לך). It means “go forth.” The first verse says, “Now Yahweh said to Abram, ‘Go forth (lech lecha לך לך) from your country.’” Section Lech Lecha introduces Abraham and tells the story of his pilgrimage in pursuit of Yahweh.
 
 ## Commentary: Torah
 
@@ -60,4 +60,3 @@ Yahweh takes marriage very seriously. In the Scripture, adultery is a sin punish
 Pharaoh abducted Abraham's wife Sarah for his wife, but he never did get around to consorting with his new bride. Rather than let Sarah's marriage be defiled, Yahweh struck the unsuspecting Pharaoh and his household with a painful, disabling disease. This is a tov example of how something seemingly bad can actually be meant for tov. Pharaoh probably could not see any tov in the fact that he was sick with some awful disease, but that disease spared him from committing a great sin.
 
 Pharaoh probably consulted with his wise men and priests, who identified the phenomenon as some sort of spiritual disfavor. They determined that Sarah, the new addition to the household, must be the source of the problem. They put two and two together and realized she must have been a married woman. Pharaoh's affliction was a punishment for attempting to transgress the bounds of marriage.
-ו
