@@ -8,15 +8,21 @@ order: 3
 
 ## Portion Outline
 
-<div lang="he" dir="rtl">
+Bereshit 12:1 | The call of Abram
 
-בְּרֵאשִׁית בָּרָא אֱלֹהִים אֵת הַשָּׁמַיִם וְאֵת הָאָרֶץ
+Bereshit 1:10 | Abram and Sarai in Mistrayim
 
-</div>
+Bereshit 13:1 | Abram and Lot Separate
 
-The English of the same words:
+Bereshit 14:1 | Lot's Captivity and Rescue
 
-> In the beginning God created the heaven and the earth.
+Bereshit 14:17 | Abram Barack by Melchizedek
+
+Bereshit 15:1 | Yahweh's Berit with Abram
+
+Bereshit 16:1 | The Birth of Ishmael
+
+Bereshit 17:1 | The Sign of the Berit (Covenant)
 
 ## Portion Summary
 
