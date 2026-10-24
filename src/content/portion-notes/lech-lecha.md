@@ -28,7 +28,13 @@ Torah commentary goes here...
 
 ## Commentary: Prophets
 
-The commentary for the prophets wring goes here...
+### Yahweh's People are Comforted
+
+The Haftarah for Lekh Lekha comes from the Nabbi (prophet) Yeshayahu. In the Parashah, it is clear that the youth of Abraham and Sarah is supernaturally restored to them, as they become the conduits of the Promised Seed despite the ravages of old age. Likewise in the Haftarah, those who wait upon Yahweh are said to "renew their strength; they shall mount up with wings as eagles; they shall run, and not be weary; and they shall walk, and not faint."
+
+Rashi writes concerning the "wormlike" quality ascribed to Yacob: "Why was Isra'Yah compared to a worm? To say to you - just as a worm devastates a tree with its mouth, even though it is soft and the tree is hard, so too, Isra'Yah, with the power of prayer, will overcome their enemies who are strong like trees." Other of the Chaz'l (sages) have said that the "worm" here is not a metaphor for Isra'yah but rather a symbol of the ultimate source of despair - death. Yahweh will save His people from even this.
+
+Indeed, Yahshua is the Mashiach by who Yahweh will saves His people Isra'Yah from their sins - and from the ultimate verdict of sin, namely, death. He is the "First and the Last" and there is no other Savior beside Him. All Isra'Yah needs to embrace Him as their long lost Savior.
 
 ## Thought for the week
 
