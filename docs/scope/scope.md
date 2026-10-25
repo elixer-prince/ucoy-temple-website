@@ -288,6 +288,10 @@ The ladder values were sampled from screenshots of the current Google Site, clos
 
 ### 12. Holy Days calendar · planned · needs a decision
 
+Dates are computed from the Hebrew calendar (spec `docs/specs/0009-holy-days-calendar.md`).
+
+Dates are computed from the Hebrew calendar (spec `docs/specs/0009-holy-days-calendar.md`).
+
 Upcoming services and High Sabbaths shown with their dates on the Hebrew calendar, the custom feature Google Sites could not do well. Whether dates are computed or curated is the decision to settle.
 **Done when:** the calendar lists upcoming dates correctly, marks High Sabbaths, links each date to its page, and the sidebar entry for Important Dates stops reading as planned.
 

@@ -45,6 +45,7 @@ export const NAV_GROUPS: NavGroup[] = [
 export const FIXED_NAV_BEFORE_PAGES: NavEntry[] = [
   { label: 'Home', href: '/', kind: 'static' },
   { label: "This Week's Torah Portion", href: '/torah-portion', kind: 'static' },
+  { label: 'Holy Days', href: '/holy-days', kind: 'static' },
   { label: 'Important Dates', href: '/dates', kind: 'planned' },
   { label: 'Resources', href: '/resources', kind: 'static' }
 ]

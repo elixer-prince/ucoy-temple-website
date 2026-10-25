@@ -213,9 +213,54 @@ if (SITE_CONFIG.calendarUrl) {
       )}
     </div>
   </section>
+
+  <section class="holy-days">
+    <h2>Holy Days Calendar</h2>
+    <p>
+      The fixed festival dates for the current Hebrew year are computed from the calendar at each
+      build. See the full list and links to each day's service.
+    </p>
+    <a class="button" href="/holy-days">
+      View Holy Days
+    </a>
+  </section>
 </Layout>
 
 <style>
+  .holy-days {
+    padding: var(--space-xl) 0;
+  }
+
+  .holy-days h2 {
+    font-family: var(--font-serif);
+    font-size: var(--text-title);
+    margin: 0 0 var(--space-s) 0;
+  }
+
+  .holy-days p {
+    margin: 0 0 var(--space-m) 0;
+  }
+
+  .button {
+    display: inline-flex;
+    align-items: center;
+    min-height: var(--touch-target);
+    padding: var(--space-2xs) var(--space-s);
+    border: var(--border-width) solid var(--color-border);
+    border-radius: var(--radius);
+    background: var(--color-surface);
+    color: var(--color-text);
+    font-weight: 600;
+    text-decoration: none;
+  }
+
+  .button:hover {
+    background: var(--color-accent-hover);
+  }
+
+  .button:focus-visible {
+    outline: var(--focus-width) solid var(--color-focus);
+  }
   .hero {
     text-align: center;
     padding: var(--space-2xl) 0;

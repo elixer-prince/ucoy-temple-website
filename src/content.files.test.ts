@@ -79,7 +79,7 @@ describe('AC-2: Sample service files exist and validate against schema', () => {
     expect(result.success).toBe(true)
     if (result.success) {
       expect(result.data.kind).toBe('weekly')
-      expect(result.data.title).toBe('Shabbat Morning Service')
+      expect(result.data.title).toBe('Shabbat Morning Abodah (Service)')
     }
   })
 
@@ -290,6 +290,7 @@ describe('feature 6: the Friday body writes the ritual in the order it is kept',
     // is kept, so a member can follow along from a phone.
     const headings = [...body.matchAll(/^##\s+(.+)$/gm)].map((m) => m[1].trim())
     expect(headings).toEqual([
+      'Table of Contents',
       'Lighting the Shabbat candles',
       'The Shema',
       'Shabbat Rest',
@@ -430,6 +431,7 @@ describe('feature 8: the closing body writes the ritual in the order it is kept'
     // the ritual.
     const headings = [...body.matchAll(/^##\s+(.+)$/gm)].map((m) => m[1].trim())
     expect(headings).toEqual([
+      'Table of Contents',
       'The Shema',
       'Closing Prayer',
       'Tehillim (Psalm: 121)',
@@ -544,6 +546,7 @@ describe('feature 8: the closing page is built and published', () => {
       .map((m) => m[1].replace(/<[^>]+>/g, '').trim())
       .filter((text) => text.length > 0)
     expect(headings).toEqual([
+      'Table of Contents',
       'The Shema',
       'Closing Prayer',
       'Tehillim (Psalm: 121)',
@@ -704,6 +707,7 @@ describe('feature 9: the Saturday afternoon service the old site published', () 
     // blessings, then the Haftarah with the blessings around it.
     const headings = [...body.matchAll(/^##\s+(.+)$/gm)].map((m) => m[1].trim())
     expect(headings).toEqual([
+      'Table of Contents',
       'Reading and Study of the Torah',
       'Torah Berakah (Before)',
       'Torah Berakah (After)',
@@ -746,11 +750,11 @@ describe('feature 9: the sweep carried the old site text into the service bodies
     // the list is deliberately plain: an earlier version said "as it was kept
     // before", which is a note about the migration from the old site, not something
     // the temple would say to a member reading its own service order.
-    expect(morning).toContain('In this order:')
+    expect(morning).toContain('## Table of Contents')
     expect(morning).not.toMatch(/as it was kept before/i)
     // The entry is a link now, so the list item carries the old text inside an anchor.
     expect(morning).toMatch(
-      /^- \[The National Anthem Of Yah'maica \(Jamaica\)\]\(#the-national-anthem-of-yahmaica\)$/m
+      /^- \[The National Anthem Of Yah'maica \(Jamaica\)\]\(#the-national-anthem-of-yahmaica-jamaica\)$/m
     )
   })
 
