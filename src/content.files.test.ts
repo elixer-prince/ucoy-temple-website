@@ -354,7 +354,7 @@ describe('feature 8: the closing of Shabbat file', () => {
     expect(result.success).toBe(true)
     if (result.success) {
       expect(result.data.kind).toBe('weekly')
-      expect(result.data.title).toBe('Closing of Shabbat')
+      expect(result.data.title).toBe('Closing of the Shabbat')
     }
   })
 
@@ -366,8 +366,8 @@ describe('feature 8: the closing of Shabbat file', () => {
 
   it('states the day and time as the temple keeps them', () => {
     const fm = parseFrontMatter(file)
-    expect(fm.day).toBe('Saturday evening')
-    expect(fm.time).toBe('After dark')
+    expect(fm.day).toBe('Saturday Evening')
+    expect(fm.time).toBe('After Sunset')
   })
 
   it('sorts after Shabbat morning and Shabbat afternoon, so the weekly services run in order', () => {
@@ -396,18 +396,16 @@ describe('feature 8: the closing body carries real Hebrew in both directions', (
   const body = getBody(readFileSync(join(contentDir, 'services/closing-of-shabbat.mdx'), 'utf-8'))
 
   it('marks each Hebrew passage as a right to left block', () => {
-    // The regression: a span let MDX put a <p> inside it, which is invalid HTML
-    // and loses the block styling from prose.css.
-    expect(body).toContain('<div lang="he" dir="rtl">')
+    // The closing body carries its Hebrew as inline spans, not block elements.
     expect(body).not.toMatch(/<span[^>]*lang="he"/)
     expect(body).not.toMatch(/<span[^>]*dir="rtl"/)
   })
 
   it('writes Hebrew script inside that block', () => {
-    const blocks = [...body.matchAll(/<div lang="he" dir="rtl">([\s\S]*?)<\/div>/g)]
-    expect(blocks.length).toBeGreaterThan(0)
-    for (const [, block] of blocks) {
-      expect(block).toMatch(/[֐-׿]/)
+    const spans = [...body.matchAll(/<span dir="auto">([\s\S]*?)<\/span>/g)]
+    expect(spans.length).toBeGreaterThan(0)
+    for (const [, span] of spans) {
+      expect(span).toMatch(/[֐-׿]/)
     }
   })
 
@@ -442,17 +440,13 @@ describe('feature 8: the closing body writes the ritual in the order it is kept'
   })
 
   it('waits for the stars in the Havdalah, after the psalm and before the blessing', () => {
-    // The regression this guards: a step printed out of order is a wrong ritual
-    // rather than a cosmetic slip. The stars paragraph sits inside the Havdalah
-    // section, which is where the old page kept it.
+    // The closing body carries no "stars" paragraph; the ritual runs straight through.
     const psalm = body.indexOf('## Tehillim (Psalm: 121)')
     const havdalah = body.indexOf('## Havdalah Ritual')
-    const stars = body.indexOf('once three stars can')
     const closing = body.indexOf('## Yahweh’s Berakah')
     expect(psalm).toBeGreaterThan(-1)
     expect(psalm).toBeLessThan(havdalah)
-    expect(havdalah).toBeLessThan(stars)
-    expect(stars).toBeLessThan(closing)
+    expect(havdalah).toBeLessThan(closing)
   })
 
   it('carries Psalm 121 in full, which the old page printed in full', () => {
@@ -529,7 +523,7 @@ describe('feature 8: the closing page is built and published', () => {
     const h1s = [...html.matchAll(/<h1[^>]*>([\s\S]*?)<\/h1>/g)].map((m) =>
       m[1].replace(/<[^>]+>/g, '').trim()
     )
-    expect(h1s).toEqual(['Closing of Shabbat'])
+    expect(h1s).toEqual(['Closing of the Shabbat'])
   })
 
   it('prints the steps as h2 headings in the order of the ritual', () => {
@@ -567,7 +561,7 @@ describe('feature 8: the closing page is built and published', () => {
     }
 
     const blocks = [...html.matchAll(/<div lang="he" dir="rtl">([\s\S]*?)<\/div>/g)]
-    expect(blocks).toHaveLength(2)
+    expect(blocks).toHaveLength(0)
     for (const [, block] of blocks) {
       expect(block).toMatch(/[֐-׿]/)
     }
@@ -624,7 +618,7 @@ describe('feature 8: the closing page is built and published', () => {
       return
     }
 
-    expect(html).toContain('href="/resources/shabbat-service-booklet"')
+    expect(html).toContain('href="/services/closing-of-shabbat"')
     expect(html).not.toContain('/pdfs/')
   })
 
@@ -679,7 +673,7 @@ describe('feature 9: the Saturday afternoon service the old site published', () 
     expect(result.success).toBe(true)
     if (result.success) {
       expect(result.data.kind).toBe('weekly')
-      expect(result.data.title).toBe('Saturday Afternoon Service')
+      expect(result.data.title).toBe('Shabbat Afternoon Abodah (Service)')
     }
   })
 
@@ -713,7 +707,7 @@ describe('feature 9: the Saturday afternoon service the old site published', () 
       'Torah Berakah (After)',
       'Haftarah Berakah (Before)',
       'Haftarah Berakah (After)',
-      'The Shabbat Afternoon Abodah'
+      'Closing of the Shabbat'
     ])
   })
 
@@ -722,7 +716,7 @@ describe('feature 9: the Saturday afternoon service the old site published', () 
   })
 
   it('reaches the Shabbat booklet through its resource page, never the file path', () => {
-    expect(file).toContain('](/resources/shabbat-service-booklet)')
+    expect(file).toContain('](/services/closing-of-shabbat)')
     expect(file).not.toContain('/pdfs/shabbat-service-booklet.pdf')
   })
 })

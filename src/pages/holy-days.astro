@@ -1,0 +1,176 @@
+---
+/**
+ * Holy Days calendar (spec 0008).
+ *
+ * The fixed festival dates for the current Hebrew year are computed at build
+ * time from `@hebcal/core`, grouped under month headings. Each entry links to
+ * its service page or any printed material the temple points at. Nothing is
+ * fetched by the visitor's browser at view time.
+ */
+import Layout from '@layouts/Layout.astro'
+import { HDate } from '@hebcal/core'
+import { holyDaysForYear } from '@/lib/holy-days'
+
+const days = holyDaysForYear(new HDate().getFullYear())
+
+/**
+ * `Saturday, 3 October 2026`, for the byline.
+ */
+const todayLong = new Date().toLocaleDateString('en-GB', {
+  weekday: 'long',
+  day: 'numeric',
+  month: 'long',
+  year: 'numeric'
+})
+
+function holyDayDate(day: HolyDay): string {
+  return day.date.toLocaleDateString('en-US', {
+    weekday: 'short',
+    month: 'short',
+    day: 'numeric',
+    year: 'numeric',
+    timeZone: 'UTC'
+  })
+}
+
+interface HolyDay {
+  date: Date
+  english: string
+  hebrew?: string
+  material?: string
+}
+
+/**
+ * Group consecutive holy days under the month they fall in. The calendar
+ * returns dates in order, so a single pass collects each month's run.
+ */
+function groupByMonth(days: HolyDay[]): { month: string; days: HolyDay[] }[] {
+  const groups: { month: string; days: HolyDay[] }[] = []
+  for (const day of days) {
+    const month = day.date.toLocaleDateString('en-US', {
+      month: 'long',
+      year: 'numeric',
+      timeZone: 'UTC'
+    })
+    const last = groups[groups.length - 1]
+    if (last && last.month === month) {
+      last.days.push(day)
+    } else {
+      groups.push({ month, days: [day] })
+    }
+  }
+  return groups
+}
+
+const grouped = groupByMonth(days)
+---
+
+<Layout
+  title="Holy Days"
+  description={`The fixed holy days for the current Hebrew year, ${todayLong}, with links to each service and its materials.`}
+>
+  <div class="prose">
+    <h1>Holy Days</h1>
+    <p class="lead">
+      The appointed times of the Hebrew calendar for {todayLong}, computed from the calendar at each
+      build. Each day links to its order of service and to any printed material the temple keeps for
+      it.
+    </p>
+
+    {grouped.map((group) => (
+      <section class="holy-month">
+        <h2 class="holy-month-heading">{group.month}</h2>
+        <ul class="holy-list">
+          {group.days.map((day) => (
+            <li class="holy-item">
+              <time class="holy-date">{holyDayDate(day)}</time>
+              <span class="holy-name">{day.english}</span>
+              {day.hebrew && (
+                <span class="holy-hebrew" lang="he" dir="rtl">
+                  {day.hebrew}
+                </span>
+              )}
+              {day.material && (
+                <a class="holy-material" href={day.material}>
+                  Order of service
+                </a>
+              )}
+            </li>
+          ))}
+        </ul>
+      </section>
+    ))}
+
+    <p class="text-muted">
+      These dates are the same in every house of worship that keeps the Hebrew calendar. The
+      temple's own gatherings — meetings, classes, and seasonal events — are listed separately on
+      the
+      <a href="/">home page</a>, and the week's Torah reading is on its own page.
+    </p>
+  </div>
+</Layout>
+
+<style>
+  .holy-month {
+    margin-bottom: var(--space-l);
+  }
+
+  .holy-month-heading {
+    font-family: var(--font-serif);
+    font-size: var(--text-title);
+    border-bottom: var(--border-width) solid var(--color-border);
+    padding-bottom: var(--space-2xs);
+    margin: 0 0 var(--space-s) 0;
+  }
+
+  .holy-list {
+    list-style: none;
+    padding-left: 0;
+  }
+
+  .holy-item {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: baseline;
+    gap: var(--space-2xs) var(--space-s);
+    padding: var(--space-2xs) 0;
+    border-bottom: var(--border-width) solid var(--color-border);
+  }
+
+  .holy-item:last-child {
+    border-bottom: none;
+  }
+
+  .holy-date {
+    font-size: var(--text-caption);
+    font-variant-numeric: tabular-nums;
+    color: var(--color-text-muted);
+    white-space: nowrap;
+    min-width: 9em;
+  }
+
+  .holy-name {
+    font-weight: 600;
+  }
+
+  .holy-hebrew {
+    font-family: var(--font-serif);
+    font-size: var(--text-title);
+    color: var(--color-accent);
+    margin-left: auto;
+  }
+
+  .holy-material {
+    font-size: var(--text-caption);
+    margin-left: auto;
+  }
+
+  .lead {
+    font-size: var(--text-lead);
+    line-height: var(--body-line-height);
+    color: var(--color-text-muted);
+    margin-bottom: var(--space-l);
+  }
+
+  /* Button hover on the home page uses --color-accent-hover, which exists in both modes. */
+</style>
