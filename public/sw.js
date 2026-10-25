@@ -64,7 +64,12 @@ self.addEventListener('fetch', (event) => {
   if (url.origin !== self.location.origin) return
   if (url.pathname === MANIFEST_URL) return
 
-  if (request.mode === 'navigate') {
+  const accept = request.headers.get('Accept') || ''
+  // ClientRouter fetches pages with no `mode` (it defaults to `cors`), so the
+  // navigate branch above is not enough. A request that accepts text/html is a
+  // page fetch, so it must also go through the network-first handler; otherwise
+  // cache-first serves the stale copy and a redeploy never shows until reload.
+  if (request.mode === 'navigate' || accept.includes('text/html')) {
     event.respondWith(respondToNavigation(request))
     return
   }
