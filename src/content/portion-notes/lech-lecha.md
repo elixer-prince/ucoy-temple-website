@@ -1,8 +1,8 @@
 ---
 title: Lech Lecha
 description: >-
-    Description goes here...
-  
+  Description goes here...
+
 order: 3
 ---
 
@@ -26,17 +26,17 @@ Bereshit 17:1 | The Sign of the Berit (Covenant)
 
 ## Portion Summary
 
-The third reading from the book of Bereshit is named Lech Lecha (לך לך). It means “go forth.” The first verse says, “Now Yahweh said to Abram, ‘Go forth (lech lecha לך לך) from your country.’” Section Lech Lecha introduces Abraham and tells the story of his pilgrimage in pursuit of Yahweh.
+The third reading from the book of Bereshit is named Lech Lecha (<span dir="auto">לך לך</span>). It means “go forth.” The first verse says, “Now Yahweh said to Abram, ‘Go forth (lech lecha <span dir="auto">לך לך</span>) from your country.’” Section Lech Lecha introduces Abraham and tells the story of his pilgrimage in pursuit of Yahweh.
 
 ## Portion Commentary
-
-The Quarrel with Lot
 
 ### Thought for the week
 
 Abram encountered Yahweh, and it changed his life. We have all sorts of different names for this experience. Some call it a conversion. Others refer to it as being "born again." To others it is a "spiritual awakening." Regardless of what we call it, it is pure joy. It is a conversion of the heart, a Ruach'kal awakening of the nephesh (soul); it is a new birth.
 
-### Commentary: Torah
+### Torah Commentary
+
+The Quarrel with Lot
 
 #### Ber. (12: 1—9) The call of Abram
 
@@ -173,7 +173,7 @@ The long waiting for the promise discouraged them and made them vulnerable to ac
 When we impatiently try to fulfill Yahweh's promises in our own effort, it accomplishes nothing and may even prolong the time until the promise is fulfilled. Yacob had to live as an exile for 25 years because he thought he had to arrange the fulfillment of Yahweh's promise to get his father's berakah. Mosheh had to tend sheep for 40 years in the desert after he tried to arrange the fulfillment of Yahweh's promise by murdering a Mitsrayim.
 It is much better to receive Yahweh's help than to try and help Him with our own wisdom and even unbelief.
 
-#### Ber. (17: 1—27)  The sign of the Berith
+#### Ber. (17: 1—27) The sign of the Berith
 
 The Almighty appeared to Abram: Undoubtedly, this is another appearance of Yahweh in the person of Mashiach, who took on a temporary human appearance before His incarnation on earth.
 I am the Almighty: First, Yahweh told Abram who He is. By this title Shaddai, He revealed His Person and character to Abram. However, there is some debate as to what exactly the name Shaddai means.
@@ -184,9 +184,9 @@ We can only do what Yahweh expects of us when we know who He is and know it in a
 The word blameless literally means whole. Yahweh wanted all of Abram, Yahweh wanting a total commitment.
 Yahweh also reminded Abram He has not forgotten the covenant. Though it had been some 25 years since the promise was first made, and though it maybe seemed to Abram Yahweh forgot, Yahweh didnt forget anything.
 
-## Commentary: Prophets
+### Prophets Commentary
 
-### Yahweh's People are Comforted
+#### Yahweh's People are Comforted
 
 The Haftarah for Lekh Lekha comes from the Nabbi (prophet) Yeshayahu. In the Parashah, it is clear that the youth of Abraham and Sarah is supernaturally restored to them, as they become the conduits of the Promised Seed despite the ravages of old age. Likewise in the Haftarah, those who wait upon Yahweh are said to "renew their strength; they shall mount up with wings as eagles; they shall run, and not be weary; and they shall walk, and not faint."
 
@@ -194,7 +194,7 @@ Rashi writes concerning the "wormlike" quality ascribed to Yacob: "Why was Isra'
 
 Indeed, Yahshua is the Mashiach by who Yahweh will saves His people Isra'Yah from their sins - and from the ultimate verdict of sin, namely, death. He is the "First and the Last" and there is no other Savior beside Him. All Isra'Yah needs to embrace Him as their long lost Savior.
 
-## Commentary Summary
+### Commentary Summary
 
 So Abram said to Lot, "Please let there be no strife between you and me, nor between my herdsmen and your herdsmen, for we are brothers. (Bereshit 13:8)
 

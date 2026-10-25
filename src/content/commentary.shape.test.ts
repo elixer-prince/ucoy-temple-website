@@ -32,9 +32,10 @@ const notesDir = join(process.cwd(), 'src', 'content', 'portion-notes')
 const REQUIRED_SECTIONS = [
   'Portion Outline',
   'Portion Summary',
-  'Commentary: Torah',
-  'Commentary: Prophets',
+  'Portion Commentary',
   'Thought for the week',
+  'Torah Commentary',
+  'Prophets Commentary',
   'Commentary Summary'
 ]
 
@@ -43,12 +44,12 @@ const GOSPEL_HEADING = 'Commentary: Gospel'
 
 const files = readdirSync(notesDir).filter((name) => /\.mdx?$/.test(name))
 
-/** The `##` headings of a commentary, in the order they appear. */
+/** The `##` and `###` headings of a commentary, in the order they appear. */
 function headingsIn(name: string): string[] {
   const source = readFileSync(join(notesDir, name), 'utf-8')
   return source
     .split('\n')
-    .map((line) => /^##\s+(.+?)\s*$/.exec(line)?.[1])
+    .map((line) => /^#{2,3}\s+(.+?)\s*$/.exec(line)?.[1])
     .filter((heading): heading is string => Boolean(heading))
 }
 

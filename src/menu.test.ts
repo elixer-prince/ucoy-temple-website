@@ -150,7 +150,10 @@ describe('the sidebar menu starts closed on every load (spec 0004, AC-5)', () =>
 
 describe('the toggle markup', () => {
   it('carries autocomplete=off so browsers do not restore its state', () => {
-    expect(LAYOUT).toContain(
+    // Prettier wraps the input across several lines (print width 100), so
+    // normalise whitespace before matching the markup.
+    const normalized = LAYOUT.replace(/\s+/g, ' ')
+    expect(normalized).toContain(
       '<input class="sidebar-toggle" type="checkbox" id="sidebar-toggle" autocomplete="off" aria-label="Show menu" />'
     )
   })

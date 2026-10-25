@@ -29,7 +29,19 @@ disagreement between them, and the family's departure from the garden toward the
 ground that was cursed for them. It is read at the start of the Torah reading
 cycle, so a member arriving for the first time hears where the story starts.
 
-## Commentary: Torah
+## Portion Commentary
+
+### Thought for the week
+
+> The emptiness comes first, and the moving over it comes before any word is
+> spoken into it.
+
+Bereshit is read at the start of the year rather than the end of it. A
+Congregation that reads it as a restart would be claiming the world back. Read
+as a return, it asks for something smaller and harder: to see again what was
+already there, and to be willing to be changed by the seeing.
+
+### Torah Commentary
 
 The Torah says that the earth was _tohu va vohu_, formless and void, and that
 the spirit of God moved over the face of the deep. Both halves stay in the
@@ -45,7 +57,7 @@ The garden is described the same way. What is forbidden is described as being
 good, and the prohibition is the first thing spoken to the man. The portion
 gives the gift before it gives the rule.
 
-## Commentary: Prophets
+### Prophets Commentary
 
 The Haftarah for Bereshit is the opening of I Samuel, where Hannah brings her
 son Samuel to the sanctuary at Shiloh and gives him to the LORD. Hannah prays
@@ -57,17 +69,7 @@ keeping Samuel; it is answered by the willingness to place him where he belongs,
 which is the same movement the portion describes when the family leaves the
 garden for the ground outside it.
 
-## Thought for the week
-
-> The emptiness comes first, and the moving over it comes before any word is
-> spoken into it.
-
-Bereshit is read at the start of the year rather than the end of it. A
-Congregation that reads it as a restart would be claiming the world back. Read
-as a return, it asks for something smaller and harder: to see again what was
-already there, and to be willing to be changed by the seeing.
-
-## Commentary Summary
+### Commentary Summary
 
 Bereshit gives the world before it gives the rules, and it asks a reader to
 begin from what is missing rather than from what is already understood. The
