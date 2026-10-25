@@ -70,7 +70,13 @@ const hasBanner = Astro.slots.has('banner')
     <SkipLink transition:animate="none" />
     <Header transition:animate="none" />
 
-    <input class="sidebar-toggle" type="checkbox" id="sidebar-toggle" aria-label="Show menu" />
+    <input
+      class="sidebar-toggle"
+      type="checkbox"
+      id="sidebar-toggle"
+      autocomplete="off"
+      aria-label="Show menu"
+    />
 
     <div class:list={['shell', { 'shell--with-banner': hasBanner }]}>
       <label class="sidebar-backdrop" for="sidebar-toggle" aria-hidden="true"></label>
@@ -192,11 +198,28 @@ const hasBanner = Astro.slots.has('banner')
         }
         function init() {
           document.querySelectorAll('label[for="' + FOR + '"]').forEach(bind)
+          // Browsers restore form control state on a full reload, so a menu
+          // left open comes back open. Always start closed. `autocomplete="off"`
+          // on the toggle covers pages without JavaScript; this script covers
+          // the rest (spec 0004, AC-5).
+          const toggle = document.getElementById(FOR)
+          if (toggle) toggle.checked = false
         }
         init()
         if (!window.__ucoyMenuRouterWired) {
           document.addEventListener('astro:page-load', init)
           window.__ucoyMenuRouterWired = true
+        }
+        // Re-assert once the page settles: form state restoration can land
+        // after this script runs, so make sure the menu is closed after load.
+        // `window` outlives ClientRouter swaps, so the flag keeps a single
+        // listener for the lifetime of the tab.
+        if (!window.__ucoyMenuLoadWired) {
+          window.addEventListener('load', function () {
+            const toggle = document.getElementById(FOR)
+            if (toggle) toggle.checked = false
+          })
+          window.__ucoyMenuLoadWired = true
         }
       })()
     </script>
@@ -294,11 +317,11 @@ const hasBanner = Astro.slots.has('banner')
     inset: 0 auto 0 0;
     width: var(--sidebar-width);
     /* Anchor to both viewport edges instead of a fixed height: on Firefox
-                 mobile the search bar retracts when the page scrolls up and the
-                 visual viewport grows, but `100dvh` can stay stuck at the smaller
-                 size and leave a gap below the panel. Stretching between top and
-                 bottom keeps the sidebar flush to the screen at every scroll
-                 position, and overflow-y: auto still scrolls the panel contents. */
+                   mobile the search bar retracts when the page scrolls up and the
+                   visual viewport grows, but `100dvh` can stay stuck at the smaller
+                   size and leave a gap below the panel. Stretching between top and
+                   bottom keeps the sidebar flush to the screen at every scroll
+                   position, and overflow-y: auto still scrolls the panel contents. */
     overflow-y: auto;
     overscroll-behavior: contain;
     z-index: 60;
@@ -450,8 +473,8 @@ const hasBanner = Astro.slots.has('banner')
       visibility: visible;
       inset: 0 auto 0 0;
       /* Stretch to the viewport height like the narrow screen panel: a fixed
-                             height can fall short of the visual viewport when Firefox retracts
-                             its search bar on scroll up. */
+                                 height can fall short of the visual viewport when Firefox retracts
+                                 its search bar on scroll up. */
       padding: var(--space-m);
     }
 
