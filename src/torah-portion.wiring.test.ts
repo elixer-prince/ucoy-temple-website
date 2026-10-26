@@ -91,6 +91,9 @@ describe('feature 7: the sidebar entry stops reading as planned', () => {
     for (const name of sourceFiles()) {
       const source = read('src', ...name.split(/[\\/]/))
       if (/config[\\/]nav\.ts$/.test(name)) continue
+      // The sidebar links here in its reload set, so it is exempt from the
+      // one-source rule; the RELOAD_HREFS set is the new place it is named.
+      if (/components[/]Sidebar\.astro$/.test(name)) continue
       // Each page may name its own route, but nothing else may: a second
       // hardcoded address is a second place to update if the page ever moves.
       if (/pages[\\/]torah-portion\.astro$/.test(name)) continue
@@ -240,7 +243,7 @@ describe('feature 24: the portion page keeps the same ground rules', () => {
     // A member who lands here with no commentary must still be able to find what
     // is being read now, which is the one thing the page can always offer.
     expect(portionPage).toContain('No commentary written yet')
-    expect(portionPage).toContain('<a href="/torah-portion">')
+    expect(portionPage).toContain('<a href="/torah-portion" data-astro-reload>')
   })
 
   it('shows the Gospel outline row only when the file supplies a Gospel', () => {

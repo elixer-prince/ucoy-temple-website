@@ -99,6 +99,13 @@ form carries it too, so a submit always performs a real navigation and the
 existing confirmation script keeps working untouched. Links to other origins and
 `mailto` links are already skipped by the router without any markup.
 
+Links whose target changes between rebuilds carry it as well: the Home link
+(the upcoming events list is computed from the calendar feed at build time,
+spec 0007) and the "This Week's Torah Portion" link (the reading is computed
+from the Hebrew calendar at build time). Without it the router would serve the
+worker's cached copy of an older build until the worker version changes, so a
+member clicking the link could be shown last week's events or portion.
+
 **Videos.** No video is marked persistent. A playing video is stopped by
 navigating away and starts again from the beginning on return, which matches how
 a service order is read and stops audio continuing behind a page the member has

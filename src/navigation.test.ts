@@ -206,3 +206,36 @@ describe('PDF links and the contact form skip the router (spec 0008, AC-6, AC-7)
     expect(pdfLink).toContain('data-astro-reload')
   })
 })
+
+describe('time sensitive pages skip the router so they are never served stale', () => {
+  const sidebar = readFileSync(join(process.cwd(), 'src', 'components', 'Sidebar.astro'), 'utf-8')
+
+  // Home and the weekly Torah portion both hold content that is recomputed at
+  // every build (upcoming events from the calendar feed; this week's portion),
+  // so a router-swapped click would serve the worker's cached copy of an older
+  // build until the worker version changes. A full navigation is network-first
+  // in the worker, so it always lands on fresh content while online.
+  it('marks the Home link with data-astro-reload', () => {
+    const home = sidebar.slice(
+      sidebar.indexOf('FIXED_NAV_BEFORE_PAGES.slice(0, 1)'),
+      sidebar.indexOf('FIXED_NAV_BEFORE_PAGES.slice(1)')
+    )
+    expect(home).toMatch(
+      /<a\s+href=\{entry\.href\}\s*\{\.\.\.reloadLink\(entry\.href\)\}\s*aria-current/
+    )
+  })
+
+  it('marks the sidebar brand link to Home with data-astro-reload', () => {
+    expect(sidebar).toContain('<a class="sidebar-brand" href="/" data-astro-reload>')
+  })
+
+  it("marks the This Week's Torah Portion link with data-astro-reload", () => {
+    const torah = sidebar.slice(
+      sidebar.indexOf('FIXED_NAV_BEFORE_PAGES.slice(1)'),
+      sidebar.indexOf('{pages.map')
+    )
+    expect(torah).toMatch(
+      /<a\s+href=\{entry\.href\}\s*\{\.\.\.reloadLink\(entry\.href\)\}\s*aria-current/
+    )
+  })
+})

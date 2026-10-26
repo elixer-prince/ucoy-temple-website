@@ -26,6 +26,22 @@ const byOrder = (
   b: { data: { order: number; title: string } }
 ): number => a.data.order - b.data.order || a.data.title.localeCompare(b.data.title)
 
+/** Links whose target changes between rebuilds must skip the router. */
+const RELOAD_HREFS = new Set(['/', '/torah-portion'])
+
+/**
+ * `data-astro-reload` marks these links, because their targets hold content
+ * that is recomputed at build time: the home page lists upcoming events from
+ * the calendar feed (spec 0007), and the weekly page names this week's Torah
+ * portion. The router fetches pages cache-first through the service worker,
+ * so between rebuilds a click would serve last week's events or portion until
+ * the worker version changes. A full reload is network-first in the worker,
+ * so it always lands on fresh content while online, and falls back to the
+ * cache offline like every other navigation.
+ */
+const reloadLink = (href: string): Record<string, boolean> =>
+  RELOAD_HREFS.has(href) ? { 'data-astro-reload': true } : {}
+
 const services = await getCollection('services')
 
 /**
@@ -49,7 +65,7 @@ const pages = (await getCollection('pages')).sort(byOrder)
 ---
 
 <nav class="sidebar-nav" aria-label="Site">
-  <a class="sidebar-brand" href="/">
+  <a class="sidebar-brand" href="/" data-astro-reload>
     <img class="brand-mark" src="/favicon.png" alt="" width="48" height="43" />
     <span class="brand-text">
       United Congregation
@@ -65,7 +81,11 @@ const pages = (await getCollection('pages')).sort(byOrder)
             {entry.label} <span class="planned-note">(planned)</span>
           </span>
         ) : (
-          <a href={entry.href} aria-current={isCurrent(entry.href) ? 'page' : undefined}>
+          <a
+            href={entry.href}
+            {...reloadLink(entry.href)}
+            aria-current={isCurrent(entry.href) ? 'page' : undefined}
+          >
             {entry.label}
           </a>
         )}
@@ -112,7 +132,11 @@ const pages = (await getCollection('pages')).sort(byOrder)
             {entry.label} <span class="planned-note">(planned)</span>
           </span>
         ) : (
-          <a href={entry.href} aria-current={isCurrent(entry.href) ? 'page' : undefined}>
+          <a
+            href={entry.href}
+            {...reloadLink(entry.href)}
+            aria-current={isCurrent(entry.href) ? 'page' : undefined}
+          >
             {entry.label}
           </a>
         )}

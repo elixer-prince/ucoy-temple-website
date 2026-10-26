@@ -249,7 +249,10 @@ const referenceDate = portion.shabbatDate.toLocaleDateString('en-GB', {
             in English.
           </p>
           <p>
-            <a href="/torah-portion">This week's Torah portion</a> shows what is being read now.
+            <a href="/torah-portion" data-astro-reload>
+              This week's Torah portion
+            </a>{' '}
+            shows what is being read now.
           </p>
         </Callout>
       )}

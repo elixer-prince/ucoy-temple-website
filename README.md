@@ -145,8 +145,8 @@ Create `src/content/portion-notes/<slug>.md` where `<slug>` is the portion slug 
 ---
 title: Portion Name
 description: >-
-    Description goes here...
-  
+  Description goes here...
+
 order: 999
 ---
 
@@ -191,7 +191,7 @@ This is the summary of the commentary...
 - Every colour, type, spacing, and radius value a stylesheet uses is a token from `src/styles/tokens.css`; a raw hex, `rgb`, `rgba`, `hsl`, `hsla`, `px`, or `rem` literal anywhere under `src/` fails the literal scan in `npm run test`.
 - Styles name token roles only, never a ladder step like `--color-royal-gold-600`. Restyling the palette means editing ladder steps in `tokens.css` and nothing else.
 - The theme choice lives on the member's device under the `localStorage` key `ucoy-theme`, applied as `data-theme` on `html` before the first paint. The site sets no cookies.
-- PDF links and the contact form carry `data-astro-reload` so they skip Astro's client-side router.
+- PDF links, the contact form, the Home link, and the "This Week's Torah Portion" link carry `data-astro-reload` so they skip Astro's client-side router; their targets change between rebuilds, so a full (network-first) reload keeps them from going stale.
 - A missing or unreadable `CALENDAR_URL` never fails the build — the home page shows a quiet notice instead.
 - The style guide (`/style-guide`) carries `noindex`, is unlinked from the menu, and must stay out of the sitemap and the search index.
 
