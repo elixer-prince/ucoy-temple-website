@@ -241,26 +241,10 @@ if (SITE_CONFIG.calendarUrl) {
     margin: 0 0 var(--space-m) 0;
   }
 
-  .button {
-    display: inline-flex;
-    align-items: center;
-    min-height: var(--touch-target);
-    padding: var(--space-2xs) var(--space-s);
-    border: var(--border-width) solid var(--color-border);
-    border-radius: var(--radius);
-    background: var(--color-surface);
-    color: var(--color-text);
-    font-weight: 600;
-    text-decoration: none;
-  }
-
-  .button:hover {
-    background: var(--color-accent-hover);
-  }
-
-  .button:focus-visible {
-    outline: var(--focus-width) solid var(--color-focus);
-  }
+  /* The .button class from base.css provides filled accent button styling
+     (border: none, background: var(--color-accent), color: var(--color-on-accent)).
+     The inline definition has been removed so the global .button class is used
+     for hero-nav buttons (About us, Visit us, Contact), matching the style guide. */
   .hero {
     text-align: center;
     padding: var(--space-2xl) 0;
