@@ -13,3 +13,5 @@ compatibility_flags = ["global_fetch_strictly_public"]
 # file (see .env.example).
 [assets]
 directory = "./dist"
+
+[previews]

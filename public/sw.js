@@ -69,7 +69,10 @@ self.addEventListener('fetch', (event) => {
   // navigate branch above is not enough. A request that accepts text/html is a
   // page fetch, so it must also go through the network-first handler; otherwise
   // cache-first serves the stale copy and a redeploy never shows until reload.
-  if (request.mode === 'navigate' || accept.includes('text/html')) {
+  // Additionally, for requests that don't specify Accept, assume they are page
+  // requests and go through the network handler to avoid serving stale cached
+  // content from previous visits after a deploy.
+  if (request.mode === 'navigate' || accept.includes('text/html') || !accept) {
     event.respondWith(respondToNavigation(request))
     return
   }
