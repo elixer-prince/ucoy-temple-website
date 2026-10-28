@@ -286,16 +286,17 @@ The ladder values were sampled from screenshots of the current Google Site, clos
 
 ## Slice 4: platform features
 
-### 12. Holy Days calendar · planned · needs a decision
+### 12. Holy Days calendar · done
 
-Dates are computed from the Hebrew calendar (spec `docs/specs/0009-holy-days-calendar.md`).
+The fixed holy days are computed at build time from the Hebrew calendar with `@hebcal/core`, mapped through the temple's printed machzor, and shown on `/holy-days` grouped under month headings. Each entry shows the date in the temple's local time, the English name, the Hebrew name where the machzor writes one, and a link to its service page. The page is linked from the home page and the sidebar, sits in the offline precache, and no visitor's browser contacts a third party to see it. The rebuild cadence that keeps the calendar current is still being scheduled (spec 0009 follow-up).
 
-Dates are computed from the Hebrew calendar (spec `docs/specs/0009-holy-days-calendar.md`).
-
-Upcoming services and High Sabbaths shown with their dates on the Hebrew calendar, the custom feature Google Sites could not do well. Whether dates are computed or curated is the decision to settle.
-**Done when:** the calendar lists upcoming dates correctly, marks High Sabbaths, links each date to its page, and the sidebar entry for Important Dates stops reading as planned.
-
-- [ ] Decide the date approach (spec): `/architect holy days calendar`
+- [x] Decide the date approach (spec): spec 0009 accepted
+- [x] Build it: `/develop holy days calendar` (spec 0009)
+  - `src/lib/holy-days.ts` resolves the fixed holy days for the Hebrew year and returns one entry per Gregorian date in the temple's timezone
+  - `src/pages/holy-days.astro` is the `/holy-days` page, grouped under month headings, with date, English name, Hebrew name, and service page link per entry
+  - Shabbatonim link to `/shabbatonim/<slug>`; Rosh Hashanah has no material link because no service page exists for it
+  - `src/lib/holy-days.test.ts` pins the 5787 list, the Hebrew names, the `/shabbatonim/` links, and the excluded Erev and intermediate days
+    Spec [0009](../specs/0009-holy-days-calendar.md) · code in `src/lib/holy-days.ts`, `src/pages/holy-days.astro`
 
 ### 13. Site search · planned
 
