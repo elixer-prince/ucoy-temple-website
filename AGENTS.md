@@ -88,6 +88,8 @@ ESLint 10 flat config plus Prettier 3 with the Astro plugin.
 
 Pre-commit: husky runs lint-staged on every commit. The hook runs `npx lint-staged`.
 
+Commit messages: husky runs commitlint on every commit via `.husky/commit-msg`, enforcing Conventional Commits (`@commitlint/config-conventional`). Config in `.commitlintrc.json`. Every commit subject must follow `<type>(<scope>): <description>` (for example `feat(holy-days): add computed calendar page`); types include `feat`, `fix`, `docs`, `chore`, `refactor`, `test`, `style`, `perf`, `ci`, `build`, `revert`. The repo's older commits predate this rule and are grandfathered.
+
 Type strictness: strict, no `any`, exhaustive types. The tsconfig extends `astro/tsconfigs/strict`.
 
 Testing gate: Vitest is installed and `npm run test` runs the suite (`.test.ts` files under `src/`; framework and location saved in `test-preferences.json`). The primary gate stays `npm run verify` (`astro check` plus `astro build`); at the Beta tier `/test` follows a feature's Verify step and ticks the feature's `Test it` box in the scope.
