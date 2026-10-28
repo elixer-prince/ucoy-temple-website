@@ -323,19 +323,14 @@ Sections, in order, for `/portion/<slug>`:
    the page shows, with its Hebrew date and the reference year stated plainly, so a
    member comparing the page with the scroll in front of them knows it is not this
    week's scroll
-3. **The reading**, computed: the aliyah table, the maftir, the Haftarah, and any
-   differing passage reasons. It is not titled "this week's reading" because it is
-   not this week's: each page shows its portion's own reading as it was set in a
-   fixed reference year, so naming it so would invite a member to compare it with
-   the scroll in front of them and find a difference.
-4. **The outline**, the three reference lines: Torah and Prophets filled from the
+3. **The outline**, the three reference lines: Torah and Prophets filled from the
    computed values, never from the file, and the whole Gospel line absent when the
    file carries no `gospel`
-5. **Commentary**, authored: the temple's sections in the paper's order
-6. **Thought for the week**, authored: called out so it reads as the takeaway
-7. **Commentary Summary**, authored: the closing summary, visually distinguished
+4. **Commentary**, authored: the temple's sections in the paper's order
+5. **Thought for the week**, authored: called out so it reads as the takeaway
+6. **Commentary Summary**, authored: the closing summary, visually distinguished
    from the Portion Summary so a scrolled reader is not confused
-8. Previous and next portion links
+7. Previous and next portion links
 
 When no commentary file exists, sections 1 to 3 render in full, followed by a
 notice that the commentary for this portion has not been written yet. The notice
@@ -367,8 +362,6 @@ is a token role from `src/styles/tokens.css`, and the literal scan in
   disappear when a file is renamed, and the notice needs a page to sit on.
 - **AC-3**: request a portion with no file; a notice naming the portion renders,
   and no commentary section renders.
-- **AC-4**: a commentary file containing a wrong aliyah citation renders the
-  computed citation anyway, because the file cannot supply one.
 - **AC-7**: a portion with `gospel` set shows the Gospel section; a portion
   without it shows no Gospel heading and no empty gap.
 - **AC-8**: the two summaries render under distinguishable headings.

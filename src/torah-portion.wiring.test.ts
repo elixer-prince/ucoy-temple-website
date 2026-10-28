@@ -111,11 +111,13 @@ describe('feature 7 and 24: the temple teaches the portion, the calendar does no
     expect(portionPage).toContain('notes.find((entry) => entry.id === portion.slug)')
   })
 
-  it('renders a full reading when no commentary exists for the portion', () => {
+  it('renders a full page when no commentary exists for the portion', () => {
     // The regression: requiring a commentary would blank the page for the 50 or
-    // so portions the temple has not written about yet.
+    // so portions the temple has not written about yet. The reading is no longer
+    // printed here — the commentary file is the teaching — so the page must still
+    // stand on its own: the notice, the outline, and the way onward.
     expect(portionPage).toContain('No commentary written yet')
-    expect(portionPage).toContain('portion.aliyot.map')
+    expect(portionPage).toContain('<dt>Torah</dt>')
   })
 
   it('gives every portion a page whether or not a commentary exists', () => {
@@ -220,13 +222,6 @@ describe('feature 24: the portion page keeps the same ground rules', () => {
     expect(portionPage).toContain('{portion.referenceYear}')
   })
 
-  it('gives the aliyah table a header row and row headers', () => {
-    // A screen reader announcing eight identical rows with no column names is the
-    // accessibility failure a data table has by default.
-    expect(portionPage).toContain('<th scope="col">')
-    expect(portionPage).toContain('<th scope="row">')
-  })
-
   it('labels the cycle navigation, so the links are not read as loose text', () => {
     expect(portionPage).toContain('aria-label="Portions either side of this one"')
   })
@@ -237,8 +232,8 @@ describe('feature 24: the portion page keeps the same ground rules', () => {
   })
 
   it('gives the unwritten notice somewhere to go, rather than leaving a dead page', () => {
-    // A member who lands here with no commentary must still be able to find what
-    // is being read now, which is the one thing the page can always offer.
+    // A member who lands here with no commentary still needs a way to find what
+    // is being read now, so the notice keeps the link to this week's portion.
     expect(portionPage).toContain('No commentary written yet')
     expect(portionPage).toContain('<a href="/torah-portion">')
   })
