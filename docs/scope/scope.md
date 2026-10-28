@@ -25,7 +25,7 @@ _These are recommendations to keep your build orderly, not requirements. Skip an
 | 10  | High Holy Days section                        | Slice 3    | done    |
 | 11  | Temple information & contact                  | Slice 3    | done    |
 | 21  | Exact palette from the current site           | Slice 3    | done    |
-| 12  | Holy Days calendar                            | Slice 4    | planned |
+| 12  | Holy Days calendar                            | Slice 4    | done    |
 | 13  | Site search                                   | Slice 4    | planned |
 | 14  | Product analytics                             | Slice 4    | planned |
 | 15  | SEO, metadata & performance                   | Slice 4    | planned |

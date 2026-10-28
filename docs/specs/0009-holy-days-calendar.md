@@ -1,7 +1,7 @@
 # 0009. Holy days calendar, computed from the Hebrew calendar
 
 **Date**: 2026-10-23
-**Status**: Proposed
+**Status**: Accepted
 
 ## Summary
 
@@ -87,3 +87,13 @@ The list is sorted by date. The page renders it grouped by month.
 - The printed machzor is the source of the holy day names and links. The temple takes the names and links from its printed year book, not from a third party, so the module carries them as data rather than fetching them.
 - The Hebrew body face (scope feature 23) is the evidence scope that tells us whether the Hebrew names are legible. The holy days page is the best first test, because it shows the full Hebrew names for the whole year.
 - The rebuild cadence for the Torah portion page — the open item in spec 0006 — is decided and scheduled here.
+
+## Ratified implementation
+
+The decision was built and verified as follows:
+
+- `src/lib/holy-days.ts` — pure, fully testable module. `holyDaysForYear(hebrewYear, timeZone)` resolves the fixed holy days from `@hebcal/core` for the Hebrew year, maps them through the temple's printed machzor (carried as data), and returns one entry per Gregorian date in the temple's timezone. Defaults `timeZone` to `SITE_CONFIG.calendarTimezone` (`America/New_York`), so no build-clock drift and no timezone shift moves a date to the wrong day. Erev entries and Chol HaMoed intermediate days are excluded; they are observances, not the yom tov days the machzor lists.
+- `src/pages/holy-days.astro` — page at `/holy-days`, grouped under month headings, each entry showing the date in the temple's local timezone, the English name, the Hebrew name where the machzor writes one, and a link to its service page.
+- Shabbatonim link to `/shabbatonim/<slug>` (spec 0003), not `/services/`. Rosh Hashanah has no material link because the temple keeps no Rosh Hashanah service page; linking to a nonexistent address would break the calendar's promise.
+- Tests: `src/lib/holy-days.test.ts` pins the 5787 list, the Hebrew names, the `/shabbatonim/` links, the excluded Erev/intermediate days, and purity. The pre-existing `src/holy-days.test.ts` was corrected to the same routes.
+- `/holy-days` is linked from the home page and the sidebar, and is in the offline precache. No visitor's browser contacts a third party to see it.

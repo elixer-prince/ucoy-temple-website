@@ -8,10 +8,11 @@
  * fetched by the visitor's browser at view time.
  */
 import Layout from '@layouts/Layout.astro'
+import { SITE_CONFIG } from '@/config/site'
 import { HDate } from '@hebcal/core'
 import { holyDaysForYear } from '@/lib/holy-days'
 
-const days = holyDaysForYear(new HDate().getFullYear())
+const days = holyDaysForYear(new HDate().getFullYear(), SITE_CONFIG.calendarTimezone)
 
 /**
  * `Saturday, 3 October 2026`, for the byline.
@@ -29,7 +30,7 @@ function holyDayDate(day: HolyDay): string {
     month: 'short',
     day: 'numeric',
     year: 'numeric',
-    timeZone: 'UTC'
+    timeZone: SITE_CONFIG.calendarTimezone
   })
 }
 
@@ -50,7 +51,7 @@ function groupByMonth(days: HolyDay[]): { month: string; days: HolyDay[] }[] {
     const month = day.date.toLocaleDateString('en-US', {
       month: 'long',
       year: 'numeric',
-      timeZone: 'UTC'
+      timeZone: SITE_CONFIG.calendarTimezone
     })
     const last = groups[groups.length - 1]
     if (last && last.month === month) {

@@ -1,5 +1,5 @@
 /**
- * Tests for the build time holy days module (spec 0008).
+ * Tests for the build time holy days module (spec 0009).
  *
  * The computation is pure once a Hebrew year is fixed, so the tests pin the
  * dates, the sort order, and the library behaviour rather than the clock.
@@ -36,14 +36,14 @@ describe('holy days for 5787 match the real calendar', () => {
     expect(days[0].english).toBe('Rosh Hashanah')
     expect(days[0].hebrew).toBe('ראש השנה')
     expect(iso(days[0].date)).toMatch(/^2026-09-/)
-    expect(days[0].material).toBe('/services/rosh-hashanah')
+    expect(days[0].material).toBeUndefined()
   })
 
   it('has Yom Kippur after Rosh Hashanah', () => {
     const kippur = days.find((day) => day.english === 'Yom Kippur')
     expect(kippur).toBeDefined()
     expect(kippur!.hebrew).toBe('יום כיפור')
-    expect(kippur!.material).toBe('/services/yom-kippur')
+    expect(kippur!.material).toBe('/shabbatonim/yom-kippur')
     const hashana = days.find((day) => day.english === 'Rosh Hashanah')
     expect(kippur!.date.getTime()).toBeGreaterThan(hashana!.date.getTime())
   })
@@ -72,7 +72,7 @@ describe('holy days for 5787 match the real calendar', () => {
     const pesach = days.find((day) => day.english === 'Passover')
     expect(pesach).toBeDefined()
     expect(pesach!.hebrew).toBe('פסח')
-    expect(pesach!.material).toBe('/services/pesach')
+    expect(pesach!.material).toBe('/shabbatonim/pesach')
     expect(iso(pesach!.date)).toMatch(/^2027-/)
   })
 
