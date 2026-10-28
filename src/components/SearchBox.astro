@@ -1,0 +1,74 @@
+---
+/**
+ * Compact search box used in the header and sidebar.
+ *
+ * Submits a GET to /search, so it works without JavaScript. The
+ * keyboard shortcut handling lives in the layout.
+ */
+---
+
+<form class="search-box" role="search" action="/search" method="get">
+  <input
+    class="search-input search-box-input"
+    type="search"
+    name="q"
+    placeholder="Search…"
+    autocomplete="off"
+    aria-label="Search the site"
+  />
+  <button class="search-box-button" type="submit" aria-label="Search">
+    <span aria-hidden="true">⌕</span>
+  </button>
+</form>
+
+<style>
+  .search-box {
+    display: flex;
+    align-items: center;
+    gap: var(--space-2xs);
+    flex: 1;
+    min-width: 0;
+  }
+
+  .search-box-label {
+    display: none;
+  }
+
+  .search-box-input {
+    flex: 1;
+    min-width: 0;
+    min-height: var(--touch-target);
+    padding: var(--space-2xs) var(--space-s);
+    border: var(--border-width) solid var(--color-sidebar-hover);
+    border-radius: var(--radius);
+    background: var(--color-sidebar-hover);
+    color: var(--color-sidebar-text);
+    font: inherit;
+    font-size: var(--text-small);
+  }
+
+  .search-box-input::placeholder {
+    color: var(--color-sidebar-muted);
+  }
+
+  .search-box-button {
+    min-height: var(--touch-target);
+    min-width: var(--touch-target);
+    border: var(--border-width) solid var(--color-sidebar-hover);
+    border-radius: var(--radius);
+    background: var(--color-sidebar-hover);
+    color: var(--color-sidebar-text);
+    cursor: pointer;
+    font-size: var(--text-body);
+  }
+
+  .search-box-button:focus-visible {
+    outline: var(--focus-width) solid var(--color-sidebar-marker);
+    outline-offset: var(--focus-offset);
+  }
+
+  .search-box-input:focus-visible {
+    outline: var(--focus-width) solid var(--color-sidebar-marker);
+    outline-offset: var(--focus-offset);
+  }
+</style>

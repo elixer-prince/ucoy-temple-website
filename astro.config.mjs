@@ -3,6 +3,7 @@
 import { defineConfig, fontProviders, envField } from 'astro/config'
 import mdx from '@astrojs/mdx'
 import { precacheManifest } from './integrations/precache-manifest.mjs'
+import pagefind from 'astro-pagefind'
 
 export default defineConfig({
   // Static output: every page is prebuilt as HTML and served from Cloudflare
@@ -87,5 +88,5 @@ export default defineConfig({
   // MDX carries service bodies, so a <Video> call can sit inline in the order
   // of service (spec 0003, AC-4). Service files are the only MDX authored by
   // hand; page and announcement content stays plain markdown.
-  integrations: [precacheManifest(), mdx()]
+  integrations: [mdx(), pagefind(), precacheManifest()]
 })

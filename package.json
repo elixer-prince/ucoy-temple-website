@@ -29,6 +29,7 @@
     "@hebcal/core": "^6.11.1",
     "@hebcal/leyning": "^10.0.2",
     "astro": "^7.3.3",
+    "astro-pagefind": "^2.0.1",
     "node-ical": "^0.27.3"
   },
   "devDependencies": {

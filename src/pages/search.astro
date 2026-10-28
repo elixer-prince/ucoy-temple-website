@@ -1,0 +1,238 @@
+---
+import Layout from '@layouts/Layout.astro'
+---
+
+<Layout title="Search" description="Search the temple's services, Holy Days, and resources.">
+  <div class="prose">
+    <h1>Search</h1>
+    <form class="search-form" role="search" action="/search" method="get">
+      <label class="search-label" for="search-page-input">
+        Search the site
+      </label>
+      <div class="search-row">
+        <input
+          id="search-page-input"
+          class="search-input search-page-input"
+          type="search"
+          name="q"
+          placeholder="Search services, Holy Days, resources"
+          autocomplete="off"
+          aria-describedby="search-status"
+          autofocus
+        />
+        <button class="button" type="submit">
+          Search
+        </button>
+      </div>
+    </form>
+
+    <p id="search-status" class="search-status" role="status" aria-live="polite"></p>
+    <ul id="search-results" class="search-results" aria-label="Search results"></ul>
+  </div>
+</Layout>
+<script is:inline>
+  function getPageInput() {
+    return document.getElementById('search-page-input')
+  }
+
+  function getStatus() {
+    return document.getElementById('search-status')
+  }
+
+  function getList() {
+    return document.getElementById('search-results')
+  }
+
+  let pagefind = null
+
+  async function getPagefind() {
+    if (pagefind) return pagefind
+    try {
+      // Pagefind is generated at build time and is not present in src, so
+      // load it through a variable so Vite does not try to resolve it in dev.
+      const pagefindPath = '/pagefind/pagefind.js'
+      pagefind = await import(/* @vite-ignore */ pagefindPath)
+      await pagefind.options({ bundlePath: '/pagefind/', highlightParam: 'highlight' })
+      await pagefind.init()
+    } catch (error) {
+      pagefind = null
+      console.warn('Search is unavailable', error)
+    }
+    return pagefind
+  }
+
+  function renderResults(results, query) {
+    const list = getList()
+    const status = getStatus()
+    if (!list || !status) return
+    list.innerHTML = ''
+    if (!query.trim()) {
+      status.textContent = 'Type a few words to search.'
+      return
+    }
+    if (!results.length) {
+      status.textContent = 'No results for ' + query + '.'
+      return
+    }
+    status.textContent =
+      results.length + ' result' + (results.length === 1 ? '' : 's') + ' for ' + query + '.'
+    for (const result of results) {
+      const item = document.createElement('li')
+      item.className = 'search-result'
+      const link = document.createElement('a')
+      link.href = result.url + '?highlight=' + encodeURIComponent(query)
+      link.className = 'search-result-link'
+      const title = document.createElement('span')
+      title.className = 'search-result-title'
+      title.textContent = result.meta?.title ?? result.url
+      const excerpt = document.createElement('p')
+      excerpt.className = 'search-result-excerpt'
+      excerpt.innerHTML = result.excerpt
+      link.append(title)
+      item.append(link, excerpt)
+      list.append(item)
+    }
+  }
+
+  async function runSearch(query) {
+    const pf = await getPagefind()
+    if (!pf) {
+      renderResults([], query)
+      const status = getStatus()
+      if (status) status.textContent = 'Search is unavailable right now.'
+      return
+    }
+    const search = await pf.search(query)
+    const data = await Promise.all(
+      search.results.slice(0, 20).map(function (r) {
+        return r.data()
+      })
+    )
+    renderResults(data, query)
+  }
+
+  let debounceTimer
+  function scheduleSearch(query) {
+    if (debounceTimer) window.clearTimeout(debounceTimer)
+    debounceTimer = window.setTimeout(() => {
+      const url = new URL(window.location.href)
+      if (query) url.searchParams.set('q', query)
+      else url.searchParams.delete('q')
+      window.history.replaceState({}, '', url.toString())
+      runSearch(query)
+    }, 150)
+  }
+
+  function initSearchPage() {
+    const input = getPageInput()
+    const status = getStatus()
+    if (!input) return
+    const params = new URLSearchParams(window.location.search)
+    const initialQuery = params.get('q') || ''
+
+    if (input.dataset.bound !== 'true') {
+      input.dataset.bound = 'true'
+      input.addEventListener('input', function (event) {
+        scheduleSearch(event.target.value)
+      })
+      input.addEventListener('keydown', function (event) {
+        if (event.key === 'Enter') {
+          event.preventDefault()
+          scheduleSearch(input.value)
+        }
+      })
+    }
+
+    if (input.dataset.lastQuery !== initialQuery) {
+      input.value = initialQuery
+      input.dataset.lastQuery = initialQuery
+      if (initialQuery) runSearch(initialQuery)
+      else if (status) status.textContent = 'Type a few words to search.'
+    }
+  }
+
+  document.addEventListener('astro:page-load', initSearchPage)
+  initSearchPage()
+</script>
+
+<style>
+  .search-form {
+    margin: var(--space-m) 0;
+  }
+
+  .search-label {
+    display: block;
+    font-weight: 600;
+    margin-bottom: var(--space-2xs);
+  }
+
+  .search-row {
+    display: flex;
+    gap: var(--space-xs);
+    align-items: stretch;
+  }
+
+  .search-input {
+    flex: 1;
+    min-height: var(--touch-target);
+    padding: var(--space-2xs) var(--space-s);
+    border: var(--border-width) solid var(--color-border);
+    border-radius: var(--radius);
+    font: inherit;
+  }
+
+  .search-page-input {
+    font-size: var(--text-body);
+  }
+
+  .search-status {
+    color: var(--color-text-muted);
+    margin: var(--space-s) 0;
+  }
+
+  .search-results {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-s);
+  }
+
+  .search-result {
+    border: var(--border-width) solid var(--color-border);
+    border-radius: var(--radius);
+    padding: var(--space-s);
+    background: var(--color-surface);
+  }
+
+  .search-result-link {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-3xs);
+    text-decoration: none;
+    color: var(--color-text);
+  }
+
+  .search-result-title {
+    font-weight: 600;
+  }
+
+  .search-result-category {
+    font-size: var(--text-small);
+    color: var(--color-text-muted);
+  }
+
+  .search-result-excerpt {
+    margin: var(--space-2xs) 0 0;
+    font-size: var(--text-small);
+    color: var(--color-text-muted);
+  }
+
+  .search-result-excerpt :global(mark) {
+    background: var(--color-accent);
+    color: var(--color-on-accent);
+    border-radius: var(--radius);
+    padding: 0 var(--space-3xs);
+  }
+</style>

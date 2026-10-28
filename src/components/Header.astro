@@ -8,12 +8,14 @@
  * and the header works with JavaScript off.
  */
 import { SITE_CONFIG } from '@/config/site'
+import SearchBox from '@components/SearchBox.astro'
 
 interface Props {
   label?: string
 }
 
 const { label = 'Menu' } = Astro.props
+const isSearchPage = Astro.url.pathname.replace(/\/$/, '') === '/search'
 ---
 
 <header class="site-header">
@@ -26,6 +28,7 @@ const { label = 'Menu' } = Astro.props
       <span class="logo-text">{SITE_CONFIG.title}</span>
       <span class="logo-short">{SITE_CONFIG.shortTitle}</span>
     </a>
+    {!isSearchPage && <SearchBox />}
     <label class="menu-button" for="sidebar-toggle">
       {label}
     </label>

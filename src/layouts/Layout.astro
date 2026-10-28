@@ -17,9 +17,12 @@ interface Props {
   title: string
   description?: string
   robots?: string
+  /** Whether Pagefind should index this page. Defaults to true; the style
+   *  guide and 404 set it false so they stay out of the search index. */
+  searchable?: boolean
 }
 
-const { title, description = SITE_CONFIG.description, robots } = Astro.props
+const { title, description = SITE_CONFIG.description, robots, searchable = true } = Astro.props
 const hasBanner = Astro.slots.has('banner')
 ---
 
@@ -94,7 +97,13 @@ const hasBanner = Astro.slots.has('banner')
 
       <div class:list={['page', hasBanner && 'page--with-banner']}>
         <slot name="banner" />
-        <main id="main-content" class="content" transition:animate="none">
+        <main
+          id="main-content"
+          class="content"
+          transition:animate="none"
+          data-pagefind-body={searchable ? '' : undefined}
+          data-pagefind-ignore={searchable ? undefined : 'all'}
+        >
           <slot />
         </main>
       </div>
@@ -249,7 +258,163 @@ const hasBanner = Astro.slots.has('banner')
         })
       }
     </script>
+    <script is:inline>
+      ;(function () {
+        if (window.__ucoySearchShortcutBound) return
+        window.__ucoySearchShortcutBound = true
+        document.addEventListener('keydown', function (event) {
+          const target = event.target
+          const tag = target && target.tagName
+          if (tag === 'INPUT' || tag === 'TEXTAREA' || tag === 'SELECT') return
+          const isSlash = event.key === '/'
+          const isK = (event.ctrlKey || event.metaKey) && event.key.toLowerCase() === 'k'
+          if (!isSlash && !isK) return
+          const inputs = document.querySelectorAll('.search-input')
+          let chosen = null
+          for (let i = 0; i < inputs.length; i++) {
+            if (inputs[i].getClientRects().length > 0) {
+              chosen = inputs[i]
+              break
+            }
+          }
+          if (!chosen && inputs.length) chosen = inputs[0]
+          if (chosen) {
+            event.preventDefault()
+            chosen.focus()
+            if (typeof chosen.select === 'function') chosen.select()
+          }
+        })
+      })()
+    </script>
+    <script>
+      ;(async function () {
+        const highlightPath = '/pagefind/pagefind-highlight.js'
+        try {
+          const dynamicImport = new Function('u', 'return import(u)')
+          const mod = await dynamicImport(highlightPath)
+          const PagefindHighlight = mod && (mod.default || mod.PagefindHighlight)
+          if (PagefindHighlight) {
+            new PagefindHighlight({ highlightParam: 'highlight' })
+          }
+        } catch {
+          // Pagefind highlight is only available in production builds.
+        }
+
+        const MARK_SELECTOR = 'mark.pagefind-highlight'
+        let toolbar: HTMLElement | null = null
+        let countLabel: HTMLElement | null = null
+        let currentIndex = 0
+        let marks: HTMLElement[] = []
+
+        function ensureToolbar() {
+          if (toolbar) return toolbar
+          toolbar = document.createElement('div')
+          toolbar.id = 'pagefind-highlight-nav'
+          toolbar.className = 'highlight-nav'
+          toolbar.setAttribute('role', 'toolbar')
+          toolbar.setAttribute('aria-label', 'Search match navigation')
+
+          const prevButton = document.createElement('button')
+          prevButton.type = 'button'
+          prevButton.className = 'highlight-nav-button'
+          prevButton.setAttribute('aria-label', 'Previous match')
+          prevButton.textContent = '‹'
+
+          countLabel = document.createElement('span')
+          countLabel.className = 'highlight-nav-count'
+          countLabel.setAttribute('aria-live', 'polite')
+
+          const nextButton = document.createElement('button')
+          nextButton.type = 'button'
+          nextButton.className = 'highlight-nav-button'
+          nextButton.setAttribute('aria-label', 'Next match')
+          nextButton.textContent = '›'
+
+          const closeButton = document.createElement('button')
+          closeButton.type = 'button'
+          closeButton.className = 'highlight-nav-button'
+          closeButton.setAttribute('aria-label', 'Close match navigation')
+          closeButton.textContent = '×'
+
+          prevButton.addEventListener('click', function () {
+            if (!marks.length) return
+            currentIndex = (currentIndex - 1 + marks.length) % marks.length
+            updateCurrent()
+          })
+          nextButton.addEventListener('click', function () {
+            if (!marks.length) return
+            currentIndex = (currentIndex + 1) % marks.length
+            updateCurrent()
+          })
+          closeButton.addEventListener('click', function () {
+            if (toolbar) toolbar.style.display = 'none'
+            marks.forEach(function (mark) {
+              mark.classList.remove('pagefind-highlight--current')
+            })
+          })
+
+          toolbar.append(prevButton, countLabel, nextButton, closeButton)
+          document.body.append(toolbar)
+          return toolbar
+        }
+
+        function updateCurrent() {
+          marks.forEach(function (mark, index) {
+            if (index === currentIndex) {
+              mark.classList.add('pagefind-highlight--current')
+              mark.scrollIntoView({ block: 'center', behavior: 'smooth' })
+            } else {
+              mark.classList.remove('pagefind-highlight--current')
+            }
+          })
+          if (countLabel)
+            countLabel.textContent = marks.length ? currentIndex + 1 + ' / ' + marks.length : ''
+        }
+
+        function refresh() {
+          marks = Array.from(document.querySelectorAll(MARK_SELECTOR)) as HTMLElement[]
+          if (!marks.length) {
+            if (toolbar) toolbar.style.display = 'none'
+            return
+          }
+          ensureToolbar()
+          if (toolbar) toolbar.style.display = 'flex'
+          if (currentIndex >= marks.length) currentIndex = 0
+          updateCurrent()
+        }
+
+        let refreshTimer: ReturnType<typeof setTimeout> | null = null
+        function scheduleRefresh() {
+          if (refreshTimer) clearTimeout(refreshTimer)
+          refreshTimer = setTimeout(refresh, 120)
+        }
+
+        const observer = new MutationObserver(scheduleRefresh)
+        observer.observe(document.body, { childList: true, subtree: true })
+
+        setTimeout(refresh, 150)
+        setTimeout(refresh, 600)
+        setTimeout(refresh, 1500)
+      })()
+    </script>
   </body>
+  <script is:inline>
+    ;(function () {
+      if (window.__ucoySearchLiveBound) return
+      window.__ucoySearchLiveBound = true
+      let liveTimer = null
+      document.addEventListener('input', function (event) {
+        const target = event.target
+        if (!target || !target.classList || !target.classList.contains('search-input')) return
+        if (location.pathname === '/search' || location.pathname === '/search/') return
+        if (liveTimer) clearTimeout(liveTimer)
+        liveTimer = setTimeout(function () {
+          const query = (target.value || '').trim()
+          if (query) window.location.assign('/search?q=' + encodeURIComponent(query))
+        }, 300)
+      })
+    })()
+  </script>
 </html>
 
 <style>
@@ -317,11 +482,11 @@ const hasBanner = Astro.slots.has('banner')
     inset: 0 auto 0 0;
     width: var(--sidebar-width);
     /* Anchor to both viewport edges instead of a fixed height: on Firefox
-                   mobile the search bar retracts when the page scrolls up and the
-                   visual viewport grows, but `100dvh` can stay stuck at the smaller
-                   size and leave a gap below the panel. Stretching between top and
-                   bottom keeps the sidebar flush to the screen at every scroll
-                   position, and overflow-y: auto still scrolls the panel contents. */
+                                 mobile the search bar retracts when the page scrolls up and the
+                                 visual viewport grows, but `100dvh` can stay stuck at the smaller
+                                 size and leave a gap below the panel. Stretching between top and
+                                 bottom keeps the sidebar flush to the screen at every scroll
+                                 position, and overflow-y: auto still scrolls the panel contents. */
     overflow-y: auto;
     overscroll-behavior: contain;
     z-index: 60;
@@ -473,8 +638,8 @@ const hasBanner = Astro.slots.has('banner')
       visibility: visible;
       inset: 0 auto 0 0;
       /* Stretch to the viewport height like the narrow screen panel: a fixed
-                                 height can fall short of the visual viewport when Firefox retracts
-                                 its search bar on scroll up. */
+                                                             height can fall short of the visual viewport when Firefox retracts
+                                                             its search bar on scroll up. */
       padding: var(--space-m);
     }
 
@@ -543,5 +708,54 @@ const hasBanner = Astro.slots.has('banner')
       width: 100%;
       padding: 0;
     }
+  }
+  .pagefind-highlight {
+    background: var(--color-tint);
+    color: var(--color-text);
+    border-radius: var(--radius);
+  }
+
+  .pagefind-highlight--current {
+    background: var(--color-accent);
+    color: var(--color-on-accent);
+    box-shadow: 0 0 0 var(--focus-width) var(--color-focus);
+  }
+
+  .highlight-nav {
+    position: fixed;
+    bottom: var(--space-m);
+    right: var(--space-m);
+    display: none;
+    align-items: center;
+    gap: var(--space-2xs);
+    padding: var(--space-2xs) var(--space-s);
+    background: var(--color-surface);
+    border: var(--border-width) solid var(--color-border);
+    border-radius: var(--radius);
+    box-shadow: 0 var(--space-3xs) var(--space-s) var(--color-border);
+    z-index: 60;
+  }
+
+  .highlight-nav-button {
+    min-height: var(--touch-target);
+    min-width: var(--touch-target);
+    border: var(--border-width) solid var(--color-border);
+    border-radius: var(--radius);
+    background: var(--color-canvas);
+    color: var(--color-text);
+    cursor: pointer;
+    font-size: var(--text-body);
+  }
+
+  .highlight-nav-button:focus-visible {
+    outline: var(--focus-width) solid var(--color-focus);
+    outline-offset: var(--focus-offset);
+  }
+
+  .highlight-nav-count {
+    font-size: var(--text-small);
+    color: var(--color-text-muted);
+    min-width: var(--space-xl);
+    text-align: center;
   }
 </style>

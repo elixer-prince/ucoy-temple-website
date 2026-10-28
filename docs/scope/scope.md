@@ -298,12 +298,13 @@ The fixed holy days are computed at build time from the Hebrew calendar with `@h
   - `src/lib/holy-days.test.ts` pins the 5787 list, the Hebrew names, the `/shabbatonim/` links, and the excluded Erev and intermediate days
     Spec [0009](../specs/0009-holy-days-calendar.md) · code in `src/lib/holy-days.ts`, `src/pages/holy-days.astro`
 
-### 13. Site search · planned
+### 13. Site search · in-progress
 
 Find any service, Holy Day, or resource from any page.
 **Done when:** search from any page returns matching pages quickly and keeps working offline, with the style guide kept out of the index.
 
-- [ ] Build it: `/develop site search`
+- [x] Build it: `/develop site search`
+- Spec [0013](../specs/0013-site-search.md) · code in `src/pages/search.astro`, `src/components/SearchBox.astro`, `src/layouts/Layout.astro`, `integrations/precache-manifest.mjs`
 
 ### 14. Product analytics · planned · needs a decision
 

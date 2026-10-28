@@ -7,6 +7,7 @@
 import { getCollection } from 'astro:content'
 import { FIXED_NAV_BEFORE_PAGES, FIXED_NAV_AFTER_PAGES, NAV_GROUPS } from '@/config/nav'
 import Icon from '@components/Icon.astro'
+import SearchBox from '@components/SearchBox.astro'
 
 interface Props {
   currentPath?: string
@@ -27,6 +28,7 @@ const byOrder = (
 ): number => a.data.order - b.data.order || a.data.title.localeCompare(b.data.title)
 
 const services = await getCollection('services')
+const isSearchPage = Astro.url.pathname.replace(/\/$/, '') === '/search'
 
 /**
  * One entry per group in `src/config/nav.ts`: its service files by `kind`,
@@ -57,6 +59,11 @@ const pages = (await getCollection('pages')).sort(byOrder)
       of Yisra'Yah
     </span>
   </a>
+  {!isSearchPage && (
+    <div class="sidebar-search">
+      <SearchBox />
+    </div>
+  )}
   <ul class="menu">
     {FIXED_NAV_BEFORE_PAGES.slice(0, 1).map((entry) => (
       <li>

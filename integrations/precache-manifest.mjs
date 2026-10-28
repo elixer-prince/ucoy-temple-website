@@ -23,7 +23,12 @@ export const PRECACHE_EXTENSIONS = new Set([
   '.png',
   '.jpg',
   '.jpeg',
-  '.webp'
+  '.webp',
+  '.wasm',
+  '.pagefind',
+  '.pf_fragment',
+  '.pf_index',
+  '.pf_meta'
 ])
 
 // The worker itself, its manifest, and the offline fallback are handled
