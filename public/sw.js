@@ -71,8 +71,14 @@ self.addEventListener('fetch', (event) => {
   // cache-first serves the stale copy and a redeploy never shows until reload.
   // Additionally, for requests that don't specify Accept, assume they are page
   // requests and go through the network handler to avoid serving stale cached
-  // content from previous visits after a deploy.
-  if (request.mode === 'navigate' || accept.includes('text/html') || !accept) {
+  // content from previous visits after a deploy. A media file is the exception:
+  // a video element asks for it with a Range header and no Accept, so a bare
+  // media URL must reach the media handler instead of being mistaken for a page.
+  if (
+    request.mode === 'navigate' ||
+    accept.includes('text/html') ||
+    (!accept && !isMedia(url.pathname))
+  ) {
     event.respondWith(respondToNavigation(request))
     return
   }
