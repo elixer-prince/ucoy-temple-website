@@ -36,9 +36,9 @@ export const NAV_GROUPS: NavGroup[] = [
   },
   {
     kind: 'shabbaton',
-    label: 'High Shabbatot',
+    label: 'High Shabbats',
     href: '/shabbatonim',
-    allLabel: 'All Shabbatot'
+    allLabel: 'All High Shabbats'
   }
 ]
 
