@@ -64,7 +64,7 @@ function shortDate(date: Date): string {
 
 <Layout
   title="This Week's Torah Portion"
-  description={`The Torah portion read on ${shabbatLong}, ${portion.summary}, with the aliyot and the Haftarah.`}
+  description={`The Torah portion read on ${shabbatLong}, ${portion.summary}, with the Haftarah.`}
 >
   <div class="prose">
     <article class="portion">
@@ -119,50 +119,6 @@ function shortDate(date: Date): string {
           </p>
         </section>
       )}
-      <!-- The reading itself: the seven aliyot then the maftir, in the order they
-           are called, so a member can find today's passage without guessing. -->
-      <section class="aliyot">
-        <h2>The aliyot</h2>
-        <p class="text-muted">
-          Seven portions are called from the scroll, followed by the maftir, and then the Haftarah
-          from the Prophets.
-        </p>
-
-        <table class="aliyah-table">
-          <thead>
-            <tr>
-              <th scope="col">Aliyah</th>
-              <th scope="col">Book</th>
-              <th scope="col">Verses</th>
-              <th scope="col">Lines</th>
-            </tr>
-          </thead>
-          <tbody>
-            {portion.aliyot.map((aliyah) => (
-              <tr>
-                <th scope="row">{aliyah.label}</th>
-                <td>{aliyah.book}</td>
-                <td class="aliyah-reference">
-                  {aliyah.begin}–{aliyah.end}
-                </td>
-                <td class="aliyah-verses">{aliyah.verses ?? ''}</td>
-              </tr>
-            ))}
-          </tbody>
-        </table>
-
-        {/* A passage that differs from the usual customing says so, rather than
-            leaving a reader to wonder why the scroll was opened differently. */}
-        {portion.aliyot.some((aliyah) => aliyah.reason) && (
-          <p class="aliyah-note text-muted">
-            {portion.aliyot
-              .filter((aliyah) => aliyah.reason)
-              .map((aliyah) => `${aliyah.label}: ${aliyah.reason}`)
-              .join('. ')}
-          </p>
-        )}
-      </section>
-
       {portion.haftarah && (
         <Panel title="The Haftarah" as="section">
           {/* The citation carries the book and verses already, so it is not
@@ -248,42 +204,6 @@ function shortDate(date: Date): string {
     font-size: var(--text-lead);
     line-height: var(--body-line-height);
     color: var(--color-text-muted);
-  }
-
-  /* The table scrolls sideways on a narrow phone rather than forcing the whole
-     page to, so a long citation never widens the reading column. */
-  .aliyah-table {
-    display: block;
-    overflow-x: auto;
-    width: 100%;
-    border-collapse: collapse;
-    margin: 0 0 var(--space-s) 0;
-  }
-
-  .aliyah-table th,
-  .aliyah-table td {
-    padding: var(--space-2xs) var(--space-xs);
-    border: var(--border-width) solid var(--color-border);
-    text-align: start;
-    white-space: nowrap;
-  }
-
-  .aliyah-table thead th {
-    background: var(--color-surface);
-    color: var(--color-text);
-  }
-
-  .aliyah-reference {
-    font-variant-numeric: tabular-nums;
-  }
-
-  .aliyah-verses {
-    text-align: end;
-    font-variant-numeric: tabular-nums;
-  }
-
-  .aliyah-note {
-    font-size: var(--text-caption);
   }
 
   .haftarah-summary {

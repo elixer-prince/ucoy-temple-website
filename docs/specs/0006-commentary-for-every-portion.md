@@ -310,7 +310,7 @@ Gospel, and it is optional and labelled as the temple's own choice.
   build and a new commentary file fills one in with no code change and no edit to
   any index.
 - `/torah-portion`: unchanged in role. It gains a link to this week's commentary
-  page and keeps the computed reading it already shows. On a festival Shabbat no
+  page. On a festival Shabbat no
   portion is read, so there is no commentary page to link to and the link is
   omitted rather than pointed at an address that would 404.
 
