@@ -24,7 +24,8 @@ const ROLES = [
   'accent-hover',
   'on-accent',
   'focus',
-  'tint'
+  'tint',
+  'highlight-current'
 ] as const
 
 type Role = (typeof ROLES)[number]
@@ -106,7 +107,8 @@ const LIGHT_ROLES: Record<Role, string> = {
   'accent-hover': 'kosher-blue-800',
   'on-accent': 'black-50',
   focus: 'kosher-blue-700',
-  tint: 'royal-gold-100'
+  tint: 'royal-gold-100',
+  'highlight-current': 'royal-gold-500'
 }
 
 const DARK_ROLES: Record<Role, string> = {
@@ -119,7 +121,8 @@ const DARK_ROLES: Record<Role, string> = {
   'accent-hover': 'kosher-blue-200',
   'on-accent': 'black-950',
   focus: 'kosher-blue-300',
-  tint: 'royal-gold-900'
+  tint: 'royal-gold-900',
+  'highlight-current': 'royal-gold-600'
 }
 
 const SIDEBAR_POINTS: Record<SidebarRole, string> = {

@@ -89,6 +89,7 @@
   --color-on-accent: var(--color-black-50);
   --color-focus: var(--color-kosher-blue-700);
   --color-tint: var(--color-royal-gold-100);
+  --color-highlight-current: var(--color-royal-gold-500);
 
   /* ---- Sidebar panel: fixed black in both modes (old site look) ----
      Sidebar tokens point at ladders and extremes like every other role.
@@ -180,10 +181,11 @@
     --color-on-accent: var(--color-black-950);
     --color-focus: var(--color-kosher-blue-300);
     --color-tint: var(--color-royal-gold-900);
+    --color-highlight-current: var(--color-royal-gold-600);
   }
 }
 
-/* Explicit choice wins over the OS setting. */
+/* Explicit choice wins over the OS setting.*/
 :root[data-theme='light'] {
   --color-canvas: var(--color-black-100);
   --color-surface: var(--color-black-50);
@@ -195,6 +197,7 @@
   --color-on-accent: var(--color-black-50);
   --color-focus: var(--color-kosher-blue-700);
   --color-tint: var(--color-royal-gold-100);
+  --color-highlight-current: var(--color-royal-gold-500);
   color-scheme: light;
 }
 
@@ -209,6 +212,7 @@
   --color-on-accent: var(--color-black-950);
   --color-focus: var(--color-kosher-blue-300);
   --color-tint: var(--color-royal-gold-900);
+  --color-highlight-current: var(--color-royal-gold-600);
   color-scheme: dark;
 }
 
