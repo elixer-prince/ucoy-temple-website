@@ -398,13 +398,6 @@ const hasBanner = Astro.slots.has('banner')
           }
           if (currentIndex >= marks.length) currentIndex = 0
           updateCurrent()
-          if (marks.length < 2) {
-            // A single match is already scrolled into view; nothing to
-            // navigate between, so keep the navigation toolbar hidden.
-            if (toolbar) toolbar.style.display = 'none'
-            if (countLabel) countLabel.textContent = ''
-            return
-          }
           ensureToolbar()
           if (toolbar) toolbar.style.display = 'flex'
         }
@@ -537,11 +530,11 @@ const hasBanner = Astro.slots.has('banner')
     inset: 0 auto 0 0;
     width: var(--sidebar-width);
     /* Anchor to both viewport edges instead of a fixed height: on Firefox
-                                               mobile the search bar retracts when the page scrolls up and the
-                                               visual viewport grows, but `100dvh` can stay stuck at the smaller
-                                               size and leave a gap below the panel. Stretching between top and
-                                               bottom keeps the sidebar flush to the screen at every scroll
-                                               position, and overflow-y: auto still scrolls the panel contents. */
+                                                 mobile the search bar retracts when the page scrolls up and the
+                                                 visual viewport grows, but `100dvh` can stay stuck at the smaller
+                                                 size and leave a gap below the panel. Stretching between top and
+                                                 bottom keeps the sidebar flush to the screen at every scroll
+                                                 position, and overflow-y: auto still scrolls the panel contents. */
     overflow-y: auto;
     overscroll-behavior: contain;
     z-index: 60;
@@ -693,8 +686,8 @@ const hasBanner = Astro.slots.has('banner')
       visibility: visible;
       inset: 0 auto 0 0;
       /* Stretch to the viewport height like the narrow screen panel: a fixed
-                                                                                         height can fall short of the visual viewport when Firefox retracts
-                                                                                         its search bar on scroll up. */
+                                                                                             height can fall short of the visual viewport when Firefox retracts
+                                                                                             its search bar on scroll up. */
       padding: var(--space-m);
     }
 
@@ -771,8 +764,9 @@ const hasBanner = Astro.slots.has('banner')
   }
 
   .pagefind-highlight--current {
-    background: var(--color-accent);
-    color: var(--color-on-accent);
+    background: var(--color-royal-gold-200);
+    color: var(--color-text);
+    border-radius: var(--radius);
     box-shadow: 0 0 0 var(--focus-width) var(--color-focus);
   }
 
