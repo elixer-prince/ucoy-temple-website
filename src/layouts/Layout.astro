@@ -318,37 +318,17 @@ const hasBanner = Astro.slots.has('banner')
 
         function ensureToolbar() {
           if (toolbar && document.body.contains(toolbar)) return toolbar
-          if (toolbar && !document.body.contains(toolbar)) {
-            toolbar = null
-            countLabel = null
-          }
-          toolbar = document.createElement('div')
-          toolbar.id = 'pagefind-highlight-nav'
-          toolbar.className = 'highlight-nav'
-          toolbar.setAttribute('role', 'toolbar')
-          toolbar.setAttribute('aria-label', 'Search match navigation')
+          toolbar = document.getElementById('pagefind-highlight-nav')
+          if (!toolbar) return null
+          countLabel = toolbar.querySelector('.highlight-nav-count')
 
-          const prevButton = document.createElement('button')
-          prevButton.type = 'button'
-          prevButton.className = 'highlight-nav-button'
-          prevButton.setAttribute('aria-label', 'Previous match')
-          prevButton.textContent = '‹'
-
-          countLabel = document.createElement('span')
-          countLabel.className = 'highlight-nav-count'
-          countLabel.setAttribute('aria-live', 'polite')
-
-          const nextButton = document.createElement('button')
-          nextButton.type = 'button'
-          nextButton.className = 'highlight-nav-button'
-          nextButton.setAttribute('aria-label', 'Next match')
-          nextButton.textContent = '›'
-
-          const closeButton = document.createElement('button')
-          closeButton.type = 'button'
-          closeButton.className = 'highlight-nav-button'
-          closeButton.setAttribute('aria-label', 'Close match navigation')
-          closeButton.textContent = '×'
+          const prevButton = toolbar.querySelector(
+            '.highlight-nav-button[aria-label="Previous match"]'
+          )
+          const nextButton = toolbar.querySelector('.highlight-nav-button[aria-label="Next match"]')
+          const closeButton = toolbar.querySelector(
+            '.highlight-nav-button[aria-label="Close match navigation"]'
+          )
 
           prevButton.addEventListener('click', function () {
             if (!marks.length) return
@@ -361,14 +341,16 @@ const hasBanner = Astro.slots.has('banner')
             updateCurrent()
           })
           closeButton.addEventListener('click', function () {
+            removeExistingMarks()
+            marks = []
+            currentIndex = 0
             if (toolbar) toolbar.style.display = 'none'
-            marks.forEach(function (mark) {
-              mark.classList.remove('pagefind-highlight--current')
-            })
+            if (countLabel) countLabel.textContent = ''
+            const url = new URL(window.location.href)
+            url.searchParams.delete('highlight')
+            window.history.replaceState({}, '', url.toString())
           })
 
-          toolbar.append(prevButton, countLabel, nextButton, closeButton)
-          document.body.append(toolbar)
           return toolbar
         }
 
@@ -445,6 +427,27 @@ const hasBanner = Astro.slots.has('banner')
         document.addEventListener('astro:page-load', runHighlight)
       })()
     </script>
+    <!-- Search-match navigation toolbar (shown when a page is reached with a
+         ?highlight= query from search results). Hidden by default; the script
+         below shows it and updates the current-match count. -->
+    <div
+      id="pagefind-highlight-nav"
+      class="highlight-nav"
+      role="toolbar"
+      aria-label="Search match navigation"
+      style="display: none"
+    >
+      <button type="button" class="highlight-nav-button" aria-label="Previous match">
+        ‹
+      </button>
+      <span class="highlight-nav-count" aria-live="polite"></span>
+      <button type="button" class="highlight-nav-button" aria-label="Next match">
+        ›
+      </button>
+      <button type="button" class="highlight-nav-button" aria-label="Close match navigation">
+        ×
+      </button>
+    </div>
   </body>
   <script is:inline>
     ;(function () {
@@ -530,11 +533,11 @@ const hasBanner = Astro.slots.has('banner')
     inset: 0 auto 0 0;
     width: var(--sidebar-width);
     /* Anchor to both viewport edges instead of a fixed height: on Firefox
-                                                 mobile the search bar retracts when the page scrolls up and the
-                                                 visual viewport grows, but `100dvh` can stay stuck at the smaller
-                                                 size and leave a gap below the panel. Stretching between top and
-                                                 bottom keeps the sidebar flush to the screen at every scroll
-                                                 position, and overflow-y: auto still scrolls the panel contents. */
+                                                       mobile the search bar retracts when the page scrolls up and the
+                                                       visual viewport grows, but `100dvh` can stay stuck at the smaller
+                                                       size and leave a gap below the panel. Stretching between top and
+                                                       bottom keeps the sidebar flush to the screen at every scroll
+                                                       position, and overflow-y: auto still scrolls the panel contents. */
     overflow-y: auto;
     overscroll-behavior: contain;
     z-index: 60;
@@ -686,8 +689,8 @@ const hasBanner = Astro.slots.has('banner')
       visibility: visible;
       inset: 0 auto 0 0;
       /* Stretch to the viewport height like the narrow screen panel: a fixed
-                                                                                             height can fall short of the visual viewport when Firefox retracts
-                                                                                             its search bar on scroll up. */
+                                                                                                         height can fall short of the visual viewport when Firefox retracts
+                                                                                                         its search bar on scroll up. */
       padding: var(--space-m);
     }
 
@@ -764,7 +767,7 @@ const hasBanner = Astro.slots.has('banner')
   }
 
   .pagefind-highlight--current {
-    background: var(--color-royal-gold-200);
+    background: var(--color-hebrew-red-100);
     color: var(--color-text);
     border-radius: var(--radius);
     box-shadow: 0 0 0 var(--focus-width) var(--color-focus);
