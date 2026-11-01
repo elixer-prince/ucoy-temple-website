@@ -289,7 +289,10 @@ const hasBanner = Astro.slots.has('banner')
     <script>
       ;(async function () {
         const highlightPath = '/pagefind/pagefind-highlight.js'
-        let PagefindHighlightCtor = null
+        type PagefindHighlight = { highlight: () => void }
+        let PagefindHighlightCtor:
+          ((opts: { highlightParam: string; addStyles: boolean }) => PagefindHighlight) | null =
+          null
         try {
           // Same dynamic-import pattern search.astro uses for pagefind.js.
           const mod = await import(/* @vite-ignore */ highlightPath)
@@ -302,11 +305,11 @@ const hasBanner = Astro.slots.has('banner')
         }
 
         const MARK_SELECTOR = 'mark.pagefind-highlight'
-        let toolbar = null
-        let countLabel = null
+        let toolbar: HTMLElement | null = null
+        let countLabel: HTMLElement | null = null
         let currentIndex = 0
-        let marks = []
-        let highlighter = null
+        let marks: HTMLElement[] = []
+        let highlighter: PagefindHighlight | null = null
 
         function removeExistingMarks() {
           document.querySelectorAll(MARK_SELECTOR).forEach(function (mark) {
@@ -330,26 +333,29 @@ const hasBanner = Astro.slots.has('banner')
             '.highlight-nav-button[aria-label="Close match navigation"]'
           )
 
-          prevButton.addEventListener('click', function () {
-            if (!marks.length) return
-            currentIndex = (currentIndex - 1 + marks.length) % marks.length
-            updateCurrent()
-          })
-          nextButton.addEventListener('click', function () {
-            if (!marks.length) return
-            currentIndex = (currentIndex + 1) % marks.length
-            updateCurrent()
-          })
-          closeButton.addEventListener('click', function () {
-            removeExistingMarks()
-            marks = []
-            currentIndex = 0
-            if (toolbar) toolbar.style.display = 'none'
-            if (countLabel) countLabel.textContent = ''
-            const url = new URL(window.location.href)
-            url.searchParams.delete('highlight')
-            window.history.replaceState({}, '', url.toString())
-          })
+          if (prevButton)
+            prevButton.addEventListener('click', function () {
+              if (!marks.length) return
+              currentIndex = (currentIndex - 1 + marks.length) % marks.length
+              updateCurrent()
+            })
+          if (nextButton)
+            nextButton.addEventListener('click', function () {
+              if (!marks.length) return
+              currentIndex = (currentIndex + 1) % marks.length
+              updateCurrent()
+            })
+          if (closeButton)
+            closeButton.addEventListener('click', function () {
+              removeExistingMarks()
+              marks = []
+              currentIndex = 0
+              if (toolbar) toolbar.style.display = 'none'
+              if (countLabel) countLabel.textContent = ''
+              const url = new URL(window.location.href)
+              url.searchParams.delete('highlight')
+              window.history.replaceState({}, '', url.toString())
+            })
 
           return toolbar
         }
@@ -384,7 +390,7 @@ const hasBanner = Astro.slots.has('banner')
           if (toolbar) toolbar.style.display = 'flex'
         }
 
-        let refreshTimer = null
+        let refreshTimer: ReturnType<typeof setTimeout> | null = null
         function scheduleRefresh() {
           if (refreshTimer) clearTimeout(refreshTimer)
           refreshTimer = setTimeout(refresh, 120)
@@ -398,7 +404,7 @@ const hasBanner = Astro.slots.has('banner')
           removeExistingMarks()
           try {
             if (!highlighter) {
-              highlighter = new PagefindHighlightCtor({
+              highlighter = PagefindHighlightCtor({
                 highlightParam: 'highlight',
                 addStyles: false
               })
@@ -516,11 +522,11 @@ const hasBanner = Astro.slots.has('banner')
     inset: 0 auto 0 0;
     width: var(--sidebar-width);
     /* Anchor to both viewport edges instead of a fixed height: on Firefox
-                                                               mobile the search bar retracts when the page scrolls up and the
-                                                               visual viewport grows, but `100dvh` can stay stuck at the smaller
-                                                               size and leave a gap below the panel. Stretching between top and
-                                                               bottom keeps the sidebar flush to the screen at every scroll
-                                                               position, and overflow-y: auto still scrolls the panel contents. */
+                                                                   mobile the search bar retracts when the page scrolls up and the
+                                                                   visual viewport grows, but `100dvh` can stay stuck at the smaller
+                                                                   size and leave a gap below the panel. Stretching between top and
+                                                                   bottom keeps the sidebar flush to the screen at every scroll
+                                                                   position, and overflow-y: auto still scrolls the panel contents. */
     overflow-y: auto;
     overscroll-behavior: contain;
     z-index: 60;
@@ -672,8 +678,8 @@ const hasBanner = Astro.slots.has('banner')
       visibility: visible;
       inset: 0 auto 0 0;
       /* Stretch to the viewport height like the narrow screen panel: a fixed
-                                                                                                                         height can fall short of the visual viewport when Firefox retracts
-                                                                                                                         its search bar on scroll up. */
+                                                                                                                                 height can fall short of the visual viewport when Firefox retracts
+                                                                                                                                 its search bar on scroll up. */
       padding: var(--space-m);
     }
 
