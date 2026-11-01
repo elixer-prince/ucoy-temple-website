@@ -289,13 +289,11 @@ const hasBanner = Astro.slots.has('banner')
     <script>
       ;(async function () {
         const highlightPath = '/pagefind/pagefind-highlight.js'
+        let PagefindHighlightCtor: unknown = null
         try {
           const dynamicImport = new Function('u', 'return import(u)')
           const mod = await dynamicImport(highlightPath)
-          const PagefindHighlight = mod && (mod.default || mod.PagefindHighlight)
-          if (PagefindHighlight) {
-            new PagefindHighlight({ highlightParam: 'highlight' })
-          }
+          PagefindHighlightCtor = mod && (mod.default || mod.PagefindHighlight)
         } catch {
           // Pagefind highlight is only available in production builds.
         }
@@ -305,9 +303,14 @@ const hasBanner = Astro.slots.has('banner')
         let countLabel: HTMLElement | null = null
         let currentIndex = 0
         let marks: HTMLElement[] = []
+        let highlighter: unknown = null
 
         function ensureToolbar() {
-          if (toolbar) return toolbar
+          if (toolbar && document.body.contains(toolbar)) return toolbar
+          if (toolbar && !document.body.contains(toolbar)) {
+            toolbar = null
+            countLabel = null
+          }
           toolbar = document.createElement('div')
           toolbar.id = 'pagefind-highlight-nav'
           toolbar.className = 'highlight-nav'
@@ -372,6 +375,10 @@ const hasBanner = Astro.slots.has('banner')
         }
 
         function refresh() {
+          if (toolbar && !document.body.contains(toolbar)) {
+            toolbar = null
+            countLabel = null
+          }
           marks = Array.from(document.querySelectorAll(MARK_SELECTOR)) as HTMLElement[]
           if (!marks.length) {
             if (toolbar) toolbar.style.display = 'none'
@@ -392,9 +399,33 @@ const hasBanner = Astro.slots.has('banner')
         const observer = new MutationObserver(scheduleRefresh)
         observer.observe(document.body, { childList: true, subtree: true })
 
-        setTimeout(refresh, 150)
-        setTimeout(refresh, 600)
-        setTimeout(refresh, 1500)
+        let lastRunUrl: string | null = null
+        function runHighlight() {
+          if (lastRunUrl === window.location.href) return
+          lastRunUrl = window.location.href
+          if (!PagefindHighlightCtor) return
+          if (!highlighter) {
+            highlighter = new (PagefindHighlightCtor as new (opts: unknown) => unknown)({
+              highlightParam: 'highlight',
+              addStyles: false
+            })
+          } else {
+            try {
+              ;(highlighter as { highlight: () => void }).highlight()
+            } catch {
+              // ignore
+            }
+          }
+          currentIndex = 0
+          marks = []
+          if (toolbar) toolbar.style.display = 'none'
+          setTimeout(refresh, 150)
+          setTimeout(refresh, 600)
+          setTimeout(refresh, 1500)
+        }
+
+        runHighlight()
+        document.addEventListener('astro:page-load', runHighlight)
       })()
     </script>
   </body>
@@ -482,11 +513,11 @@ const hasBanner = Astro.slots.has('banner')
     inset: 0 auto 0 0;
     width: var(--sidebar-width);
     /* Anchor to both viewport edges instead of a fixed height: on Firefox
-                                 mobile the search bar retracts when the page scrolls up and the
-                                 visual viewport grows, but `100dvh` can stay stuck at the smaller
-                                 size and leave a gap below the panel. Stretching between top and
-                                 bottom keeps the sidebar flush to the screen at every scroll
-                                 position, and overflow-y: auto still scrolls the panel contents. */
+                                         mobile the search bar retracts when the page scrolls up and the
+                                         visual viewport grows, but `100dvh` can stay stuck at the smaller
+                                         size and leave a gap below the panel. Stretching between top and
+                                         bottom keeps the sidebar flush to the screen at every scroll
+                                         position, and overflow-y: auto still scrolls the panel contents. */
     overflow-y: auto;
     overscroll-behavior: contain;
     z-index: 60;
@@ -638,8 +669,8 @@ const hasBanner = Astro.slots.has('banner')
       visibility: visible;
       inset: 0 auto 0 0;
       /* Stretch to the viewport height like the narrow screen panel: a fixed
-                                                             height can fall short of the visual viewport when Firefox retracts
-                                                             its search bar on scroll up. */
+                                                                             height can fall short of the visual viewport when Firefox retracts
+                                                                             its search bar on scroll up. */
       padding: var(--space-m);
     }
 
