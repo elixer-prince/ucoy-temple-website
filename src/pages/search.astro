@@ -80,7 +80,12 @@ import Layout from '@layouts/Layout.astro'
       const item = document.createElement('li')
       item.className = 'search-result'
       const link = document.createElement('a')
-      link.href = result.url + '?highlight=' + encodeURIComponent(query)
+      // Set (not append) the highlight param so it never doubles up when
+      // result.url already carries a query string, and so ClientRouter
+      // navigations keep a single clean ?highlight= value on the destination.
+      const dest = new URL(result.url, window.location.origin)
+      dest.searchParams.set('highlight', query)
+      link.href = dest.toString()
       link.className = 'search-result-link'
       const title = document.createElement('span')
       title.className = 'search-result-title'
