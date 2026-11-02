@@ -28,7 +28,7 @@ _These are recommendations to keep your build orderly, not requirements. Skip an
 | 12  | Holy Days calendar                            | Slice 4    | done    |
 | 13  | Site search                                   | Slice 4    | done    |
 | 14  | Product analytics                             | Slice 4    | done    |
-| 15  | SEO, metadata & performance                   | Slice 4    | planned |
+| 15  | SEO, metadata & performance                   | Slice 4    | done    |
 | 16  | Site wide offline & install                   | Slice 4    | planned |
 | 22  | Offline PDFs                                  | Slice 4    | planned |
 | 26  | Commentary index                              | Slice 4    | planned |
@@ -321,12 +321,18 @@ Privacy-friendly product analytics so the temple can see which materials people 
 - [x] Test it: `/test product analytics`
       Spec [0010](../specs/0010-product-analytics.md) · code in `src/lib/posthog.ts`, `src/layouts/Layout.astro`, `src/components/Video.astro`, `src/pages/resources/[slug].astro`, `src/pages/contact.astro`, `src/pages/search.astro`, `src/content/pages/privacy.md`, `src/config/nav.ts`, `src/config/site.ts`
 
-### 15. SEO, metadata & performance · planned
+### 15. SEO, metadata & performance · done
 
 The public pages deserve to be found and to load fast on a phone.
 **Done when:** every public page carries title and description metadata, a sitemap and social cards exist, the style guide stays out of the sitemap, and pages load quickly on a phone.
 
-- [ ] Build it: `/develop seo metadata & performance`
+- [x] Build it: `/develop seo metadata & performance`
+  - [x] Open Graph meta tags on every page via Layout (AC-1)
+  - [x] Twitter Card meta tags on every page via Layout (AC-1)
+  - [x] Static social card image at `/social-card.svg` using design tokens (AC-2)
+  - [x] Absolute canonical URLs on every page (AC-1)
+  - [x] Astro sitemap enabled, style guide excluded (AC-3)
+        code in `src/layouts/Layout.astro`, `astro.config.mjs`, `public/social-card.svg`
 
 ### 16. Site wide offline & install · planned
 

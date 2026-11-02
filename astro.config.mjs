@@ -2,6 +2,7 @@
 // The stack this file configures is recorded in docs/specs/0001-adopt-static-site-stack.md.
 import { defineConfig, fontProviders, envField } from 'astro/config'
 import mdx from '@astrojs/mdx'
+import sitemap from '@astrojs/sitemap'
 import { precacheManifest } from './integrations/precache-manifest.mjs'
 import pagefind from 'astro-pagefind'
 
@@ -10,7 +11,7 @@ export default defineConfig({
   // Pages. There is no server, no database and no sign in.
   output: 'static',
 
-  // Absolute URLs are needed for canonical links, and later for the sitemap.
+  // Absolute URLs are needed for canonical links and the sitemap.
   // Set SITE_URL in the Cloudflare Pages build settings once the domain is
   // known, and update the fallback here at the same time (spec 0001 Follow-up).
   site: process.env.SITE_URL ?? 'https://ucoy-temple-website.pages.dev',
@@ -100,5 +101,16 @@ export default defineConfig({
   // MDX carries service bodies, so a <Video> call can sit inline in the order
   // of service (spec 0003, AC-4). Service files are the only MDX authored by
   // hand; page and announcement content stays plain markdown.
-  integrations: [mdx(), pagefind(), precacheManifest()]
+  integrations: [
+    mdx(),
+    pagefind(),
+    precacheManifest(),
+    sitemap({
+      filter(page) {
+        // Exclude the style guide: it carries noindex and is unlinked from the
+        // menu, so it should not appear in the sitemap either (feature 15).
+        return !page.includes('style-guide')
+      }
+    })
+  ]
 })

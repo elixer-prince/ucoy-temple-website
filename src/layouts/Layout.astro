@@ -20,9 +20,25 @@ interface Props {
   /** Whether Pagefind should index this page. Defaults to true; the style
    *  guide and 404 set it false so they stay out of the search index. */
   searchable?: boolean
+  /** Override the default social card image for this page. Falls back to the
+   *  site-wide social card at /social-card.png. */
+  image?: string
 }
 
-const { title, description = SITE_CONFIG.description, robots, searchable = true } = Astro.props
+const {
+  title,
+  description = SITE_CONFIG.description,
+  robots,
+  searchable = true,
+  image
+} = Astro.props
+
+// Social card URL: page override, or the site-wide default.
+// Use new URL() to avoid double slashes if Astro.site has a trailing slash.
+const socialImage = image ?? new URL('/social-card.svg', Astro.site).href
+// Absolute page URL for canonical links and Open Graph. Astro.url already
+// includes the site origin, so no manual concatenation is needed.
+const pageUrl = Astro.url.href
 const hasBanner = Astro.slots.has('banner')
 ---
 
@@ -35,8 +51,8 @@ const hasBanner = Astro.slots.has('banner')
     <meta name="description" content={description} />
     {robots && <meta name="robots" content={robots} />}
 
-    <!-- Canonical link -->
-    <link rel="canonical" href={Astro.url.pathname} />
+    <!-- Canonical link: absolute URL so search engines resolve the correct address. -->
+    <link rel="canonical" href={pageUrl} />
 
     <!-- Favicon: one PNG for every surface. A 32px context is the tab,
          the touch icon is iOS's home screen, and the header mark is the
@@ -48,6 +64,20 @@ const hasBanner = Astro.slots.has('banner')
     <meta name="theme-color" media="(prefers-color-scheme: light)" content="#fbfaf7" />
     <meta name="theme-color" media="(prefers-color-scheme: dark)" content="#14151b" />
     <meta name="color-scheme" content="light dark" />
+
+    <!-- Open Graph: social preview when a link is shared (feature 15). -->
+    <meta property="og:title" content={`${title} — ${SITE_CONFIG.title}`} />
+    <meta property="og:description" content={description} />
+    <meta property="og:type" content="website" />
+    <meta property="og:url" content={pageUrl} />
+    <meta property="og:image" content={socialImage} />
+    <meta property="og:locale" content="en_US" />
+
+    <!-- Twitter Card: same preview on X (feature 15). -->
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:title" content={`${title} — ${SITE_CONFIG.title}`} />
+    <meta name="twitter:description" content={description} />
+    <meta name="twitter:image" content={socialImage} />
 
     <!-- ClientRouter: instant page swaps with no animation (spec 0008).
          No handleFallback: a fallback of none stops the router registering
@@ -528,11 +558,11 @@ const hasBanner = Astro.slots.has('banner')
     inset: 0 auto 0 0;
     width: var(--sidebar-width);
     /* Anchor to both viewport edges instead of a fixed height: on Firefox
-                                                                     mobile the search bar retracts when the page scrolls up and the
-                                                                     visual viewport grows, but `100dvh` can stay stuck at the smaller
-                                                                     size and leave a gap below the panel. Stretching between top and
-                                                                     bottom keeps the sidebar flush to the screen at every scroll
-                                                                     position, and overflow-y: auto still scrolls the panel contents. */
+                                                                         mobile the search bar retracts when the page scrolls up and the
+                                                                         visual viewport grows, but `100dvh` can stay stuck at the smaller
+                                                                         size and leave a gap below the panel. Stretching between top and
+                                                                         bottom keeps the sidebar flush to the screen at every scroll
+                                                                         position, and overflow-y: auto still scrolls the panel contents. */
     overflow-y: auto;
     overscroll-behavior: contain;
     z-index: 60;
@@ -684,8 +714,8 @@ const hasBanner = Astro.slots.has('banner')
       visibility: visible;
       inset: 0 auto 0 0;
       /* Stretch to the viewport height like the narrow screen panel: a fixed
-                                                                                                                                     height can fall short of the visual viewport when Firefox retracts
-                                                                                                                                     its search bar on scroll up. */
+                                                                                                                                             height can fall short of the visual viewport when Firefox retracts
+                                                                                                                                             its search bar on scroll up. */
       padding: var(--space-m);
     }
 
