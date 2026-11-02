@@ -1,0 +1,116 @@
+---
+/**
+ * Commentary index (scope feature 26).
+ *
+ * Lists all 53 Torah portions in cycle order, with a link to each portion's
+ * page. A portion with a commentary file is marked as written so a member can
+ * see at a glance which ones are ready to read.
+ */
+import { getCollection } from 'astro:content'
+import Layout from '@layouts/Layout.astro'
+import { getPortionCycle, type CyclePortion } from '@/lib/portion-cycle'
+
+// All 53 portions in cycle order, with computed readings
+const cycle = getPortionCycle()
+
+// Commentary files, so we can check which portions have been written
+const notes = await getCollection('portionNotes')
+const writtenSlugs = new Set(notes.map((entry) => entry.id))
+---
+
+<Layout
+  title="Torah Portion Commentary"
+  description="All 53 weekly Torah portions with links to the Congregation's commentary. Portions with commentary written are marked so you can see which ones are ready to read."
+>
+  <div class="prose">
+    <h1>Torah Portion Commentary</h1>
+    <p class="lead">
+      Every weekly portion in the order the Torah is read. A check mark means the Congregation has
+      written commentary for that portion; the rest are still being prepared.
+    </p>
+
+    <ul class="portion-list">
+      {cycle.map((portion: CyclePortion) => {
+        const isWritten = writtenSlugs.has(portion.slug)
+        return (
+          <li class="portion-item">
+            <a class="portion-link" href={`/portion/${portion.slug}`}>
+              <span class="portion-number text-muted">{portion.index + 1}</span>
+              <span class="portion-name">{portion.nameEn}</span>
+              <span class="portion-summary text-muted">{portion.summary}</span>
+              {isWritten && (
+                <span class="portion-status status-written" aria-label="Commentary written">
+                  ✓
+                </span>
+              )}
+            </a>
+          </li>
+        )
+      })}
+    </ul>
+  </div>
+</Layout>
+
+<style>
+  .lead {
+    font-size: var(--text-lead);
+    line-height: var(--body-line-height);
+    color: var(--color-text-muted);
+    margin-bottom: var(--space-l);
+  }
+
+  .portion-list {
+    list-style: none;
+    padding-left: 0;
+    margin: 0;
+  }
+
+  .portion-item {
+    border-bottom: var(--border-width) solid var(--color-border);
+    padding: 0;
+  }
+
+  .portion-link {
+    display: flex;
+    align-items: baseline;
+    gap: var(--space-s);
+    text-decoration: none;
+    padding: var(--space-2xs) 0;
+  }
+
+  .portion-link:hover {
+    text-decoration: underline;
+  }
+
+  .portion-number {
+    font-size: var(--text-caption);
+    min-width: var(--space-m);
+    flex-shrink: 0;
+  }
+
+  .portion-name {
+    font-family: var(--font-serif);
+    font-size: var(--text-subtitle);
+    color: var(--color-accent);
+    flex-shrink: 0;
+  }
+
+  .portion-link:hover .portion-name {
+    color: var(--color-accent-hover);
+  }
+
+  .portion-summary {
+    font-size: var(--text-small);
+    flex: 1;
+  }
+
+  .portion-status {
+    flex-shrink: 0;
+    font-size: var(--text-subtitle);
+    line-height: 1;
+  }
+
+  .status-written {
+    color: var(--color-accent);
+  }
+</style>

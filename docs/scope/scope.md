@@ -31,7 +31,7 @@ _These are recommendations to keep your build orderly, not requirements. Skip an
 | 15  | SEO, metadata & performance                   | Slice 4    | done    |
 | 16  | Site wide offline & install                   | Slice 4    | done    |
 | 22  | Offline PDFs                                  | Slice 4    | done    |
-| 26  | Commentary index                              | Slice 4    | planned |
+| 26  | Commentary index                              | Slice 4    | done    |
 | 25  | UI rework and style guide revamp              | Rework     | planned |
 | 23  | Hebrew body face                              | Rework     | planned |
 | 17  | Private Temple Treasury                       | Deferred   | planned |
@@ -363,12 +363,13 @@ The temple's booklets are deliberately kept out of the precache, so a booklet a 
 - [x] Test it: `/test offline pdfs`
       Spec [0014](../specs/0014-offline-pdfs.md) · code in `public/sw.js`, `integrations/precache-manifest.mjs`
 
-### 26. Commentary index · planned
+### 26. Commentary index · done
 
 List all 53 portions in one place with links to each page, so members can find any commentary once more than a handful exist.
 **Done when:** a member can open one list and reach every portion page from it, with written and unwritten clearly shown.
 
-- [ ] Build it: `/develop commentary index`
+- [x] Build it: `/develop commentary index`
+      code in `src/pages/commentary/index.astro`, `src/config/nav.ts`
 
 ## Rework: the look, after the features
 
