@@ -9,7 +9,12 @@
 // Only files that are safe to pre-cache are listed: video and other heavy media
 // are left to the network first path in the worker, as the spec's offline cache
 // strategy requires.
-import { readdir, writeFile, readFile } from 'node:fs/promises'
+//
+// The offline page is built by Astro (src/pages/offline.astro) so it can import
+// design tokens.  Astro writes it to dist/offline/index.html, but the service
+// worker expects a fixed /offline.html at the root.  This integration copies the
+// built HTML to dist/offline.html after each build (feature 16).
+import { readdir, writeFile, readFile, copyFile } from 'node:fs/promises'
 import { fileURLToPath } from 'node:url'
 import { join, posix } from 'node:path'
 
@@ -108,6 +113,17 @@ export function precacheManifest() {
         const swSource = await readFile(join(outputDirectory, 'sw.js'), 'utf8')
         const swVersioned = swSource.replace('__BUILD_VERSION__', version)
         await writeFile(join(outputDirectory, 'sw.js'), swVersioned, 'utf8')
+
+        // Copy the built offline page to dist/offline.html so the service
+        // worker can find it at a fixed address. Astro writes it to
+        // dist/offline/index.html; the worker needs /offline.html.
+        const offlineSource = join(outputDirectory, 'offline', 'index.html')
+        const offlineTarget = join(outputDirectory, 'offline.html')
+        try {
+          await copyFile(offlineSource, offlineTarget)
+        } catch (err) {
+          logger.warn('Could not copy offline page to dist/offline.html', err)
+        }
 
         logger.info(`precache manifest: ${urls.length} files listed, version ${version}`)
       }

@@ -1,0 +1,21 @@
+{
+  "name": "United Congregation of Yisra'Yah",
+  "short_name": "UCOY",
+  "description": "Service times, directions, and Holy Day materials — works offline.",
+  "start_url": "/",
+  "display": "standalone",
+  "theme_color": "#fbfaf7",
+  "background_color": "#fbfaf7",
+  "icons": [
+    {
+      "src": "/pwa-192.png",
+      "sizes": "192x192",
+      "type": "image/png"
+    },
+    {
+      "src": "/pwa-512.png",
+      "sizes": "512x512",
+      "type": "image/png"
+    }
+  ]
+}

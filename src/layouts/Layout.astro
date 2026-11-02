@@ -60,6 +60,9 @@ const hasBanner = Astro.slots.has('banner')
     <link rel="icon" href="/favicon.png" type="image/png" />
     <link rel="apple-touch-icon" href="/favicon.png" />
 
+    <!-- PWA manifest: makes the site installable to a phone home screen. -->
+    <link rel="manifest" href="/manifest.json" />
+
     <!-- Theme colour follows the canvas role in each mode. -->
     <meta name="theme-color" media="(prefers-color-scheme: light)" content="#fbfaf7" />
     <meta name="theme-color" media="(prefers-color-scheme: dark)" content="#14151b" />
@@ -284,13 +287,86 @@ const hasBanner = Astro.slots.has('banner')
     <!-- Register the service worker for offline support (AC-7).
          Only register in production: the precache manifest is written by the
          build integration and does not exist in dev, so an active worker there
-         would intercept navigation and serve the offline fallback. -->
+         would intercept navigation and serve the offline fallback.
+         When a new build deploys, a waiting worker is detected and a small
+         banner offers the member to reload and pick up the update. -->
     <script type="module">
       if ('serviceWorker' in navigator && import.meta.env.PROD) {
         window.addEventListener('load', () => {
-          navigator.serviceWorker.register('/sw.js').catch((err) => {
-            console.debug('SW registration failed:', err)
-          })
+          navigator.serviceWorker
+            .register('/sw.js')
+            .then((registration) => {
+              // Watch for a new worker waiting to activate.
+              registration.addEventListener('updatefound', () => {
+                const newWorker = registration.installing
+                newWorker.addEventListener('statechange', () => {
+                  if (newWorker.state === 'installed' && navigator.serviceWorker.controller) {
+                    // A new worker is installed but not yet active — the page has
+                    // an older controller. Show the update banner.
+                    showUpdateBanner()
+                  }
+                })
+              })
+            })
+            .catch((err) => {
+              console.debug('SW registration failed:', err)
+            })
+        })
+      }
+
+      function showUpdateBanner() {
+        // Avoid showing the banner more than once per session.
+        if (document.getElementById('sw-update-banner')) return
+
+        const banner = document.createElement('div')
+        banner.id = 'sw-update-banner'
+        banner.setAttribute('role', 'status')
+        banner.setAttribute('aria-live', 'polite')
+        banner.className = 'sw-update-banner'
+        banner.innerHTML =
+          '<p class="sw-update-message">A new version of the site is available.</p>' +
+          '<button class="sw-update-button" type="button">Reload to update</button>' +
+          '<button class="sw-update-dismiss" type="button" aria-label="Dismiss">Dismiss</button>'
+
+        // Style the banner inline so it does not depend on a stylesheet that
+        // may not be loaded yet. It reads design tokens for colours.
+        banner.style.cssText =
+          'position:fixed;bottom:0;left:0;right:0;z-index:9999;' +
+          'display:flex;align-items:center;justify-content:center;gap:var(--space-s,1rem);' +
+          'padding:var(--space-s,1rem);' +
+          'background:var(--color-tint,#fffec2);' +
+          'color:var(--color-text,#1a1a1a);' +
+          'font-family:var(--font-sans,sans-serif);' +
+          'font-size:var(--text-small,0.875rem);' +
+          'box-shadow:0 -2px 8px rgba(0,0,0,0.12);'
+        document.body.appendChild(banner)
+
+        // Reload button: skip waiting and then reload the page.
+        const reloadButton = banner.querySelector('.sw-update-button')
+        reloadButton.style.cssText =
+          'min-height:var(--touch-target,2.75rem);' +
+          'padding:var(--space-2xs,0.5rem) var(--space-m,1.25rem);' +
+          'background:var(--color-accent,#015da3);' +
+          'color:var(--color-on-accent,#fafafa);' +
+          'border:none;border-radius:var(--radius,0);' +
+          'font-weight:600;cursor:pointer;'
+        reloadButton.addEventListener('click', () => {
+          navigator.serviceWorker.controller.postMessage('SKIP_WAITING')
+          location.reload()
+        })
+
+        // Dismiss button.
+        const dismissButton = banner.querySelector('.sw-update-dismiss')
+        dismissButton.style.cssText =
+          'min-height:var(--touch-target,2.75rem);' +
+          'padding:var(--space-2xs,0.5rem) var(--space-s,1rem);' +
+          'background:transparent;' +
+          'color:var(--color-text-muted,#434343);' +
+          'border:var(--border-width,1px) solid var(--color-border,#575757);' +
+          'border-radius:var(--radius,0);' +
+          'cursor:pointer;'
+        dismissButton.addEventListener('click', () => {
+          banner.remove()
         })
       }
     </script>
@@ -558,11 +634,11 @@ const hasBanner = Astro.slots.has('banner')
     inset: 0 auto 0 0;
     width: var(--sidebar-width);
     /* Anchor to both viewport edges instead of a fixed height: on Firefox
-                                                                         mobile the search bar retracts when the page scrolls up and the
-                                                                         visual viewport grows, but `100dvh` can stay stuck at the smaller
-                                                                         size and leave a gap below the panel. Stretching between top and
-                                                                         bottom keeps the sidebar flush to the screen at every scroll
-                                                                         position, and overflow-y: auto still scrolls the panel contents. */
+                                                                           mobile the search bar retracts when the page scrolls up and the
+                                                                           visual viewport grows, but `100dvh` can stay stuck at the smaller
+                                                                           size and leave a gap below the panel. Stretching between top and
+                                                                           bottom keeps the sidebar flush to the screen at every scroll
+                                                                           position, and overflow-y: auto still scrolls the panel contents. */
     overflow-y: auto;
     overscroll-behavior: contain;
     z-index: 60;
@@ -714,8 +790,8 @@ const hasBanner = Astro.slots.has('banner')
       visibility: visible;
       inset: 0 auto 0 0;
       /* Stretch to the viewport height like the narrow screen panel: a fixed
-                                                                                                                                             height can fall short of the visual viewport when Firefox retracts
-                                                                                                                                             its search bar on scroll up. */
+                                                                                                                                                 height can fall short of the visual viewport when Firefox retracts
+                                                                                                                                                 its search bar on scroll up. */
       padding: var(--space-m);
     }
 

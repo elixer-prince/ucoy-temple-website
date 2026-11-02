@@ -334,12 +334,19 @@ The public pages deserve to be found and to load fast on a phone.
   - [x] Astro sitemap enabled, style guide excluded (AC-3)
         code in `src/layouts/Layout.astro`, `astro.config.mjs`, `public/social-card.svg`
 
-### 16. Site wide offline & install · planned
+### 16. Site wide offline & install · done
 
 Complete the offline promise across the whole site: every page available with no connection, installable to a phone home screen, with clean updates when a connection returns, and the palette repeated in `public/offline.html` revisited so the offline page stops being a second copy of the tokens.
 **Done when:** the whole site works in airplane mode, installs to a phone home screen, picks up updates cleanly when back online, and the offline page's repeated palette is settled one way or the other.
 
-- [ ] Build it: `/develop site wide offline & install`
+- [x] Build it: `/develop site wide offline & install`
+  - [x] PWA manifest at `/manifest.json` with icons, name, and theme color (installable)
+  - [x] Manifest link in Layout head
+  - [x] Service worker update detection with reload banner in Layout
+  - [x] Offline page converted to Astro page that imports tokens.css (no palette duplication)
+  - [x] Precache manifest integration copies built offline page to dist/offline.html
+  - [x] Offline page excluded from sitemap and search index
+        code in `public/manifest.json`, `public/pwa-192.png`, `public/pwa-512.png`, `src/pages/offline.astro`, `src/layouts/Layout.astro`, `integrations/precache-manifest.mjs`, `astro.config.mjs`
 
 ### 22. Offline PDFs · planned · needs a decision
 

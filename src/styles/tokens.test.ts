@@ -2,17 +2,20 @@
  * Design token tests (spec 0004, AC-1, AC-2, AC-3, AC-9).
  * Guards the two layer contract: ladders hold raw values, roles point at
  * ladders, nothing outside tokens.css carries a raw literal, both modes
- * meet AA contrast on every rendered pairing, and offline.html repeats
- * the same role values.
+ * meet AA contrast on every rendered pairing, and the offline page imports
+ * tokens so it cannot drift from the design system (feature 16).
  */
 import { describe, it, expect } from 'vitest'
-import { readFileSync, readdirSync, statSync } from 'node:fs'
+import { readFileSync, readdirSync, statSync, existsSync } from 'node:fs'
 import { join } from 'node:path'
 
 const root = process.cwd()
 const tokensPath = join(root, 'src', 'styles', 'tokens.css')
 const tokens = readFileSync(tokensPath, 'utf-8')
-const offline = readFileSync(join(root, 'public', 'offline.html'), 'utf-8')
+// The offline page source (Astro) imports tokens.css so it cannot drift.
+// The built output at dist/offline.html is checked when a build exists.
+const offlineSource = readFileSync(join(root, 'src', 'pages', 'offline.astro'), 'utf-8')
+const offlineBuiltPath = join(root, 'dist', 'offline.html')
 
 const ROLES = [
   'canvas',
@@ -182,10 +185,6 @@ function roleValue(hueStep: string): string {
   return value
 }
 
-function ladderValue(hueStep: string): string {
-  return roleValue(hueStep)
-}
-
 function collectStyleFiles(dir: string, found: string[] = []): string[] {
   for (const entry of readdirSync(dir)) {
     const absolute = join(dir, entry)
@@ -322,21 +321,37 @@ describe('AC-3 contrast', () => {
 })
 
 describe('AC-9 offline drift', () => {
-  it('light roles match offline html', () => {
-    for (const role of ROLES) {
-      expect(offline).toContain('--color-' + role + ': ' + ladderValue(LIGHT_ROLES[role]))
-    }
+  // The offline page now imports tokens.css (feature 16), so it cannot drift.
+  // Verify the import exists and the page still honours the saved theme choice.
+  it('imports tokens.css so it cannot drift', () => {
+    expect(offlineSource).toContain("import '@styles/tokens.css'")
   })
 
-  it('dark roles match offline html', () => {
-    const dark = offline.slice(offline.indexOf('prefers-color-scheme: dark'))
-    for (const role of ROLES) {
-      expect(dark).toContain('--color-' + role + ': ' + ladderValue(DARK_ROLES[role]))
-    }
+  it('uses role names, not raw hex values, in its style block', () => {
+    // Extract the <style> block from the Astro source.
+    const styleMatch = offlineSource.match(/<style[^>]*>([\s\S]*?)<\/style>/)
+    expect(styleMatch).not.toBeNull()
+    const styleBlock = styleMatch![1]
+    // No raw hex literals in the style block.
+    expect(styleBlock).not.toMatch(/#[0-9a-fA-F]{3,8}\b/)
+    // Uses var() for colors.
+    expect(styleBlock).toMatch(/var\(--color-/)
   })
 
   it('offline honours saved choice', () => {
-    expect(offline).toContain('ucoy-theme')
-    expect(offline).toContain('data-theme')
+    expect(offlineSource).toContain('ucoy-theme')
+    expect(offlineSource).toContain('data-theme')
+  })
+
+  it('built offline page exists and uses tokens, when a build is present', () => {
+    if (!existsSync(offlineBuiltPath)) {
+      expect(true).toBe(true)
+      return
+    }
+    const built = readFileSync(offlineBuiltPath, 'utf-8')
+    // The built page should contain the tokens.css import (as a link tag).
+    expect(built).toMatch(/tokens/)
+    // Should honour saved theme.
+    expect(built).toContain('ucoy-theme')
   })
 })

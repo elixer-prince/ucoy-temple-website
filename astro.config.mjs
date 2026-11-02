@@ -109,7 +109,8 @@ export default defineConfig({
       filter(page) {
         // Exclude the style guide: it carries noindex and is unlinked from the
         // menu, so it should not appear in the sitemap either (feature 15).
-        return !page.includes('style-guide')
+        // Exclude the offline page: it is a service worker fallback, not real content.
+        return !page.includes('style-guide') && !page.includes('offline')
       }
     })
   ]

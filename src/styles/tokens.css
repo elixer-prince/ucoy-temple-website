@@ -14,9 +14,8 @@
  * through the OS setting and through an explicit data-theme attribute
  * set by the theme switch, so the two stay in step (AC-4).
  *
- * These values MUST stay in sync with public/offline.html, which repeats
- * the ten role values because it is served outside the build and cannot
- * import a hashed stylesheet. A test fails when they drift (AC-9).
+ * The offline page (src/pages/offline.astro) imports this file so it cannot
+ * drift from the design system (feature 16).
  */
 
 :root {
