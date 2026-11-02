@@ -29,7 +29,7 @@ _These are recommendations to keep your build orderly, not requirements. Skip an
 | 13  | Site search                                   | Slice 4    | done    |
 | 14  | Product analytics                             | Slice 4    | done    |
 | 15  | SEO, metadata & performance                   | Slice 4    | done    |
-| 16  | Site wide offline & install                   | Slice 4    | planned |
+| 16  | Site wide offline & install                   | Slice 4    | done    |
 | 22  | Offline PDFs                                  | Slice 4    | done    |
 | 26  | Commentary index                              | Slice 4    | planned |
 | 25  | UI rework and style guide revamp              | Rework     | planned |

@@ -1,7 +1,7 @@
 # 0010. Adopt PostHog for privacy friendly product analytics
 
 **Date**: 2026-11-01
-**Status**: In Progress
+**Status**: Accepted
 
 ## Summary
 
