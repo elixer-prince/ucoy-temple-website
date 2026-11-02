@@ -53,7 +53,7 @@ This is the public website for the United Congregation of Yisra'Yah, a temple re
 - A video goes inline in a service body as `<Video src="/videos/…" />` with no import line; `caption` and `poster` are optional
 - Service bodies start at `##`, because the front-matter title is the page's only `h1`
 - A PDF lives under `public/pdfs/` and is linked through its resource page (`/resources/<slug>`), never by its `public/` path
-- No accounts, no sign in, no cookies, no tracking beyond cookieless Cloudflare Web Analytics
+- No accounts, no sign in, no cookies. Analytics are privacy friendly via PostHog with session recording disabled
 - The contact form sends to one site config value that holds the temple's email address
 - Fonts are downloaded at build time and served from this site, never from a third party at runtime
 - Every colour, type, spacing, and radius value a stylesheet or style block uses is a token from `src/styles/tokens.css`; a raw hex, `rgb`, `rgba`, `hsl`, `hsla`, `px`, or `rem` literal anywhere else under `src/` fails the literal scan in `npm run test`

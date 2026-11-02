@@ -46,12 +46,6 @@ export default defineConfig({
         access: 'public',
         default: 'America/New_York'
       }),
-      // Cloudflare Web Analytics token (cookieless, spec 0001 AC-3).
-      CF_ANALYTICS_TOKEN: envField.string({
-        context: 'client',
-        access: 'public',
-        optional: true
-      }),
       // PostHog project API key (public, read-only, spec 0010 AC-7, AC-8).
       POSTHOG_API_KEY: envField.string({
         context: 'client',

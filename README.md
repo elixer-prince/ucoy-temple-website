@@ -2,7 +2,7 @@
 
 The public website for the United Congregation of Yisra'Yah, a temple replacing its Google Site with a custom build. It carries complete service and Holy Day materials that members can rely on from a phone, even with no internet.
 
-It is a **static Astro site** published on **Cloudflare Pages** (free tier). There is no server, no database, no sign in, no cookies, and no third-party tracking beyond cookieless Cloudflare Web Analytics. Content lives as plain text files in the repository, so every change is a commit.
+It is a **static Astro site** published on **Cloudflare Pages** (free tier). There is no server, no database, and no sign in. Content lives as plain text files in the repository, so every change is a commit. Analytics are privacy friendly via PostHog with session recording disabled. The site is installable as a PWA.
 
 ## What the site contains
 
@@ -10,12 +10,17 @@ It is a **static Astro site** published on **Cloudflare Pages** (free tier). The
 | ------------------------- | ---------------------------------------- | ----------------------------------------------------------------------------------- |
 | Home                      | `/`                                      | Temple information, upcoming events from the temple calendar                        |
 | Contact                   | `/contact`                               | Message form (posts to a Formspree endpoint)                                        |
+| Privacy                   | `/privacy`                               | What data the site collects and how it is used                                      |
+| Holy Days calendar        | `/holy-days`                             | Fixed holy days computed at build time, grouped by month                            |
 | This week's Torah portion | `/torah-portion`                         | The week's reading, computed at build time from the Hebrew calendar                 |
 | Portion page              | `/portion/[slug]`                        | Reading + citations for all 53 weekly portions; commentary where written            |
+| Commentary index          | `/commentary`                            | List of all 53 portions with links to each commentary page                          |
 | Weekly services           | `/services` and `/services/[slug]`       | Shabbat morning, Friday evening home ritual, Saturday afternoon, closing of Shabbat |
 | High Shabbatot            | `/shabbatonim` and `/shabbatonim/[slug]` | Pesach, Shavuot, Sukkot, Yom Teruah, Yom Kippur, and more                           |
 | Resources                 | `/resources` and `/resources/[slug]`     | Service booklets and other PDFs, each with its own page                             |
+| Search                    | `/search`                                | Site-wide search via Pagefind, works offline                                        |
 | Style guide               | `/style-guide`                           | Living review of the design system (`noindex`, unlinked, off the sitemap)           |
+| Offline fallback          | `/offline`                               | Shown when a page is requested with no connection and was never opened online       |
 
 ## Tech stack
 
@@ -24,10 +29,14 @@ It is a **static Astro site** published on **Cloudflare Pages** (free tier). The
 - **Fonts** — Roboto (body/sans) and Oswald (display), downloaded at build time from Fontsource and served from this site, never from a third party at runtime
 - **Hebrew calendar** — `@hebcal/core` and `@hebcal/leyning`, read at build time so a reading is never a content file
 - **Calendar feed** — `node-ical` reads the temple's Proton Calendar ICS feed once at build time; the home page renders plain HTML, so no visitor's browser contacts a third party
-- **Service worker** — hand-written `public/sw.js` pre-caches the shell, pages, styles, fonts, and images at install; video is network-first; `/offline.html` is the fallback when a page was never opened
+- **Search** — Pagefind indexes the site at build time; the search bundle and index are pre-cached so search works offline
+- **Analytics** — PostHog with session recording disabled; events queue in localStorage while offline and deliver when the connection returns.
+- **Service worker** — hand-written `public/sw.js` pre-caches the shell, pages, styles, fonts, images, and PDFs at install; video is network-first; `/offline.html` is the fallback when a page was never opened
+- **PWA** — `public/manifest.json` with icons makes the site installable to a phone home screen; the service worker detects updates and shows a reload banner
+- **SEO** — Open Graph and Twitter Card meta tags on every page, a static social card at `/social-card.svg`, canonical URLs, and a sitemap that excludes the style guide and offline page
 - **Precache manifest** — `integrations/precache-manifest.mjs` writes `dist/sw-manifest.json` after every build so the worker knows which hashed files to pre-cache
 - **Testing** — Vitest under `src/`; gate is `npm run verify` (`astro check` + `astro build`) followed by `npm run test`
-- **Lint/format** — ESLint 10 flat config, Prettier 3 with `prettier-plugin-astro`, husky + lint-staged on commit
+- **Lint/format** — ESLint 10 flat config, Prettier 3 with `prettier-plugin-astro`, husky + lint-staged on commit, Conventional Commits enforced by commitlint
 
 ## Getting started
 
@@ -67,18 +76,19 @@ The pre-commit hook (husky + lint-staged) runs Prettier and ESLint fix on staged
 
 Copy `.env.example` to `.env` locally, and set the real values in the Cloudflare Pages dashboard under Settings → Environment Variables → Production. These are public client-side variables and must not contain secrets.
 
-| Variable             | Purpose                                                              | Required                                   |
-| -------------------- | -------------------------------------------------------------------- | ------------------------------------------ |
-| `CONTACT_EMAIL`      | Temple email shown on the contact page and in the privacy notice     | No (falls back to `contact@ucoy.org`)      |
-| `FORM_ENDPOINT`      | Formspree form action URL the contact form posts to                  | No (falls back to a placeholder)           |
-| `CALENDAR_URL`       | Proton Calendar share link returning an ICS feed for upcoming events | No (empty = quiet notice on the home page) |
-| `CALENDAR_TIMEZONE`  | Timezone the event list is rendered in                               | No (defaults to `America/New_York`)        |
-| `CF_ANALYTICS_TOKEN` | Cloudflare Web Analytics beacon token                                | No (empty = analytics disabled)            |
-| `SITE_URL`           | Absolute site URL for canonical links and the sitemap                | No (falls back to the pages.dev URL)       |
+| Variable            | Purpose                                                              | Required                                    |
+| ------------------- | -------------------------------------------------------------------- | ------------------------------------------- |
+| `CONTACT_EMAIL`     | Temple email shown on the contact page and in the privacy notice     | No (falls back to `contact@ucoy.org`)       |
+| `FORM_ENDPOINT`     | Formspree form action URL the contact form posts to                  | No (falls back to a placeholder)            |
+| `CALENDAR_URL`      | Proton Calendar share link returning an ICS feed for upcoming events | No (empty = quiet notice on the home page)  |
+| `CALENDAR_TIMEZONE` | Timezone the event list is rendered in                               | No (defaults to `America/New_York`)         |
+| `POSTHOG_API_KEY`   | PostHog project API key for privacy-friendly analytics               | No (empty = analytics disabled)             |
+| `POSTHOG_HOST`      | PostHog instance URL (us or eu cloud)                                | No (defaults to `https://us.i.posthog.com`) |
+| `SITE_URL`          | Absolute site URL for canonical links and the sitemap                | No (falls back to the pages.dev URL)        |
 
 Content is authored in `src/content/` across five collections:
 
-- **`pages`** — static pages (`about`, `history`, `visiting`), rendered through the `[...slug]` route
+- **`pages`** — static pages (`about`, `history`, `visiting`, `privacy`), rendered through the `[...slug]` route
 - **`announcements`** — time-stamped bulletins listed newest-first on the home page
 - **`services`** — weekly services and High Shabbatot, authored as `.mdx`; `kind` (`weekly` \| `shabbaton`) decides the area and route
 - **`resources`** — the temple's PDFs, each with its own page and a listing
@@ -145,8 +155,8 @@ Create `src/content/portion-notes/<slug>.md` where `<slug>` is the portion slug 
 ---
 title: Portion Name
 description: >-
-    Description goes here...
-  
+  Description goes here...
+
 order: 999
 ---
 
@@ -191,6 +201,7 @@ This is the summary of the commentary...
 - Every colour, type, spacing, and radius value a stylesheet uses is a token from `src/styles/tokens.css`; a raw hex, `rgb`, `rgba`, `hsl`, `hsla`, `px`, or `rem` literal anywhere under `src/` fails the literal scan in `npm run test`.
 - Styles name token roles only, never a ladder step like `--color-royal-gold-600`. Restyling the palette means editing ladder steps in `tokens.css` and nothing else.
 - The theme choice lives on the member's device under the `localStorage` key `ucoy-theme`, applied as `data-theme` on `html` before the first paint. The site sets no cookies.
+- PostHog analytics uses `localStorage` for offline event queuing. Session recording is disabled, and no personal data is collected.
 - PDF links and the contact form carry `data-astro-reload` so they skip Astro's client-side router.
 - A missing or unreadable `CALENDAR_URL` never fails the build — the home page shows a quiet notice instead.
 - The style guide (`/style-guide`) carries `noindex`, is unlinked from the menu, and must stay out of the sitemap and the search index.
@@ -198,22 +209,24 @@ This is the summary of the commentary...
 ## Project structure
 
 ```
-astro.config.mjs          # Astro config: static output, fonts, mdx + precache integrations, env schema
+astro.config.mjs          # Astro config: static output, fonts, mdx, pagefind, precache, sitemap, env schema
 src/
-  components/             # Reusable blocks: Banner, Callout, Figure, Panel, PdfLink, Sidebar,
-                          # SkipLink, Tag, plus Video and Icon
+  components/             # Reusable blocks: Banner, Callout, Figure, Panel, PdfLink, SearchBox,
+                          # Sidebar, SkipLink, Tag, plus Video and Icon
   content/                # Content collections: pages, announcements, services, resources, portionNotes
   config/                 # site.ts (env-backed configuration), nav.ts (sidebar menu source)
-  lib/                    # torah-portion.ts, portion-cycle.ts, calendar-events.ts
-  layouts/                # Layout.astro — shell, sidebar, theme switch, ClientRouter
-  pages/                  # Routes: index, contact, torah-portion, portion/[slug], services, shabbatonim, resources, style-guide
+  lib/                    # torah-portion.ts, portion-cycle.ts, calendar-events.ts, holy-days.ts, posthog.ts
+  layouts/                # Layout.astro — shell, sidebar, theme switch, ClientRouter, PostHog init
+  pages/                  # Routes: index, contact, holy-days, torah-portion, portion/[slug],
+                          # commentary, services, shabbatonim, resources, search, style-guide, offline
   styles/                 # tokens.css (design tokens), prose.css (content + Hebrew direction), tests
 public/
-  favicon.png, offline.html, sw.js, _headers, _redirects
-  pdfs/                   # Temple PDFs
+  favicon.png, sw.js, manifest.json, social-card.svg, _headers, _redirects
+  pwa-192.png, pwa-512.png                          # PWA icons
+  pdfs/                   # Temple PDFs (pre-cached by service worker)
   videos/                 # Local service videos (not pre-cached)
 docs/
-  scope/scope.md          # Feature trail map (24 features)
+  scope/scope.md          # Feature trail map (27 features)
   specs/                  # Recorded decisions and acceptance criteria
   sweep/                  # Content sweep notes from the current Google Site
 integrations/
@@ -224,11 +237,15 @@ scripts/
 
 ## Deployment
 
-The site builds to `dist/` and deploys to Cloudflare Pages on the free tier. Push to `main`; Cloudflare Pages runs the build. Set the environment variables above in the dashboard. To verify the offline promise locally, serve `dist/` over a plain static server (for example `npx http-server dist -p 5077`) — `npm run preview` cannot verify it because the worker registers behind `import.meta.env.PROD`, which preview sets false.
+The site builds to `dist/` and deploys to Cloudflare Pages on the free tier. Push to `main`; Cloudflare Pages runs the build. Set the environment variables above in the dashboard.
+
+The Holy Days calendar is computed at build time, so the site needs to rebuild when the Hebrew year changes. Schedule a rebuild around Rosh Hashanah (usually September or October) to keep the calendar current for the new year.
+
+To verify the offline promise locally, serve `dist/` over a plain static server (for example `npx http-server dist -p 5077`) — `npm run preview` cannot verify it because the worker registers behind `import.meta.env.PROD`, which preview sets false.
 
 ## Documentation
 
-- `docs/scope/scope.md` — feature trail map with 24 features across foundation, four slices, and a deferred list
+- `docs/scope/scope.md` — feature trail map with 27 features across foundation, four slices, rework, and a deferred list
 - `docs/specs/0001-adopt-static-site-stack.md` — stack decision and acceptance criteria
 - `docs/specs/0002-coding-standards-and-tooling.md` — coding standards and tooling
 - `docs/specs/0003-content-model.md` — content model
@@ -236,6 +253,10 @@ The site builds to `dist/` and deploys to Cloudflare Pages on the free tier. Pus
 - `docs/specs/0006-commentary-for-every-portion.md` — commentary model and the 53 portion routes
 - `docs/specs/0007-upcoming-events-proton-calendar.md` — build-time Proton Calendar feed
 - `docs/specs/0008-client-side-navigation/` — client-side navigation decision
+- `docs/specs/0009-holy-days-calendar.md` — Holy Days calendar computed at build time
+- `docs/specs/0010-product-analytics.md` — PostHog analytics with privacy settings
+- `docs/specs/0013-site-search.md` — site-wide search via Pagefind
+- `docs/specs/0014-offline-pdfs.md` — offline PDF precaching
 
 Service and portion page wording in the repository is placeholder prose standing in for the temple's own words (scope feature 9, the content sweep, replaces it from the current site).
 

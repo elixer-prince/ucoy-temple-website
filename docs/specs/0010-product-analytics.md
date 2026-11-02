@@ -190,7 +190,7 @@ The PostHog project API key is public (it lives in the browser) but read only: i
 
 ## Follow-up
 
-- [ ] Disable Cloudflare Web Analytics in the Cloudflare dashboard after PostHog is verified working
+- [x] Disable Cloudflare Web Analytics in the Cloudflare dashboard after PostHog is verified working — done 2026-11-01, dead code removed from `astro.config.mjs`, `src/config/site.ts`, and `.env.example`
 - [ ] Review the PostHog free tier limits after the site launches publicly and adjust if traffic approaches 1 million events per month
 
 ## References
