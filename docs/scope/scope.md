@@ -30,7 +30,7 @@ _These are recommendations to keep your build orderly, not requirements. Skip an
 | 14  | Product analytics                             | Slice 4    | done    |
 | 15  | SEO, metadata & performance                   | Slice 4    | done    |
 | 16  | Site wide offline & install                   | Slice 4    | planned |
-| 22  | Offline PDFs                                  | Slice 4    | planned |
+| 22  | Offline PDFs                                  | Slice 4    | done    |
 | 26  | Commentary index                              | Slice 4    | planned |
 | 25  | UI rework and style guide revamp              | Rework     | planned |
 | 23  | Hebrew body face                              | Rework     | planned |
@@ -348,12 +348,20 @@ Complete the offline promise across the whole site: every page available with no
   - [x] Offline page excluded from sitemap and search index
         code in `public/manifest.json`, `public/pwa-192.png`, `public/pwa-512.png`, `src/pages/offline.astro`, `src/layouts/Layout.astro`, `integrations/precache-manifest.mjs`, `astro.config.mjs`
 
-### 22. Offline PDFs · planned · needs a decision
+### 22. Offline PDFs · done
 
-The temple's booklets are deliberately kept out of the precache, so a booklet a member has never opened asks for a connection the first time. Settle the size budget and which booklets earn a place in the precache, so the offline promise covers the material members actually open.
-**Done when:** a booklet a member has never opened opens with no connection, and the precache stays inside a size budget recorded in the spec.
+The temple's booklets are deliberately kept out of the precache, so a booklet a member has never opened asks for a connection the first time. Precache all eight service booklets in a dedicated PDF cache with background updates, so every booklet works offline immediately.
+**Done when:** a booklet a member has never opened opens with no connection, and the PDF cache stays separate from the shell cache so a booklet revision does not force a full reinstall.
 
-- [ ] Decide the PDF precache (spec): `/architect offline pdfs`
+- [x] Decide the PDF precache (spec): `/architect offline pdfs`
+- [x] Build it: `/develop offline pdfs`
+  - [x] Add `.pdf` to precache manifest and create dedicated PDF cache in service worker (AC-1, AC-4, AC-5)
+  - [x] Route PDF fetches through cache-first handler with background update (AC-1, AC-3)
+  - [x] Verify all eight booklets precache and work offline (AC-1, AC-2)
+  - [x] Verify background update on PDF revision without shell reinstall (AC-3, AC-5)
+- [x] Verify it: `/check verify offline pdfs`
+- [x] Test it: `/test offline pdfs`
+      Spec [0014](../specs/0014-offline-pdfs.md) · code in `public/sw.js`, `integrations/precache-manifest.mjs`
 
 ### 26. Commentary index · planned
 

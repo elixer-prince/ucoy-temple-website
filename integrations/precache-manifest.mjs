@@ -33,7 +33,8 @@ export const PRECACHE_EXTENSIONS = new Set([
   '.pagefind',
   '.pf_fragment',
   '.pf_index',
-  '.pf_meta'
+  '.pf_meta',
+  '.pdf'
 ])
 
 // The worker itself, its manifest, and the offline fallback are handled

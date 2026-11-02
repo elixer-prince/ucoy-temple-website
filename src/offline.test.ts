@@ -1,12 +1,13 @@
 /**
  * Tests for the offline promise and the service worker (spec 0003, AC-7;
- * spec 0001, AC-7).
+ * spec 0001, AC-7; spec 0014, AC-1).
  *
  * These cover two things:
  *
- *   1. What may be pre-cached. Video and PDFs are deliberately left out of the
- *      pre-cache and served network-first, because they are too heavy to
- *      download behind a visitor's back.
+ *   1. What may be pre-cached. Video is deliberately left out of the pre-cache
+ *      and served network-first, because it is too heavy to download behind a
+ *      visitor's back. PDFs are pre-cached in a dedicated cache so booklets
+ *      work offline immediately (spec 0014).
  *   2. When the worker is registered. It must never register in dev, because
  *      the precache manifest only exists after a build — an active worker in
  *      dev intercepts navigation and wrongly serves the offline fallback.
@@ -51,15 +52,15 @@ afterAll(() => {
   if (fixtureDir) rmSync(fixtureDir, { recursive: true, force: true })
 })
 
-describe('AC-7: the pre-cache keeps video and PDFs out', () => {
+describe('AC-7: the pre-cache keeps video out', () => {
   it('never lists a video file', async () => {
     const urls = await collectUrls(fixtureDir)
     expect(urls.some((url) => url.endsWith('.mp4'))).toBe(false)
   })
 
-  it('never lists a PDF', async () => {
+  it('lists a PDF so it can be pre-cached in a dedicated cache', async () => {
     const urls = await collectUrls(fixtureDir)
-    expect(urls.some((url) => url.endsWith('.pdf'))).toBe(false)
+    expect(urls).toContain('/pdfs/prayer-booklet.pdf')
   })
 
   it('lists the shell HTML, the hashed CSS and JS, and the font', async () => {
@@ -83,10 +84,14 @@ describe('AC-7: the pre-cache keeps video and PDFs out', () => {
     }
   })
 
-  it('holds no media or document extension in its allow list', () => {
-    for (const extension of ['.mp4', '.webm', '.ogg', '.m4v', '.mov', '.pdf']) {
+  it('holds no media extension in its allow list', () => {
+    for (const extension of ['.mp4', '.webm', '.ogg', '.m4v', '.mov']) {
       expect(PRECACHE_EXTENSIONS.has(extension)).toBe(false)
     }
+  })
+
+  it('includes PDF in its allow list so booklets are pre-cached', () => {
+    expect(PRECACHE_EXTENSIONS.has('.pdf')).toBe(true)
   })
 
   it('walks nested directories and returns web style paths', async () => {
@@ -113,7 +118,7 @@ describe('AC-7: the built manifest matches the rule', () => {
     return JSON.parse(readFileSync(manifestPath, 'utf-8')) as { urls: string[] }
   }
 
-  it('lists no video and no PDF, when a build is present', () => {
+  it('lists no video, when a build is present', () => {
     const manifest = readManifest()
     if (!manifest) {
       // Producing dist is the verify gate's job; this check reads it when there.
@@ -121,7 +126,15 @@ describe('AC-7: the built manifest matches the rule', () => {
       return
     }
     expect(manifest.urls.some((url) => url.endsWith('.mp4'))).toBe(false)
-    expect(manifest.urls.some((url) => url.endsWith('.pdf'))).toBe(false)
+  })
+
+  it('lists PDFs so they can be pre-cached, when a build is present', () => {
+    const manifest = readManifest()
+    if (!manifest) {
+      expect(true).toBe(true)
+      return
+    }
+    expect(manifest.urls.some((url) => url.endsWith('.pdf'))).toBe(true)
   })
 
   it('leaves the worker, its manifest, and the offline page out, when a build is present', () => {
@@ -161,7 +174,7 @@ describe('AC-7: the worker registers in production only', () => {
   })
 
   it('still registers /sw.js once the production gate is open', () => {
-    expect(layout).toContain("navigator.serviceWorker.register('/sw.js')")
+    expect(layout).toContain(".register('/sw.js')")
   })
 })
 

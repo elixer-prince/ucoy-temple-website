@@ -30,16 +30,18 @@ const VERSION = '__BUILD_VERSION__'
 const SHELL_CACHE = `shell-${VERSION}`
 const RUNTIME_CACHE = `runtime-${VERSION}`
 const MEDIA_CACHE = `media-${VERSION}`
+const PDF_CACHE = `pdfs-${VERSION}`
 
-const KEEP = new Set([SHELL_CACHE, RUNTIME_CACHE, MEDIA_CACHE])
+const KEEP = new Set([SHELL_CACHE, RUNTIME_CACHE, MEDIA_CACHE, PDF_CACHE])
 
 const OFFLINE_URL = '/offline.html'
 const MANIFEST_URL = '/sw-manifest.json'
 
 const MEDIA_EXTENSIONS = ['.mp4', '.webm', '.ogg', '.m4v', '.mov']
+const PDF_EXTENSION = '.pdf'
 
 self.addEventListener('install', (event) => {
-  event.waitUntil(precacheShell())
+  event.waitUntil(Promise.all([precacheShell(), precachePdfs()]))
 })
 
 self.addEventListener('activate', (event) => {
@@ -88,6 +90,11 @@ self.addEventListener('fetch', (event) => {
     return
   }
 
+  if (isPdf(url.pathname)) {
+    event.respondWith(respondToPdf(request))
+    return
+  }
+
   event.respondWith(respondToAsset(request))
 })
 
@@ -104,6 +111,14 @@ self.addEventListener('message', (event) => {
  */
 function isMedia(pathname) {
   return MEDIA_EXTENSIONS.some((ext) => pathname.toLowerCase().endsWith(ext))
+}
+
+/**
+ * Returns true when the URL path points to a PDF file that should use the
+ * cache-first strategy with background update.
+ */
+function isPdf(pathname) {
+  return pathname.toLowerCase().endsWith(PDF_EXTENSION)
 }
 
 /**
@@ -144,6 +159,9 @@ async function precacheShell() {
 
     const manifest = await manifestResponse.json()
     for (const url of manifest.urls) {
+      // PDFs have their own cache so a booklet revision does not force the
+      // entire shell to reinstall.
+      if (isPdf(url)) continue
       try {
         await cache.add(new Request(url, { cache: 'reload' }))
       } catch (err) {
@@ -340,6 +358,85 @@ async function storeMedia(request, response) {
     mediaKey(request),
     new Response(response.clone().body, { status: 200, statusText: 'OK', headers })
   )
+}
+
+/**
+ * Pre-cache PDF booklets during the install event.
+ *
+ * Reads the build manifest and caches every PDF URL in a dedicated PDF cache
+ * so a booklet revision does not force the entire shell to reinstall.
+ * Each URL is cached on its own so a single slow PDF does not abort the
+ * whole pre-cache.
+ */
+async function precachePdfs() {
+  try {
+    const manifestResponse = await fetch(MANIFEST_URL, {
+      cache: 'reload'
+    })
+    if (!manifestResponse.ok) return
+
+    const manifest = await manifestResponse.json()
+    const cache = await caches.open(PDF_CACHE)
+    for (const url of manifest.urls) {
+      if (!isPdf(url)) continue
+      try {
+        await cache.add(new Request(url, { cache: 'reload' }))
+      } catch (err) {
+        console.warn('SW: could not pre-cache PDF', url, err)
+      }
+    }
+  } catch (err) {
+    console.warn('SW: could not read the pre-cache manifest for PDFs', err)
+  }
+}
+
+/**
+ * Handle PDF requests (service booklets).
+ *
+ * Strategy: cache-first with background update.
+ *   1. Serve the cached copy from the PDF cache so the booklet opens
+ *      immediately, even offline.
+ *   2. Check the network in the background for a newer version and
+ *      quietly replace the cached copy without blocking the current page.
+ *   3. If no cached copy exists (should not happen after install), try
+ *      the network and cache the result.
+ *   4. If the network fails and there is no cache, return a 503.
+ */
+async function respondToPdf(request) {
+  const cache = await caches.open(PDF_CACHE)
+  const cached = await cache.match(request)
+
+  // Serve the cached copy immediately.
+  if (cached) {
+    // Check the network in the background for a newer version.
+    fetch(request)
+      .then((response) => {
+        if (response.ok) {
+          cache.put(request, response.clone()).catch(() => {
+            // A full device cache must not break the current page.
+          })
+        }
+      })
+      .catch(() => {
+        // Network unavailable — the cached copy is still served.
+      })
+    return cached
+  }
+
+  // No cached copy — try the network.
+  try {
+    const response = await fetch(request)
+    if (response.ok) {
+      try {
+        await cache.put(request, response.clone())
+      } catch (error) {
+        console.warn('SW: could not cache PDF', request.url, error)
+      }
+    }
+    return response
+  } catch {
+    return new Response('', { status: 503, statusText: 'Service Unavailable' })
+  }
 }
 
 /**

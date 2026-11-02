@@ -141,6 +141,8 @@ export interface SandboxOptions {
   runtime?: FakeCache
   /** The cache the worker keeps media in. */
   media?: FakeCache
+  /** The cache the worker pre-caches PDF booklets into. */
+  pdfs?: FakeCache
   /** What the network answers. Throwing from here stands for no connection. */
   fetch: (request: SandboxRequest) => Promise<FakeResponse>
 }
@@ -154,6 +156,7 @@ export function createWorker({
   shell = new FakeCache(),
   runtime = new FakeCache(),
   media = new FakeCache(),
+  pdfs = new FakeCache(),
   fetch
 }: SandboxOptions): FetchHandler {
   let registered: FetchHandler | undefined
@@ -177,6 +180,7 @@ export function createWorker({
       open: async (name: string): Promise<FakeCache> => {
         if (name.startsWith('media')) return media
         if (name.startsWith('runtime')) return runtime
+        if (name.startsWith('pdfs')) return pdfs
         return shell
       },
       keys: async (): Promise<string[]> => []
