@@ -30,7 +30,8 @@
     "@hebcal/leyning": "^10.0.2",
     "astro": "^7.3.3",
     "astro-pagefind": "^2.0.1",
-    "node-ical": "^0.27.3"
+    "node-ical": "^0.27.3",
+    "posthog-js": "^1.444.0"
   },
   "devDependencies": {
     "@astrojs/check": "^0.9.10",

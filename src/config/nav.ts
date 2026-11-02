@@ -51,5 +51,6 @@ export const FIXED_NAV_BEFORE_PAGES: NavEntry[] = [
 ]
 
 export const FIXED_NAV_AFTER_PAGES: NavEntry[] = [
-  { label: 'Contact', href: '/contact', kind: 'static' }
+  { label: 'Contact', href: '/contact', kind: 'static' },
+  { label: 'Privacy', href: '/privacy', kind: 'static' }
 ]

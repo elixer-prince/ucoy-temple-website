@@ -13,7 +13,9 @@ import {
   FORM_ENDPOINT,
   CALENDAR_URL,
   CALENDAR_TIMEZONE,
-  CF_ANALYTICS_TOKEN
+  CF_ANALYTICS_TOKEN,
+  POSTHOG_API_KEY,
+  POSTHOG_HOST
 } from 'astro:env/client'
 
 export const SITE_CONFIG = {
@@ -52,6 +54,12 @@ export const SITE_CONFIG = {
   // Analytics (spec 0001, AC-3)
   /** Cloudflare Web Analytics beacon token (empty = analytics disabled). */
   cfAnalyticsToken: CF_ANALYTICS_TOKEN ?? '',
+
+  // PostHog analytics (spec 0010, AC-7, AC-8)
+  /** PostHog project API key (empty = analytics disabled). */
+  posthogApiKey: POSTHOG_API_KEY ?? '',
+  /** PostHog instance URL. */
+  posthogHost: POSTHOG_HOST ?? 'https://us.i.posthog.com',
 
   // Meeting location
   // The parish and community are the temple's own words from its current site

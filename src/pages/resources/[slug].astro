@@ -45,7 +45,7 @@ const { Content } = await render(resource)
            A real navigation fetches the file exactly once, and the service worker
            caches it: a booklet opened once works offline afterwards (spec 0003). -->
       <p>
-        <a class="button" href={resource.data.file} data-astro-reload>
+        <a class="button" href={resource.data.file} data-astro-reload data-pdf-slug={resource.id}>
           Download the PDF
         </a>
       </p>
@@ -58,6 +58,25 @@ const { Content } = await render(resource)
     </article>
   </div>
 </Layout>
+
+<!-- PostHog PDF download tracking (spec 0010, AC-3).
+     Fires a custom event when the member clicks the PDF download link. -->
+<script is:inline>
+  ;(function () {
+    const link = document.querySelector('a[data-pdf-slug]')
+    if (!link) return
+    link.addEventListener('click', function () {
+      try {
+        const ph = window.posthog
+        if (ph) {
+          ph.capture('PDF Downloaded', { pdf: link.dataset.pdfSlug })
+        }
+      } catch {
+        /* analytics non-critical */
+      }
+    })
+  })()
+</script>
 
 <style>
   .lead {

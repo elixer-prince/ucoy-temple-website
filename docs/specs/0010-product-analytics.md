@@ -1,7 +1,7 @@
 # 0010. Adopt PostHog for privacy friendly product analytics
 
 **Date**: 2026-11-01
-**Status**: Proposed
+**Status**: In Progress
 
 ## Summary
 
@@ -136,8 +136,8 @@ Not applicable in the traditional sense. The PostHog SDK provides a client side 
 - The PostHog API key is never committed to the repository; it is loaded from an environment variable at build time.
 - The SDK loads only in production builds, guarded by `import.meta.env.PROD`.
 - The service worker does not intercept PostHog API requests, so events reach PostHog directly when online.
-- No IP address is sent to PostHog (disabled via SDK configuration).
 - No session replay is active (disabled via SDK configuration).
+- No IP address is collected (disabled via the PostHog project setting "Discard IP data"; the browser SDK no longer provides a client-side option for this).
 
 **Security model**:
 

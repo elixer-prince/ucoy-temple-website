@@ -50,6 +50,18 @@ export default defineConfig({
         context: 'client',
         access: 'public',
         optional: true
+      }),
+      // PostHog project API key (public, read-only, spec 0010 AC-7, AC-8).
+      POSTHOG_API_KEY: envField.string({
+        context: 'client',
+        access: 'public',
+        optional: true
+      }),
+      // PostHog instance URL (spec 0010).
+      POSTHOG_HOST: envField.string({
+        context: 'client',
+        access: 'public',
+        default: 'https://us.i.posthog.com'
       })
     }
   },

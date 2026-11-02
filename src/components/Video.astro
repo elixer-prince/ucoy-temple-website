@@ -25,7 +25,15 @@ const { src, caption, poster } = Astro.props
 <figure class="video">
   <!-- preload="metadata" keeps a phone from pulling a whole video over a slow
        connection just to show the page; the poster covers the wait. -->
-  <video class="video-player" controls playsinline preload="metadata" src={src} poster={poster}>
+  <video
+    class="video-player"
+    controls
+    playsinline
+    preload="metadata"
+    src={src}
+    poster={poster}
+    data-video-src={src}
+  >
     <p>
       Your browser cannot play this video. <a href={src}>Download it instead</a>.
     </p>
@@ -33,6 +41,42 @@ const { src, caption, poster } = Astro.props
 
   {caption && <figcaption class="video-caption">{caption}</figcaption>}
 </figure>
+
+<!-- PostHog video tracking (spec 0010, AC-2).
+     Fires a custom event when the video starts playing and when it ends.
+     Only runs when PostHog is initialized (production, API key present). -->
+<script is:inline>
+  ;(function () {
+    const video = document.currentScript
+      ? document.currentScript.parentElement?.querySelector('video[data-video-src]')
+      : null
+    if (!video) return
+    const videoSrc = video.dataset.videoSrc
+    let played = false
+    video.addEventListener('play', function () {
+      if (played) return
+      played = true
+      try {
+        const ph = window.posthog
+        if (ph) {
+          ph.capture('Video Played', { video: videoSrc, event: 'start' })
+        }
+      } catch {
+        /* analytics non-critical */
+      }
+    })
+    video.addEventListener('ended', function () {
+      try {
+        const ph = window.posthog
+        if (ph) {
+          ph.capture('Video Played', { video: videoSrc, event: 'complete' })
+        }
+      } catch {
+        /* analytics non-critical */
+      }
+    })
+  })()
+</script>
 
 <style>
   .video {

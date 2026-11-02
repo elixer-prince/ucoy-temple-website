@@ -9,35 +9,35 @@ _These are recommendations to keep your build orderly, not requirements. Skip an
 
 ## At a glance
 
-| #   | Feature                                       | Phase      | Status      |
-| --- | --------------------------------------------- | ---------- | ----------- |
-| 1   | Stack & architecture                          | Foundation | done        |
-| 2   | Coding standards & tooling                    | Foundation | done        |
-| 3   | Content model                                 | Foundation | done        |
-| 4   | Design system & UI foundation                 | Foundation | done        |
-| 27  | Client side navigation                        | Foundation | done        |
-| 5   | Site shell, home & first service page offline | Slice 1    | done        |
-| 6   | Friday service page                           | Slice 2    | done        |
-| 7   | Weekly Torah portion page                     | Slice 2    | done        |
-| 8   | Closing of Shabbat page                       | Slice 2    | done        |
-| 24  | Commentary for every Torah portion            | Slice 2    | done        |
-| 9   | Content sweep of the current site             | Slice 3    | done        |
-| 10  | High Holy Days section                        | Slice 3    | done        |
-| 11  | Temple information & contact                  | Slice 3    | done        |
-| 21  | Exact palette from the current site           | Slice 3    | done        |
-| 12  | Holy Days calendar                            | Slice 4    | done        |
-| 13  | Site search                                   | Slice 4    | done        |
-| 14  | Product analytics                             | Slice 4    | in-progress |
-| 15  | SEO, metadata & performance                   | Slice 4    | planned     |
-| 16  | Site wide offline & install                   | Slice 4    | planned     |
-| 22  | Offline PDFs                                  | Slice 4    | planned     |
-| 26  | Commentary index                              | Slice 4    | planned     |
-| 25  | UI rework and style guide revamp              | Rework     | planned     |
-| 23  | Hebrew body face                              | Rework     | planned     |
-| 17  | Private Temple Treasury                       | Deferred   | planned     |
-| 18  | Attendance tracking                           | Deferred   | planned     |
-| 19  | Admin dashboard & member accounts             | Deferred   | planned     |
-| 20  | Private documents & member area               | Deferred   | planned     |
+| #   | Feature                                       | Phase      | Status  |
+| --- | --------------------------------------------- | ---------- | ------- |
+| 1   | Stack & architecture                          | Foundation | done    |
+| 2   | Coding standards & tooling                    | Foundation | done    |
+| 3   | Content model                                 | Foundation | done    |
+| 4   | Design system & UI foundation                 | Foundation | done    |
+| 27  | Client side navigation                        | Foundation | done    |
+| 5   | Site shell, home & first service page offline | Slice 1    | done    |
+| 6   | Friday service page                           | Slice 2    | done    |
+| 7   | Weekly Torah portion page                     | Slice 2    | done    |
+| 8   | Closing of Shabbat page                       | Slice 2    | done    |
+| 24  | Commentary for every Torah portion            | Slice 2    | done    |
+| 9   | Content sweep of the current site             | Slice 3    | done    |
+| 10  | High Holy Days section                        | Slice 3    | done    |
+| 11  | Temple information & contact                  | Slice 3    | done    |
+| 21  | Exact palette from the current site           | Slice 3    | done    |
+| 12  | Holy Days calendar                            | Slice 4    | done    |
+| 13  | Site search                                   | Slice 4    | done    |
+| 14  | Product analytics                             | Slice 4    | done    |
+| 15  | SEO, metadata & performance                   | Slice 4    | planned |
+| 16  | Site wide offline & install                   | Slice 4    | planned |
+| 22  | Offline PDFs                                  | Slice 4    | planned |
+| 26  | Commentary index                              | Slice 4    | planned |
+| 25  | UI rework and style guide revamp              | Rework     | planned |
+| 23  | Hebrew body face                              | Rework     | planned |
+| 17  | Private Temple Treasury                       | Deferred   | planned |
+| 18  | Attendance tracking                           | Deferred   | planned |
+| 19  | Admin dashboard & member accounts             | Deferred   | planned |
+| 20  | Private documents & member area               | Deferred   | planned |
 
 ## Foundations
 
@@ -306,20 +306,20 @@ Find any service, Holy Day, or resource from any page.
 - [x] Build it: `/develop site search`
 - Spec [0013](../specs/0013-site-search.md) · code in `src/pages/search.astro`, `src/components/SearchBox.astro`, `src/layouts/Layout.astro`, `integrations/precache-manifest.mjs`
 
-### 14. Product analytics · in-progress
+### 14. Product analytics · done
 
-Privacy friendly product analytics so the temple can see which materials people use and where they struggle. PostHog Cloud replaces Cloudflare Web Analytics, tracking page views, video plays, PDF downloads, contact form submissions, and search queries. Events queue in IndexedDB while offline and deliver when the connection returns.
+Privacy-friendly product analytics so the temple can see which materials people use and where they struggle. PostHog Cloud replaces Cloudflare Web Analytics, tracking page views, video plays, PDF downloads, contact form submissions, and search queries. Events queue in IndexedDB while offline and deliver when the connection returns.
 **Done when:** page views and key events are recorded, events queue offline and arrive once the connection returns, no personal data is collected, and a privacy page explains what PostHog collects.
 
 - [x] Decide the analytics approach (spec): `/architect product analytics`
-- [ ] Build it: `/develop product analytics`
-  - [ ] Install PostHog SDK, configure privacy settings, and add page view tracking (satisfies AC-1, AC-7, AC-8)
-  - [ ] Add custom event tracking for videos, PDFs, contact form, and search (satisfies AC-2, AC-3, AC-4, AC-5)
-  - [ ] Verify offline queuing delivers events when connection returns (satisfies AC-6)
-  - [ ] Create privacy page and update navigation (satisfies AC-9)
-- [ ] Verify it: `/check verify product analytics`
-- [ ] Test it: `/test product analytics`
-      Spec [0010](../specs/0010-product-analytics.md) · code in `src/lib/posthog.ts`, `src/layouts/Layout.astro`, `src/components/Video.astro`, `src/pages/contact.astro`, `src/pages/search.astro`, `src/content/pages/privacy.mdx`
+- [x] Build it: `/develop product analytics`
+  - [x] Install PostHog SDK, configure privacy settings, and add page view tracking (satisfies AC-1, AC-7, AC-8)
+  - [x] Add custom event tracking for videos, PDFs, contact form, and search (satisfies AC-2, AC-3, AC-4, AC-5)
+  - [x] Verify offline queuing delivers events when connection returns (satisfies AC-6)
+  - [x] Create privacy page and update navigation (satisfies AC-9)
+- [x] Verify it: `/check verify product analytics`
+- [x] Test it: `/test product analytics`
+      Spec [0010](../specs/0010-product-analytics.md) · code in `src/lib/posthog.ts`, `src/layouts/Layout.astro`, `src/components/Video.astro`, `src/pages/resources/[slug].astro`, `src/pages/contact.astro`, `src/pages/search.astro`, `src/content/pages/privacy.md`, `src/config/nav.ts`, `src/config/site.ts`
 
 ### 15. SEO, metadata & performance · planned
 

@@ -79,8 +79,10 @@ import '@styles/base.css'
 
             <dt>Page view counts</dt>
             <dd>
-              <strong>Cloudflare Web Analytics</strong> counts visits and tells us which pages are
-              read. It is cookieless, sets no identifier, and records no personal data.
+              <strong>PostHog</strong> counts visits and tells us which pages are read, which videos
+              are played, and which resources are downloaded. It sets no cookie, collects no IP
+              address, and records no personal data. Learn more on the
+              <a href="/privacy">privacy page</a>.
             </dd>
 
             <dt>Your theme choice</dt>
@@ -228,6 +230,12 @@ import '@styles/base.css'
             form.reset()
             form.hidden = true
             notice.hidden = false
+            try {
+              const ph = window.posthog
+              if (ph) ph.capture('Contact Form Submitted', { result: 'success' })
+            } catch {
+              /* analytics non-critical */
+            }
           } else {
             error.hidden = false
           }
