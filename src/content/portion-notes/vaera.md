@@ -1,5 +1,5 @@
 ---
-title: Va'era
+title: Vaera
 description: >-
   Description goes here...
 
@@ -47,10 +47,10 @@ Yisra'Yah out of the Mitsrayim bondage. The narrative progresses to tell the sto
 ## Portion Commentary
 
 Deliverance from Bondage
-                                                                                                   
+
 ### Thought for the week
 
-Yahweh promised to deliver Yisra'Yah from the burdens of Mitsrayim. The tov (good) news of salvation is that, through amanah (faith) in Yahshua, those burdens can be removed. Instead of sin we have forgiveness. Instead of guilt we have simcah (joy). Instead of condemnation, we have vindication. Instead of death and judgment, we have the gift of eternal life and favor.                             
+Yahweh promised to deliver Yisra'Yah from the burdens of Mitsrayim. The tov (good) news of salvation is that, through amanah (faith) in Yahshua, those burdens can be removed. Instead of sin we have forgiveness. Instead of guilt we have simcah (joy). Instead of condemnation, we have vindication. Instead of death and judgment, we have the gift of eternal life and favor.
 
 ### Torah Commentary
 
