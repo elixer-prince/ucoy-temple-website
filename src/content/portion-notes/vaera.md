@@ -1,5 +1,5 @@
 ---
-title: Vaera
+title: Va'era
 description: >-
   Description goes here...
 
