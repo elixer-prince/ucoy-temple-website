@@ -8,6 +8,8 @@ order: 3
 
 ## Portion Outline
 
+### TORAH
+
 Bereshit 12:1 | The call of Abram
 
 Bereshit 1:10 | Abram and Sarai in Mistrayim
@@ -23,6 +25,12 @@ Bereshit 15:1 | Yahweh's Berit with Abram
 Bereshit 16:1 | The Birth of Ishmael
 
 Bereshit 17:1 | The Sign of the Berit (Covenant)
+
+### PROPHETS
+
+Yeshayahu 40:1 | Yahweh's People Are Comforted
+
+Yeshayahu 41:1 | Yisra'Yah Assured of Yahweh's Help
 
 ## Portion Summary
 
