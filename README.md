@@ -149,7 +149,34 @@ Conventions:
 
 ### Adding a portion commentary
 
-Create `src/content/portion-notes/<slug>.md` where `<slug>` is the portion slug the Hebrew calendar produces (e.g. `bereshit`, `matot`). The reading itself is computed at build time, so only the authored teaching lives here. A portion with no file is normal — its page shows the reading and says no commentary has been written yet.
+Commentary files live in `src/content/portion-notes/`. Name the file
+`src/content/portion-notes/<slug>.md` where `<slug>` is the portion slug,
+all lowercase and hyphenated, and it must match exactly one of the 53 slugs
+the site publishes.
+
+The page routes are generated from the Hebrew calendar, so a commentary is
+paired to its portion by filename alone: `bereshit.md` pairs with
+`/portion/bereshit`, `noach.md` with `/portion/noach`, and so on. The file
+id (the name without `.md`) must equal the portion slug exactly. A near-miss
+such as `noah.md` for `noach` or `chayei-sarai.md` for `chayei-sara` builds
+cleanly but renders nowhere — its portion page shows "no commentary
+written yet" instead. Run `npm run test` to catch a misnamed file before it
+ships; `commentary.shape.test.ts` fails on any file whose name is not a
+published slug.
+
+After adding a file, rebuild (`npm run build`): it is a static site, so new
+commentaries do not appear until the next build. `npm run dev` picks them up
+locally without a rebuild.
+
+Valid slugs (all 53):
+
+bereshit, noach, lech-lecha, vayera, chayei-sara, toldot, vayetzei,
+vayishlach, vayeshev, miketz, vayigash, vayechi, shemot, vaera, bo,
+beshalach, yitro, mishpatim, terumah, tetzaveh, ki-tisa, vayakhel, pekudei,
+vayikra, tzav, shmini, tazria, metzora, achrei-mot, kedoshim, emor, behar,
+bechukotai, bamidbar, nasso, beha-alotcha, sh-lach, korach, chukat, balak,
+pinchas, matot, masei, devarim, vaetchanan, eikev, re-eh, shoftim,
+ki-teitzei, ki-tavo, nitzavim, vayeilech, ha-azinu
 
 ```md
 ---
@@ -162,12 +189,6 @@ order: 999
 
 ## Portion Outline
 
-### TORAH
-
-. . .
-
-### PROPHETS
-
 . . .
 
 ## Portion Summary
@@ -176,17 +197,15 @@ order: 999
 
 ## Portion Commentary
 
-. . .
-                                                                                                   
 ### Thought for the week
 
-. . .                           
+. . .
 
 ### Torah Commentary
 
 . . .
 
-## Prophets Commentary
+### Prophets Commentary
 
 . . .
 
