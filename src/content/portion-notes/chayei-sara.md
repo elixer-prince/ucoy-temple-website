@@ -33,7 +33,7 @@ The fifth reading from the book of Bereshit is named Chayei Sarai ( חַיֵּי
 ## Portion Commentary
 
 Bashert: The Real Soul Mate
-                                                                                                   
+
 ### Thought for the week
 
 In our culture, we believe that a person should marry whoever he or she falls in love with. This is a bad plan. It is possible to fall in love with the wrong person. It is possible to fall in love with many wrong persons. Falling in love is a terrible criteria upon which to base a marriage. It would have been easy for (Yitchaq) to fall in love with any number of Canaanite girls. Why didn't he? Because Abraham would not allow it. Abraham placed clear and specific limits around Yitchaq's potential
